@@ -37,15 +37,15 @@ When every Phase 0 row is ✅, announce "Phase 0 complete — starting Phase 1" 
 
 For each phase, in order:
 
-1. **For each Group in the phase:**
-   - Flip every task row in the Group's table from ⬜ → 🟡 in the plan file.
-   - Dispatch one `claude` implementer subagent. Pass it as context: the Group's task list, the list of files the tasks touch, and the Group's `Tests / checks` bullet list.
-   - When the implementer reports done, dispatch one `Explore` Group tester subagent. Pass it the Group's `Tests / checks` bullet list as the explicit checklist.
-   - If the Group tester reports pass, flip every task row in the Group's table from 🟡 → ✅.
-   - If the Group tester reports failure, apply the **retry rule** below.
+1. **Dispatch every Group in the phase in parallel:**
+   - Flip every task row in every Group from ⬜ → 🟡 in the plan file in one edit (do not interleave with dispatch).
+   - In a single response, emit one `Agent` call per Group dispatching a `claude` implementer. Each implementer gets only its own Group's task list, file list, and `Tests / checks` block.
+   - As each implementer reports done, dispatch its `Explore` Group tester. Group testers run concurrently across Groups — they are read-only and cannot collide.
+   - For each Group: on tester pass, flip its rows 🟡 → ✅. On tester failure, apply the retry rule for that Group only; other Groups are unaffected.
+   - Wait until every Group is ✅ before running the Phase tester.
 
 2. **After every Group in the phase is ✅:**
-   - Dispatch one `Explore` Phase tester against the phase's `Tests / checks (Phase N — integration)` block.
+   - Dispatch one `Explore` Phase tester against the phase's `Tests / checks (Phase N — integration)` block. This is the only place cross-Group integration is verified — trust it to catch anything the parallel Groups don't compose into.
    - On pass, proceed to the next phase.
    - On failure, apply the **phase-tester failure rule** below.
 
@@ -53,12 +53,13 @@ For each phase, in order:
 
 ## Parallelism rule
 
-Within a single phase, multiple Groups **may** be dispatched in parallel only when **both** conditions hold:
+**Within a phase, every Group runs in parallel. Always.** Dispatch all of the phase's implementers in a single response containing one `Agent` call per Group. There is no per-phase serial path — by definition (see CONTEXT.md → Group) a Group is a fully independent vertical slice. If two bundles can't be verified independently, the planner should have made them one Group or split them across phases.
 
-- No two Groups in the parallel batch write to the same file.
-- No Group in the batch depends on another Group's output.
+Group testers also run in parallel — they are read-only `Explore` agents.
 
-If either condition fails for any pair, dispatch those Groups serially. When in doubt, serial.
+**If you spot a read-dependency or shared-file write between sibling Groups in the same phase, halt and escalate to the user as a plan defect.** Do not serialize as a workaround. State the violating Group pair and the specific dependency; ask the user to either merge them into one Group or move one to a later phase. Resume only after the plan is fixed. The plan file is the artifact to fix — not the dispatch strategy.
+
+Cross-Group integration is the Phase tester's job, not the Supervisor's dispatch choice. Trust it.
 
 ---
 
@@ -120,8 +121,7 @@ When the Phase tester reports failure:
 - Picking which Group to re-dispatch on Phase tester failure.
 - Phase 0 interactive chat with the user.
 - Plan-file edits recording Phase 0 decisions.
-- Escalation messages to the user.
-- Deciding parallel-vs-serial dispatch within a phase.
+- Escalation messages to the user (including plan-defect escalations when Groups violate the vertical-slice invariant).
 - Deciding when to stop and escalate.
 
 Never use `general-purpose` for implementers — use `claude`. Never use a writable subagent type for testers — use `Explore`.
