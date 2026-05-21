@@ -26,6 +26,7 @@ Triggered by case (1) or a confirmed case (2) above. Behavior:
 - **Skip the WHAT topics** — these are already covered by the linked issue body. Do not re-grill scope, behavior, acceptance criteria, or out-of-scope: take them as given from the issue.
 - **Run the HOW topics only** — architecture, modules, files, tests, rollout. These are not in the issue body and must be resolved before writing the plan.
 - **Read the issue body first.** Before starting the HOW grill, fetch the issue via `gh issue view <ref> --json title,body,labels` (or equivalent) and read it in full so the HOW questions are grounded in the issue's WHAT.
+- **Capture the issue title, number, and ID tag** for use in Phase 2 — the plan filename and title must mirror the issue exactly so the link between issue and plan is obvious at a glance. The ID tag is the leading `(N)` or `(N.M)` token in the issue title (set by `new-issue`). If the issue title has no ID tag (e.g. an older issue created before this convention), tell the user and ask whether to (a) edit the issue title to add an ID, or (b) fall back to the standalone-path naming for this one plan.
 
 The existing standalone grill behavior (below) is unchanged — it runs only when the Detection order lands on case (3).
 
@@ -65,12 +66,16 @@ Then proceed immediately to Phase 2 — do not wait for the user to prompt you.
 
 1. **Read the template** at `~/.claude/skills/implementation-planning/template_implementation_plan.md` before writing anything.
 
-2. **Determine plan number** — list files in `implementation_plans/` at the project root to find the next available `N.N` slot. If the directory doesn't exist, create it and start at `1.1`.
+2. **Determine plan number** based on the Detection-order branch:
+   - **From-issue path (cases 1 and 2):** use the issue's ID tag verbatim. `(N)` → plan slot `N`; `(N.M)` → plan slot `N.M`. Do **not** pick the next free slot in `implementation_plans/` — the issue ID is authoritative. If a plan file with that slot already exists, stop and ask the user how to resolve (overwrite, rename existing, etc.) rather than silently picking a different slot.
+   - **Standalone path (case 3):** list files in `implementation_plans/` at the project root to find the next available `N.N` slot. If the directory doesn't exist, create it and start at `1.1`.
 
-3. **Write the plan file** to `implementation_plans/N.N_short_name.md` (short_name: 2–4 words, snake_case, no articles).
+3. **Write the plan file** to `implementation_plans/<slot>_short_name.md`. Derive `short_name` based on the Detection-order branch:
+   - **From-issue path (cases 1 and 2):** `short_name` is **1–3 words, snake_case, no articles** — just enough to skim a directory listing. The ID tag already identifies which issue the plan tackles, so the slug does not need to mirror the full issue title. Pick the most load-bearing nouns/verbs from the issue title; drop the ID tag, the `[feature]` / `[bug]` prefix, and any filler. Example: issue `(1.3) [feature] Add OAuth login for admin dashboard` → `1.3_oauth_login.md`. Example: issue `(2.1) [feature] skill: generate test structure from codebase + docs` → `2.1_test_structure.md`.
+   - **Standalone path (case 3):** `short_name` is 2–4 words, snake_case, no articles.
 
 4. **Follow the template exactly**:
-   - Title line: `# N.N — Plan Name`
+   - Title line: `# <slot> — Plan Name` — on the from-issue path, `Plan Name` is the **verbatim issue title with the ID tag stripped** (keep the `[feature]` / `[bug]` prefix and original casing/punctuation) followed by ` (#<issue-number>)`. Example: `# 1.3 — [feature] Add OAuth login for admin dashboard (#42)`. On the standalone path, use a short human-readable title derived from the grill.
    - One-sentence summary + Goal statement
    - Status legend
    - Phase 0 — Prerequisites (external deps, blockers, decisions to confirm before coding starts)

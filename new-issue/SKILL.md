@@ -110,7 +110,7 @@ If either tier fails, restructure the split (expand a sub-issue, add a sub-issue
 
 Every issue — parent and sub — goes through the same loop: **preview, edit, approve, publish.**
 
-1. **Preview rendered title + body** as the chat message. Show the full title (with the `[feature]` or `[bug]` prefix) and the full body markdown. The user sees the rendered issue body before any `gh` call. A fenced code block is acceptable if it helps readability.
+1. **Preview rendered title + body** as the chat message. Show the full title (with the `(<id>)` tag and the `[feature]` / `[bug]` prefix) and the full body markdown. The user sees the rendered issue body before any `gh` call. A fenced code block is acceptable if it helps readability.
 2. **Support natural-language inline edits** — e.g. "rename criterion 3 to X", "drop the Out of scope bullet about Y", "add a dependency on #42", "tighten the symptom sentence". Apply the edit, re-render the full title + body, and offer the next edit cycle.
 3. **Run `gh issue create` only after explicit user approval.** "Looks good, publish it" or equivalent. Never assume approval; never publish silently.
 
@@ -132,11 +132,29 @@ Re-run the two-tier coverage check on the final approved list before the first s
 
 ## Issue title format
 
-- `[feature] short title` or `[bug] short title`
-- Bracketed prefix is **lowercase**
-- Title cap is **70 characters total** (prefix included)
-- **Sub-issues inherit the parent's prefix.** A feature parent's sub-issues are all `[feature] ...`; a bug parent's sub-issues are all `[bug] ...`
+- `(<id>) [feature] short title` or `(<id>) [bug] short title`
+- **ID tag is mandatory and comes first.** Format: `(N)` for a standalone or parent issue; `(N.M)` for a sub-issue. The ID makes the issue ↔ implementation-plan link unambiguous — `implementation-planning` will name the plan file `N_<slug>.md` or `N.M_<slug>.md` to mirror the issue ID exactly.
+- Bracketed type prefix (`[feature]` / `[bug]`) is **lowercase** and sits after the ID tag.
+- Title cap is **70 characters total** (ID tag + type prefix + title).
+- **Sub-issues inherit the parent's type prefix.** A feature parent's sub-issues are all `(N.M) [feature] ...`; a bug parent's sub-issues are all `(N.M) [bug] ...`.
 - **No `[parent]` marker.** Parent status lives in the body, not the title.
+
+### ID assignment
+
+Determine the ID immediately before the **first preview** of each issue (parent or sub). Do not assign earlier — IDs must reflect the latest issue list.
+
+1. **Scan existing issues**, both open and closed, to avoid collisions:
+   ```
+   gh issue list --state all --limit 500 --json number,title
+   ```
+   (Add `--repo owner/name` if the preflight fallback captured one.)
+2. **Parse the leading `(N)` / `(N.M)` token** from each title.
+3. **Pick the new ID:**
+   - **Standalone issue or parent issue** → `(max(N) + 1)` across all existing top-level IDs. If no IDs exist yet, start at `(1)`.
+   - **Sub-issue under parent `(N)`** → `(N.max(M) + 1)`, where `M` ranges over existing sub-issues of that parent. If the parent has no sub-issues yet, start at `(N.1)`.
+4. **Assign sub-issue IDs in publish order** (see *Multi-plan publish order*). The parent's `(N)` is known before any sub-issue ID is picked, so each sub gets `(N.1)`, `(N.2)`, … as it's prepared for preview.
+
+Treat the ID as part of the title from the moment it's assigned: previews, inline-edit re-renders, and the final `gh issue create --title` call all show the full `(<id>) [type] short title` string.
 
 ---
 
@@ -156,7 +174,7 @@ This is enforced by the three body templates themselves (`template_feature_issue
 
 After the final issue is published (whether one-plan or multi-plan), surface a short hint to the user:
 
-> Next: run `/implementation-planning <issue-url>` to plan the HOW. Or just `/implementation-planning` — it can auto-detect the issue you just created in this session.
+> Next: run `/implementation-planning <issue-url>` to plan the HOW. Or just `/implementation-planning` — it can auto-detect the issue you just created in this session. The plan file will be named after the issue's `(<id>)` tag so the issue ↔ plan link stays obvious.
 
 Then stop. Do not start a planning session yourself. The user invokes `/implementation-planning` when they are ready.
 
