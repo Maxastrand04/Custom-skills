@@ -6,6 +6,7 @@ A collection of personal Claude Code skills. Each skill is a directory with a `S
 
 | Skill | Description |
 |-------|-------------|
+| `generate-test` | Explore the codebase, grill the user for domain cases, and write a `/tests/` directory of markdown test specs — without executing tests |
 | `implement-tdd` | Drive a small change test-first as Supervisor — preflight runner, write red tests, dispatch implementer, review on green |
 | `implementation-planning` | Grill-me interview to stress-test a plan, then produce a structured implementation plan file |
 | `new-issue` | Grill WHAT (behavior, scope, acceptance criteria) and publish a GitHub Issue |
