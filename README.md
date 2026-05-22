@@ -6,11 +6,13 @@ A collection of personal Claude Code skills. Each skill is a directory with a `S
 
 | Skill | Description |
 |-------|-------------|
+| `generate-framework-tests` | Generate real, framework-executable tests (pytest / vitest / jest / go test / cargo test / JUnit) with a single approval gate and manifest-based drift detection; re-runs skip unchanged files via `.generate-framework-tests/sidecar-manifest.json` |
 | `generate-test` | Explore the codebase, grill the user for domain cases, and write a `/tests/` directory of markdown test specs — without executing tests |
 | `implement-tdd` | Drive a small change test-first as Supervisor — preflight runner, write red tests, dispatch implementer, review on green |
 | `implementation-planning` | Grill-me interview to stress-test a plan, then produce a structured implementation plan file |
 | `new-issue` | Grill WHAT (behavior, scope, acceptance criteria) and publish a GitHub Issue |
 | `project-setup` | Scaffold a fresh project end-to-end with CONTEXT.md and artifact checklist |
+| `run-tests` | Discover and run the project's test suite, then report pass/fail results with failure details |
 | `supervise-implement` | Drive an implementation plan to completion with implementer and tester subagents |
 
 ## Installation
