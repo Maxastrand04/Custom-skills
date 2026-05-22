@@ -66,14 +66,21 @@ This is the **Cases preview**. The skill halts here and waits for an explicit ap
 
 ### Stage 6 — Write
 
-The skill writes each approved test file according to the schema defined in `template_test_file.md`. Every generated file includes the frontmatter fields:
+Writing is **delegated to Haiku subagents**, one per test file, dispatched in parallel via the Agent tool with `subagent_type: claude` and `model: haiku`. The main session (Opus) does no file writes in this stage — it only dispatches and verifies.
 
-- `source` — path to the source file under test
-- `test` — path to this test file
-- `source_sha` — SHA of the source file at generation time
-- `generated_sha` — SHA of this test file at generation time
+Rationale: by Stage 6 every case has been user-approved. Producing the markdown file from the approved spec is mechanical templating, not judgment work, so it should run on the cheapest capable model.
 
-The skill never overwrites a test file that has been user-edited. Detection of user-edited files is delegated to `staleness-detection.md`.
+Each subagent prompt is self-contained and includes:
+
+- The exact target path (`test` field)
+- All four frontmatter values: `source`, `test`, `source_sha`, `generated_sha`
+- The agent blocks to emit (`unit` / `integration` / `behavior`) with their `Targets` and `Cases` lists
+- A literal reference to `template_test_file.md` as the authoritative schema
+- Instruction to write the file and stop — no exploration, no extra cases, no commentary
+
+After dispatch, the main session verifies each file exists, has the expected frontmatter, and matches the approved spec. Any subagent failure is surfaced to the user; the main session does not silently retry.
+
+The skill never overwrites a test file that has been user-edited. Detection of user-edited files is delegated to `staleness-detection.md` and is checked **before** dispatching write subagents.
 
 ---
 
@@ -87,7 +94,7 @@ The skill's role in re-run mode:
 
 1. Ask `staleness-detection.md` to classify all existing generated test files into buckets.
 2. Present the classification to the user and wait for explicit approval before acting on it.
-3. For `Stale` and `New` files, run the normal orchestration loop (Stages 2–6) scoped to those files only.
+3. For `Stale` and `New` files, run the normal orchestration loop (Stages 2–6) scoped to those files only. Per-file rewrites in Stage 6 are dispatched to Haiku subagents as described above; bucket classification and case reconciliation stay on the main session.
 4. Never touch `User-edited` files. Never delete `Orphan` files without explicit user instruction.
 
 ---
@@ -113,3 +120,4 @@ The four files below are bundled with this skill. Each owns a specific domain. S
 - The skill never overwrites user-edited test files.
 - The denylist, agent-name list, and bucket list are each owned by their respective bundled file. They are not repeated here.
 - This is a markdown-only skill. There are no compiled artifacts, executables, or code files.
+- Cognitive work (exploration, grilling, preview reconciliation, bucket classification) runs on the main session. Mechanical file writing runs on Haiku subagents dispatched per file.
