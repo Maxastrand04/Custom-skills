@@ -6,6 +6,7 @@ A collection of personal Claude Code skills. Each skill is a directory with a `S
 
 | Skill | Description |
 |-------|-------------|
+| `add-comments` | Grill the user into a persisted comment convention and then drive a preview-and-approve commenting loop against that convention |
 | `generate-framework-tests` | Generate real, framework-executable tests (pytest / vitest / jest / go test / cargo test / JUnit) with a single approval gate and manifest-based drift detection; re-runs skip unchanged files via `.generate-framework-tests/sidecar-manifest.json` |
 | `generate-test` | Explore the codebase, grill the user for domain cases, and write a `/tests/` directory of markdown test specs — without executing tests |
 | `implement-tdd` | Drive a small change test-first as Supervisor — preflight runner, write red tests, dispatch implementer, review on green |
