@@ -101,7 +101,7 @@ Walk the remaining categories in checklist order, **one question per turn**, eac
 - **`.gitignore`** — fetched from the `github/gitignore` repo for the chosen language; append IDE entries (`.idea/`, `.vscode/`, `.DS_Store`).
 - **LICENSE** — real text with current year and author name, not a placeholder template.
 - **CLAUDE.md** — real stub encoding the convention **"1 implementation plan = 1 GitHub issue, close the issue when validation passes"**, linking to `CONTEXT.md` and `implementation_plans/`.
-- **`implementation_plans/`** — directory only (no starter `.md` files inside; `implementation-planning` populates them later).
+- **`implementation_plans/`** — directory only (no starter `.md` files inside; `plan-build` populates them later).
 - **`project_plan.md`** (only if chosen in the Planning artifacts category) — populated from the bundled `./template_project_plan.md` via skill-relative path. Do not fetch from `~/.claude/templates/` or anywhere else.
 
 ---
@@ -118,7 +118,7 @@ Then output the final report:
 
 - **Line 1** — `Scaffolded <project-name> at <path>. Remote: <gh-url>.` (or `Scaffolded <project-name> at <path>. Local-only.` for the no-gh path).
 - **Bulleted list** — every file created, each as a clickable markdown link (absolute path).
-- **Line 3** — `Next: run /implementation-planning to plan the first slice.`
+- **Line 3** — `Next: run /plan-build to plan the first slice.`
 
 ---
 
@@ -126,13 +126,13 @@ Then output the final report:
 
 **All work in this skill is Opus-direct.** No `claude` implementer subagents. No `Explore` reviewer or tester subagents. No `general-purpose` dispatch.
 
-The work is entirely conversation + file edits + shell commands — not production-code implementation — so the cost of a subagent round-trip outweighs any parallelism gain. This is the key distinction between `project-setup` and the test-first skills (`implement-tdd`, `implement-plan`), which delegate implementation precisely because production code benefits from a fresh-context implementer.
+The work is entirely conversation + file edits + shell commands — not production-code implementation — so the cost of a subagent round-trip outweighs any parallelism gain. This is the key distinction between `project-setup` and the test-first skills (`implement-tdd`, `plan-execute`), which delegate implementation precisely because production code benefits from a fresh-context implementer.
 
 ---
 
 ## Constraints
 
-1. Do NOT auto-chain to `/implementation-planning` after the final report. The user invokes it themselves.
+1. Do NOT auto-chain to `/plan-build` after the final report. The user invokes it themselves.
 2. Do NOT auto-create `claude_ignore/`. It is an artifact-grill opt-in (default yes) inside the Claude-specific category.
 3. Do NOT auto-create `project_plan.md`. It is an artifact-grill choice within the Planning artifacts category.
 4. Do NOT push until the final commit. No intermediate pushes during the artifact grill.

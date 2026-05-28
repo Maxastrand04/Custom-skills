@@ -1,13 +1,13 @@
 ---
-name: implement-plan
+name: plan-execute
 description: Drive an implementation plan to completion in one of two modes — hands-on (model
   implements inline, user owns architecture review per Group) or supervise (parallel claude
   implementer subagents per Group, Architecture tester subagent owns architecture review).
-  Use when user says "implement-plan", "supervise", "implement the plan", "run the implementation
-  plan", "drive the plan group by group", "serial plan execution", or invokes /implement-plan.
+  Use when user says "plan-execute", "supervise", "implement the plan", "run the implementation
+  plan", "drive the plan group by group", "serial plan execution", or invokes /plan-execute.
 ---
 
-# implement-plan
+# plan-execute
 
 You drive an implementation plan to completion in one of two modes: **hands-on** (you implement inline, the user reviews architecture per Group) or **supervise** (parallel `claude` implementer subagents per Group, a separate Architecture-tester subagent reviews architecture).
 
@@ -27,12 +27,12 @@ Parse the user's invocation message for:
 
 | Form | Mode token | Plan arg | Behaviour |
 |------|-----------|----------|-----------|
-| `/implement-plan hands-on plan 4.2` | `hands-on` | `plan 4.2` | Lock hands-on; use `4.2_*.md`; confirm |
-| `/implement-plan supervise plan 4.2` | `supervise` | `plan 4.2` | Lock supervise; use `4.2_*.md`; confirm |
-| `/implement-plan hands-on` | `hands-on` | absent | Lock hands-on; auto-pick highest `N.N`; confirm |
-| `/implement-plan supervise` | `supervise` | absent | Lock supervise; auto-pick highest `N.N`; confirm |
-| `/implement-plan plan 4.2` | absent | `plan 4.2` | Use `4.2_*.md`; confirm; then ask mode |
-| `/implement-plan` | absent | absent | Auto-pick highest `N.N`; confirm; then ask mode |
+| `/plan-execute hands-on plan 4.2` | `hands-on` | `plan 4.2` | Lock hands-on; use `4.2_*.md`; confirm |
+| `/plan-execute supervise plan 4.2` | `supervise` | `plan 4.2` | Lock supervise; use `4.2_*.md`; confirm |
+| `/plan-execute hands-on` | `hands-on` | absent | Lock hands-on; auto-pick highest `N.N`; confirm |
+| `/plan-execute supervise` | `supervise` | absent | Lock supervise; auto-pick highest `N.N`; confirm |
+| `/plan-execute plan 4.2` | absent | `plan 4.2` | Use `4.2_*.md`; confirm; then ask mode |
+| `/plan-execute` | absent | absent | Auto-pick highest `N.N`; confirm; then ask mode |
 
 If the mode token is absent or unknown after parsing, do **not** guess — fall through to **Mode selection**.
 
@@ -52,7 +52,7 @@ After confirming the plan and mode, grep the chosen plan for `**Architecture dec
 
 If any Group block is missing this sub-heading, fail loud and halt:
 
-> This plan was generated before per-group architecture sections were required. Re-plan with `/implementation-planning`.
+> This plan was generated before per-group architecture sections were required. Re-plan with `/plan-build`.
 
 This check applies identically to both modes — do not skip it.
 
