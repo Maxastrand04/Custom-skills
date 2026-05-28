@@ -89,33 +89,55 @@ Brief description of what this phase delivers.
 
 One line describing what this group changes and why these tasks bundle together (shared file or single atomic change).
 
+**Architecture decisions (Group 1):**
+- Follows AD-N ([short title]) and AD-N ([short title]).
+- References ADR-NNNN ([short title]) where relevant.
+
 | Task | File | Status |
 |------|------|--------|
 | Description of task | [filename](../path/to/file.py) | ⬜ |
 | Description of task | [filename](../path/to/file.py) | ⬜ |
 
-**Tests / checks (Group 1):**
-- Concrete check the Group tester will run (command, file/symbol presence, HTTP response, etc.)
-- Another concrete check
+**Functionality tests / checks (Group 1):**
+- AC-N: concrete check verifying the Group satisfies this criterion (command, file/symbol presence, HTTP response, etc.)
+- AC-N: another check
+
+**Architecture tests / checks (Group 1):**
+- (subagent) AD-N present in `path/to/file.py` — verify shape.
+- (human) AD-N — no new import from `core/` into `handlers/`.
 
 ### Group 2 — [short name]
 
 One line describing this group.
 
+**Architecture decisions (Group 2):**
+- Follows AD-N ([short title]).
+- No architectural decisions apply (or list the relevant AD-N items).
+
 | Task | File | Status |
 |------|------|--------|
 | Description of task | [filename](../path/to/file.py) | ⬜ |
 
-**Tests / checks (Group 2):**
-- Concrete check
-- Another concrete check
+**Functionality tests / checks (Group 2):**
+- AC-N: concrete check verifying the Group satisfies this criterion
+- AC-N: another check
 
-### Tests / checks (Phase 1 — integration)
+**Architecture tests / checks (Group 2):**
+- (subagent) AD-N conformance check — verify structure in `path/to/file.py`.
 
-Cross-group checks the Phase tester runs after all groups in this phase are ✅. These verify the groups compose correctly; they are not a re-run of the per-group checks.
+### Functionality tests / checks (Phase 1 — integration)
 
-- Integration check spanning Group 1 + Group 2
-- Another integration check
+Cross-group checks the Phase tester runs after all groups in this phase are ✅. These verify the `AC-N` criteria that span multiple Groups; they are not a re-run of the per-group checks.
+
+- AC-N: cross-group check verifying the criterion spanning Group 1 + Group 2
+- AC-N: another cross-group check
+
+### Architecture tests / checks (Phase 1 — integration)
+
+Cross-group structural checks. The architecture reviewer (subagent or human) verifies that the composed result respects all AD-N decisions across both Groups.
+
+- (subagent) Composed code respects AD-N dependency direction across both Groups.
+- (human) No top-level section renamed; additive-only changes verified.
 
 ---
 
@@ -125,16 +147,29 @@ Brief description of what this phase delivers.
 
 ### Group 1 — [short name]
 
+One line describing this group.
+
+**Architecture decisions (Group 1):**
+- Follows AD-N ([short title]).
+- No architectural decisions apply (or list the relevant AD-N items).
+
 | Task | File | Status |
 |------|------|--------|
 | Description of task | [filename](../path/to/file.py) | ⬜ |
 
-**Tests / checks (Group 1):**
-- Concrete check
+**Functionality tests / checks (Group 1):**
+- AC-N: concrete check verifying the Group satisfies this criterion
 
-### Tests / checks (Phase 2 — integration)
+**Architecture tests / checks (Group 1):**
+- (subagent) AD-N conformance check — verify structure in `path/to/file.py`.
 
-- Integration check
+### Functionality tests / checks (Phase 2 — integration)
+
+- AC-N: cross-group check verifying the criterion that spans both Groups
+
+### Architecture tests / checks (Phase 2 — integration)
+
+- (subagent) Composed code respects AD-N dependency direction.
 
 ---
 
