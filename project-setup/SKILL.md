@@ -126,7 +126,7 @@ Then output the final report:
 
 **All work in this skill is Opus-direct.** No `claude` implementer subagents. No `Explore` reviewer or tester subagents. No `general-purpose` dispatch.
 
-The work is entirely conversation + file edits + shell commands — not production-code implementation — so the cost of a subagent round-trip outweighs any parallelism gain. This is the key distinction between `project-setup` and the test-first skills (`implement-tdd`, `supervise-implement`), which delegate implementation precisely because production code benefits from a fresh-context implementer.
+The work is entirely conversation + file edits + shell commands — not production-code implementation — so the cost of a subagent round-trip outweighs any parallelism gain. This is the key distinction between `project-setup` and the test-first skills (`implement-tdd`, `implement-plan`), which delegate implementation precisely because production code benefits from a fresh-context implementer.
 
 ---
 

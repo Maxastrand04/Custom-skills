@@ -278,7 +278,7 @@ Decisions to elicit:
   - encodes the convention **"1 implementation plan = 1 GitHub issue, close the issue when validation passes"**,
   - points at `implementation_plans/` and the bundled `project-setup/template_project_plan.md` for planning workflows.
 - **`.claude/settings.json`** — default: yes. Seed with permissions for the project's package manager, test runner, and `gh`; add a stop-hook only if the user asks.
-- **Skills to symlink in** — defaults: `tdd`, `implement-tdd`, `implementation-planning`, `supervise-implement`, `code-review`. User can add/remove.
+- **Skills to symlink in** — defaults: `tdd`, `implement-tdd`, `implementation-planning`, `implement-plan`, `code-review`. User can add/remove.
 - **`claude_ignore/` opt-in** — opt-in, **default yes** per the user's global preference. When yes, create `claude_ignore/` at the repo root and add a `.gitkeep` so it tracks; the directory is treated as off-limits for Claude reads/writes by convention.
 
 Filesystem actions on answer:
