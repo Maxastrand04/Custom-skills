@@ -1,11 +1,11 @@
 ---
 name: new-issue
-description: Grill the user into a single-issue spec covering WHAT (behavior, scope, acceptance criteria) — not HOW (architecture, files). Publishes the spec as a GitHub Issue. If scope is too large, chains into a local sub-issue split. Output feeds `plan-build`. Use when user wants to create a new issue, file a feature request, capture a new functionality, says "new issue", "create an issue", or "spec this out".
+description: Grill the user into a single-issue spec covering WHAT (behavior, scope, acceptance criteria) — not HOW (architecture, files). Publishes the spec as a GitHub Issue. If scope is too large, chains into a local sub-issue split. Output feeds `implementation-planning`. Use when user wants to create a new issue, file a feature request, capture a new functionality, says "new issue", "create an issue", or "spec this out".
 ---
 
 # new-issue
 
-Grill the user into a single, well-scoped GitHub Issue covering **WHAT** changes (behavior, scope, acceptance criteria) — never **HOW** (architecture, files, code). Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/plan-build` for the HOW.
+Grill the user into a single, well-scoped GitHub Issue covering **WHAT** changes (behavior, scope, acceptance criteria) — never **HOW** (architecture, files, code). Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/implementation-planning` for the HOW.
 
 This skill is markdown-only orchestration. Read the four bundled files at runtime — do not assume their contents from this document:
 
@@ -62,7 +62,7 @@ Read the template file at runtime. Do not paste its contents into chat; do not w
 
 Work through every topic in the chosen template, one at a time. Ask focused, single-topic questions. Offer a recommended answer with brief reasoning when useful, but do not invent decisions the user has not made.
 
-**Forbidden during grill (HOW topics — defer to `plan-build`):**
+**Forbidden during grill (HOW topics — defer to `implementation-planning`):**
 
 - File paths, module names, function or class names, function signatures
 - Schema design, database tables, API contract shapes
@@ -133,7 +133,7 @@ Re-run the two-tier coverage check on the final approved list before the first s
 ## Issue title format
 
 - `(<id>) [feature] short title` or `(<id>) [bug] short title`
-- **ID tag is mandatory and comes first.** Format: `(N)` for a standalone or parent issue; `(N.M)` for a sub-issue. The ID makes the issue ↔ implementation-plan link unambiguous — `plan-build` will name the plan file `N_<slug>.md` or `N.M_<slug>.md` to mirror the issue ID exactly.
+- **ID tag is mandatory and comes first.** Format: `(N)` for a standalone or parent issue; `(N.M)` for a sub-issue. The ID makes the issue ↔ implementation-plan link unambiguous — `implementation-planning` will name the plan file `N_<slug>.md` or `N.M_<slug>.md` to mirror the issue ID exactly.
 - Bracketed type prefix (`[feature]` / `[bug]`) is **lowercase** and sits after the ID tag.
 - Title cap is **70 characters total** (ID tag + type prefix + title).
 - **Sub-issues inherit the parent's type prefix.** A feature parent's sub-issues are all `(N.M) [feature] ...`; a bug parent's sub-issues are all `(N.M) [bug] ...`.
@@ -170,13 +170,13 @@ This is enforced by the three body templates themselves (`template_feature_issue
 
 ---
 
-## Handoff to `/plan-build`
+## Handoff to `/implementation-planning`
 
 After the final issue is published (whether one-plan or multi-plan), surface a short hint to the user:
 
-> Next: run `/plan-build <issue-url>` to plan the HOW. Or just `/plan-build` — it can auto-detect the issue you just created in this session. The plan file will be named after the issue's `(<id>)` tag so the issue ↔ plan link stays obvious.
+> Next: run `/implementation-planning <issue-url>` to plan the HOW. Or just `/implementation-planning` — it can auto-detect the issue you just created in this session. The plan file will be named after the issue's `(<id>)` tag so the issue ↔ plan link stays obvious.
 
-Then stop. Do not start a planning session yourself. The user invokes `/plan-build` when they are ready.
+Then stop. Do not start a planning session yourself. The user invokes `/implementation-planning` when they are ready.
 
 ---
 
@@ -186,7 +186,7 @@ A consolidated list of forbidden moves:
 
 - Do **not** apply any GitHub label. Label vocabulary belongs to a future triage skill, not `new-issue`.
 - Do **not** read source files during the grill. Vocabulary lookup in `CONTEXT.md`, `README.md`, and `docs/adr/` only.
-- Do **not** modify `plan-build`'s standalone path.
+- Do **not** modify `implementation-planning`'s standalone path.
 - Do **not** publish any issue without an explicit preview-and-approve step from the user.
 - Do **not** ask the user upfront whether the issue is one-plan or multi-plan. Claude evaluates and proposes after the full WHAT-grill, then confirms.
 - Do **not** synthesise an issue from prior conversation context. Cold start or explicit one-liner seed only.
