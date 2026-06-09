@@ -18,12 +18,15 @@ This skill is markdown-only orchestration. Read the four bundled files at runtim
 
 ## Invocation
 
-Accept two modes — and only these two:
+Accept three modes:
 
 1. **Cold start** — user invokes the skill with no extra text. Open with the first grill turn (feature vs bug).
 2. **One-liner seed** — user invokes with a short phrase (e.g. "users can sign up with email"). Treat that phrase as **the seed of the grill, not a finished issue body.** It hints at the topic; every grill topic still runs.
+3. **Plan-driven** — user invokes with a bare leading `N.M` token (e.g. `5.5` or `new-issue 5.5`). Any text after the token is an optional explanation. Follow the `## Plan-driven path` section for this mode.
 
-Do **not** synthesise an issue from prior conversation context. Unlike `to-prd`, this skill starts fresh: the only inputs are the cold start or the one-liner seed.
+**Detecting the mode:** if the first token of the invocation message matches `^\d+\.\d+$` (bare decimal ref), it is plan-driven. Everything else is cold start or one-liner seed.
+
+Do **not** synthesise an issue from prior conversation context. Unlike `to-prd`, this skill starts fresh: the only inputs are the cold start, one-liner seed, or plan-driven ref.
 
 ---
 
@@ -42,6 +45,69 @@ Remediation, step by step:
 - **`gh repo view` fails** — either the current directory is not a git repo with a GitHub remote, or `gh` cannot resolve one. Fall back to the `--repo owner/name` flag: ask the user which repo to file the issue against, capture `owner/name`, and pass `--repo owner/name` to every subsequent `gh` call in this session.
 
 Do not start grilling until preflight passes (or the `--repo` fallback is captured).
+
+---
+
+## Plan-driven path
+
+Only entered when the invocation matches the plan-driven mode (see `## Invocation`).
+
+### Step 1 — Resolution ladder
+
+Attempt to locate the task in `project_plan.md` at the repo root. Follow this ladder in order; stop at the first branch that applies:
+
+**(a) No `project_plan.md` found** → prompt the user for an explanation of the task. Then proceed as a standalone issue (cold-start / one-liner flow, no parent link, computed ID). The plan-driven ID and write-back do **not** apply.
+
+**(b) `project_plan.md` exists and a `(N.M)` row is found under `### Sprint N`** → read the Task-column text from that row. Use it as the grill seed (unless an explicit explanation was also given — see Step 2). Continue the plan-driven flow.
+
+**(c) `project_plan.md` exists, `### Sprint N` exists, but no `(N.M)` row is present** → prompt the user for an explanation. Append a new task row under `### Sprint N` using the explanation as the description:
+
+```
+| N.M | <description from explanation> | — | — | ⬜ |
+```
+
+Then continue the plan-driven flow as if the row had been found (branch b), seeding from the explanation.
+
+**(d) `project_plan.md` exists but `### Sprint N` is absent** → prompt the user for an explanation. Then proceed as a standalone issue (same as branch a). No materialization.
+
+The ladder **never errors out** — every unresolvable ref either prompts and materializes or prompts and falls back to standalone.
+
+### Step 2 — Seed precedence
+
+- If the invocation contained an explicit trailing explanation (text after the `N.M` token), use that explanation as the grill seed.
+- Otherwise, use the task description read from the plan row.
+
+The `(N.M)` ID, `## Parent` link, and write-back always apply in the plan-driven flow regardless of which seed is used.
+
+### Step 3 — Feature vs bug and WHAT-grill
+
+Ask **"Is this a feature or a bug?"** — same first grill turn as the non-plan-driven path. Read the relevant template and run the full WHAT-grill seeded from the text chosen in Step 2. All grill-behavior rules (`## Grill behavior — WHAT only`) apply unchanged.
+
+### Step 4 — Parent `(N)` resolution
+
+Before rendering the issue body, resolve the sprint parent issue:
+
+```
+gh issue list --state all --limit 500 --json number,title
+```
+
+Parse each title for a leading `(N)` token (where `N` is the integer part of `N.M`, e.g. `(5)` for task `5.3`). The first match is the parent issue.
+
+- **Parent found** → inject a `## Parent` section into the issue body:
+  ```
+  ## Parent
+  #<parent-issue-number>
+  ```
+- **Parent not found** → prompt the user: "No issue with a leading `(N)` title found. Proceed standalone (no parent link) or abort?" Wait for the user's choice before continuing.
+
+### Step 5 — Issue body + ID
+
+- **Title ID** is `(N.M)` taken directly from the plan ref. **Never** computed via `gh` max+1 scan in this path.
+- **Body** = the feature or bug template filled from the grill, with the `## Parent` section injected (if resolved).
+- **No split evaluation** — the plan-driven path issues exactly one sub-issue. Do not run the propose-and-confirm split.
+- Run `template_subissue.md` is **not** used here. The body comes from the feature/bug template + injected `## Parent`.
+
+Proceed to `## Preview, inline edits, publish` for the preview-approve-publish loop, then `## Write-back`.
 
 ---
 
@@ -130,6 +196,22 @@ Re-run the two-tier coverage check on the final approved list before the first s
 
 ---
 
+## Write-back
+
+**Plan-driven path only.** After `gh issue create` returns the published issue number (`x`), edit the `(N.M)` row's Issue cell in `project_plan.md` to:
+
+```
+#x - N.M
+```
+
+For example, if task `5.5` was published as issue `#17`, the Issue cell becomes `#17 - 5.5`.
+
+**Order:** the issue is always created before the plan edit (the number must exist before it can be written). On a plan-write failure, surface the error to the user — the issue already exists and must not be rolled back. The user can manually fix the plan cell if needed.
+
+This step does not apply to standalone fallbacks (resolution-ladder branches a and d).
+
+---
+
 ## Issue title format
 
 - `(<id>) [feature] short title` or `(<id>) [bug] short title`
@@ -142,6 +224,10 @@ Re-run the two-tier coverage check on the final approved list before the first s
 ### ID assignment
 
 Determine the ID immediately before the **first preview** of each issue (parent or sub). Do not assign earlier — IDs must reflect the latest issue list.
+
+**Plan-driven path:** the ID is `(N.M)` taken directly from the plan ref. Do **not** run the `gh` scan or the max+1 computation below. The plan is the authoritative source; scanning GitHub for collisions is not required (the plan is already the single source of truth).
+
+**Cold-start / one-liner-seed path:**
 
 1. **Scan existing issues**, both open and closed, to avoid collisions:
    ```
@@ -189,6 +275,10 @@ A consolidated list of forbidden moves:
 - Do **not** modify `implementation-planning`'s standalone path.
 - Do **not** publish any issue without an explicit preview-and-approve step from the user.
 - Do **not** ask the user upfront whether the issue is one-plan or multi-plan. Claude evaluates and proposes after the full WHAT-grill, then confirms.
-- Do **not** synthesise an issue from prior conversation context. Cold start or explicit one-liner seed only.
+- Do **not** synthesise an issue from prior conversation context. Cold start, one-liner seed, or plan-driven ref only — never infer from conversation history.
 - Do **not** pull architecture, file paths, module names, or code snippets into any issue body. WHAT only.
 - Do **not** include a `[parent]` marker in the parent title.
+- Do **not** run the propose-and-confirm split in the plan-driven path. One task = one sub-issue.
+- Do **not** use `template_subissue.md` in the plan-driven path. Use the feature/bug template + injected `## Parent`.
+- Do **not** compute a `gh` max+1 ID in the plan-driven path. The plan's `(N.M)` is authoritative.
+- Do **not** roll back a published issue if the plan write-back fails. Surface the error; the issue stands.

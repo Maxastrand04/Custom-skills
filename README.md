@@ -12,7 +12,7 @@ A collection of personal Claude Code skills. Each skill is a directory with a `S
 | `generate-test` | Explore the codebase, grill the user for domain cases, and write a `/tests/` directory of markdown test specs — without executing tests |
 | `implement-tdd` | Drive a small change test-first as Supervisor — preflight runner, write red tests, dispatch implementer, review on green |
 | `implementation-planning` | Grill-me interview to stress-test a plan, then produce a structured implementation plan file |
-| `new-issue` | Grill WHAT (behavior, scope, acceptance criteria) and publish a GitHub Issue |
+| `new-issue` | Grill WHAT (behavior, scope, acceptance criteria) and publish a GitHub Issue; supports plan-driven invocation (`N.M`) to seed from `project_plan.md`, file as a sub-issue under the sprint parent, and write the issue number back to the plan |
 | `project-planning` | Run a sprint-roadmap planning session inside an existing git repo — adaptively grill to mutual understanding, propose vertical-slice sprints each with a sprint goal, then write/update CONTEXT.md and project_plan.md |
 | `run-tests` | Discover and run the project's test suite, then report pass/fail results with failure details |
 | `implementation-plan-execute` | Drive an implementation plan to completion in hands-on mode (model implements inline, user reviews architecture) or supervise mode (parallel implementer subagents, Architecture tester reviews architecture) |
