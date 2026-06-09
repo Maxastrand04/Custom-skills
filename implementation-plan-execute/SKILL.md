@@ -276,11 +276,15 @@ Run these in order, only after the Verification phase Phase tester passes:
    - A checklist of every `AC-N` → `[x]` with the one-line evidence from Group 2's report.
    - Any `[MANUAL CHECK REQUIRED]` items the user confirmed, listed under "Manually verified by user".
    - Any `AD-N` additions or amendments made via the `[ARCH GAP]` escape hatch during execution, listed under "Architecture amendments".
-   - **Never close the issue.** Closing is the user's call.
-2. **Update `CONTEXT.md`** at the project root if it exists. Skip if it does not — do not create one.
+
+   Then close the issue: run `gh issue close <N>`.
+2. **Mark the matching task in `project_plan.md` (from-issue plans only).** After the issue closes, locate the row in `project_plan.md` at the repo root whose leading `#` cell equals the plan slot `N.M` (e.g., `5.6`). Flip that row's last (Status) cell from its current value to ✅. Every other byte of the file is preserved — do not rewrite the table, touch sprint goals, or alter any other row.
+
+   **Guard:** If `project_plan.md` does not exist, or no row with a leading `#` cell matching `N.M` is found, skip the flip silently and record it in the artifacts-touched line (e.g., `project_plan.md: no row for 5.6, skipped`). The issue still closes regardless.
+3. **Update `CONTEXT.md`** at the project root if it exists. Skip if it does not — do not create one.
    - Scan the completed plan for new domain terms, relationships, or vocabulary the implementation introduced (or terms whose meaning shifted). Add or revise Language / Relationships entries to match the now-shipped reality.
    - Match the file's existing style (e.g., `**Term**:` blocks with `_Avoid_:` lines, relationship bullets).
-3. **Update `README.md`** at the project root only if the implementation changed something a new contributor needs to know to use or run the project (new top-level entry point, new install/run command, changed configuration surface). If the change is internal-only, skip. Do not invent README content.
-4. **Output one line per artifact touched.** Examples: `Posted AC checklist to #42`, `Updated CONTEXT.md: added Verification phase, Architecture tester`, `README.md unchanged`. Then announce the plan complete.
+4. **Update `README.md`** at the project root only if the implementation changed something a new contributor needs to know to use or run the project (new top-level entry point, new install/run command, changed configuration surface). If the change is internal-only, skip. Do not invent README content.
+5. **Output one line per artifact touched.** Examples: `Posted AC checklist to #42`, `Closed #42`, `project_plan.md: flipped 5.6 → ✅`, `project_plan.md: no row for 5.6, skipped`, `Updated CONTEXT.md: added Verification phase, Architecture tester`, `README.md unchanged`. Then announce the plan complete.
 
 The Supervisor edits `CONTEXT.md` and `README.md` directly — same authority as plan-file edits. Issue comments use `gh issue comment`.
