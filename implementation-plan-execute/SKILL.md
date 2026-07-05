@@ -13,6 +13,10 @@ You drive an implementation plan to completion in one of two modes: **hands-on**
 
 See `CONTEXT.md` at the repo root for canonical definitions of Group, Group tester, Phase tester, Hands-on mode, Supervise mode, Tester brief, Implementer brief, and Mode trigger.
 
+**Point, don't paste.** Every subagent dispatch (implementer, Group tester, Architecture tester, Phase tester) gets the plan file's path and a scope label, and reads its own sections from the plan file directly — never a pasted copy of `## Acceptance criteria`, `## Architecture decisions`, or a `Tests / checks` block inside the dispatch prompt. Pasted blocks repeat verbatim across every Group and every retry, and that repetition lives in the Supervisor's own context, not the subagent's — the single largest avoidable driver of context growth over a multi-phase run. The Supervisor's job is dispatch and judgment, not restating plan content it already wrote to disk.
+
+**Terse verdicts only.** After judging a Group, Phase, or retry, state the one-line verdict (e.g. "Group 2: ✅ pass", "Group 3: FAIL — retry 1/3, <one-line reason>") and move on. Do not re-paste a tester's report, do not re-summarize a prior phase, do not restate plan content the plan file already holds. The plan file's checkboxes are the sole source of truth for cross-phase state — reason from them, not from scrollback.
+
 ---
 
 ## Input
@@ -58,6 +62,19 @@ This check applies identically to both modes — do not skip it.
 
 ---
 
+## Bootstrap exploration sweep
+
+Shared by both modes. After the plan precondition check and before Phase 0, dispatch **one `Explore` subagent (haiku)** to summarize the current state of the files the plan touches. Neither the Supervisor nor any dispatched implementer reads the source itself just to get oriented — this offloads discovery so working context stays focused on dispatch, judgment, and (in hands-on mode) the actual edits.
+
+- **Brief:** *"Read the files listed in `## Architecture decisions` → Files affected. For each file, return: current shape (top-level classes/functions, public surface), where it lives in the directory tree, any obvious patterns or conventions in use. Do not read CONTEXT.md or unrelated files. Return a structured summary, one section per file."*
+- **Model:** `haiku`.
+- Write the returned summary to `{EXPLORATION_SUMMARY_PATH}` (a scratch file, e.g. `implementation_plans/.exploration-summary_N.N.md` next to the plan) — never into the plan file, and never quoted back into the Supervisor's own response. In supervise mode, each implementer brief points the implementer at this path (scoped to the files that Group touches); in hands-on mode, the Supervisor reads its own scoped slice directly before stating architecture (Step 1). Either way, the contents are never pasted into a prompt or a response.
+- **Refresh per phase:** at the start of each feature phase **after Phase 1**, re-dispatch the same `Explore` brief but scoped to only the files modified during the immediately preceding phase. Overwrite the matching entries in the file — do not re-read the whole file back into context to do this, just replace the named sections.
+- **Skip refresh on the Verification phase** — Verification writes no new code, so the prior summary is still accurate.
+- **Delete `{EXPLORATION_SUMMARY_PATH}`** during Finalization — it is scratch, not a plan artifact.
+
+---
+
 ## Phase 0 — Interactive prerequisites
 
 Phase 0 is **never** delegated to a tester. Walk it row-by-row with the user, grill-me style:
@@ -74,6 +91,11 @@ When every Phase 0 row is ✅, announce "Phase 0 complete — starting Phase 1" 
 ## Hands-on mode
 
 **Architecture review is the user's role in this mode.** Neither the model nor any dispatched subagent reviews architecture. Functionality testers verify behavior only — they never check design, structure, or architecture.
+
+**Context discipline (hands-on).** This mode has no per-Group subagent boundary for implementation — every Read/Edit you do to write the code happens in the Supervisor's own thread, for every Group, across the whole plan, in one continuous conversation. That's the mode's defining tradeoff (real-time architecture review needs the model that's about to write code in the room) and it cannot be delegated away, but don't pile incidental waste on top of it:
+- The **bootstrap exploration sweep** (run once before Phase 0, refreshed per phase — see above) already wrote the **Exploration summary file**. Use it to state architecture in Step 1 — do not Read whole files just to describe their current shape.
+- When implementing (Step 3), read only the exact region you're about to change (grep to locate, then targeted `Read` with `offset`/`limit`) rather than whole files, unless the file is already short.
+- Don't paste implemented code or diffs back into your own response — the `Edit`/`Write` call is the record. Name the files touched in one line and move on (per **Terse verdicts**).
 
 For each feature phase, in order:
 
@@ -94,10 +116,10 @@ For each feature phase, in order:
   **Step 4 — Group tester dispatch (per AC-9, AD-2)**
 
   Read `tester-brief.md`. Substitute:
+  - `{PLAN_FILE_PATH}` → the plan file's path
   - `{SCOPE_TAG}` → `"Phase N, Group M"` (the current phase and group numbers)
-  - `{CHECKS_BLOCK}` → the Group's `**Functionality tests / checks (Group N):**` block verbatim (functionality checks only — not architecture checks)
 
-  Dispatch one `Explore` (haiku) subagent with the substituted brief.
+  Dispatch one `Explore` (haiku) subagent with the substituted brief. The tester reads its own checks block from the plan file — do not paste it into the prompt.
 
   **Step 5 — Group tester result (per AC-10, AC-11, AD-8)**
 
@@ -114,10 +136,10 @@ For each feature phase, in order:
   **Step 6 — Phase tester dispatch (per AC-12, AD-2)**
 
   Read `tester-brief.md`. Substitute:
+  - `{PLAN_FILE_PATH}` → the plan file's path
   - `{SCOPE_TAG}` → `"Phase N — integration"`
-  - `{CHECKS_BLOCK}` → the phase's `Functionality tests / checks (Phase N — integration)` block verbatim
 
-  Dispatch one `Explore` (haiku) subagent with the substituted brief.
+  Dispatch one `Explore` (haiku) subagent with the substituted brief. The tester reads its own checks block from the plan file — do not paste it into the prompt.
 
   **Step 7 — Phase tester result (per AC-13, AC-14, AD-8)**
 
@@ -135,16 +157,6 @@ For each feature phase, in order:
 
 ## Supervise mode
 
-### Bootstrap exploration sweep
-
-After confirming the plan and before Phase 0, dispatch **one `Explore` subagent (haiku)** to summarize the current state of the files the plan touches. The Supervisor does not read the source itself — it offloads discovery so its working context stays focused on dispatch and judgment.
-
-- **Brief:** *"Read the files listed in `## Architecture decisions` → Files affected. For each file, return: current shape (top-level classes/functions, public surface), where it lives in the directory tree, any obvious patterns or conventions in use. Do not read CONTEXT.md or unrelated files. Return a structured summary, one section per file."*
-- **Model:** `haiku`.
-- The returned summary is held **in memory only** — never written to disk or into the plan file. It is included in every implementer brief (scoped to the files that Group touches).
-- **Refresh per phase:** at the start of each feature phase **after Phase 1**, re-dispatch the same `Explore` brief but scoped to only the files modified during the immediately preceding phase. Replace the matching entries in the in-memory summary.
-- **Skip refresh on the Verification phase** — Verification writes no new code, so the prior summary is still accurate.
-
 ### Per-feature-phase loop
 
 For each feature phase, in order:
@@ -153,12 +165,11 @@ For each feature phase, in order:
 
 - Flip every task row in every Group from ⬜ → 🟡 in the plan file in one edit (do not interleave with dispatch).
 - In a single response, emit one `Agent` call per Group dispatching a `claude` implementer. Each implementer's prompt is `implementer-brief.md` with placeholders substituted:
-  - `{ACCEPTANCE_CRITERIA_BLOCK}` ← plan's full `## Acceptance criteria` section
-  - `{ARCHITECTURE_DECISIONS_BLOCK}` ← plan's full `## Architecture decisions` section (including mock snippet)
-  - `{GROUP_TASK_TABLE}` ← this Group's task table + file list
-  - `{GROUP_TESTS_CHECKS}` ← this Group's `Tests / checks (Group N):` block
-  - `{PLAN_CLAUDE_INSTRUCTIONS}` ← plan's `## Claude Instructions` section verbatim
-  - `{SCOPED_EXPLORATION_SUMMARY}` ← exploration-summary entries scoped to files this Group touches
+  - `{PLAN_FILE_PATH}` ← the plan file's path
+  - `{GROUP_LABEL}` ← `"Phase N, Group M"`
+  - `{EXPLORATION_SUMMARY_PATH}` ← the scratch file from the bootstrap sweep
+
+  The implementer reads its own AC/AD/task-table/checks sections from the plan file and its own scoped slice of the exploration summary from disk — none of that text is pasted into the dispatch prompt.
 - As each implementer reports done, dispatch **two `Explore` (haiku) testers in parallel for that Group**: the Group tester (functionality) and the Architecture tester (structure). The Supervisor judges both reports.
 - For each Group: when both reports return, judge them per the tester contracts below. On combined pass, flip rows 🟡 → ✅. On any failure, apply the retry rule for that Group only; other Groups are unaffected.
 - Wait until every Group is ✅ before running the Phase tester.
@@ -166,9 +177,9 @@ For each feature phase, in order:
 **2. After every Group in the phase is ✅:**
 
 - Read `tester-brief.md`. Substitute:
+  - `{PLAN_FILE_PATH}` → the plan file's path
   - `{SCOPE_TAG}` → `"Phase N — integration"`
-  - `{CHECKS_BLOCK}` → the phase's `Functionality tests / checks (Phase N — integration)` block verbatim
-- Dispatch one `Explore` (haiku) Phase tester with the substituted brief. Supervisor judges per tester contracts.
+- Dispatch one `Explore` (haiku) Phase tester with the substituted brief. The tester reads its own checks block from the plan file. Supervisor judges per tester contracts.
 - On Supervisor-judged pass, proceed to the next phase.
 - On Supervisor-judged failure, apply the **Phase tester failure rule** below.
 
@@ -177,15 +188,15 @@ For each feature phase, in order:
 **Group tester brief (functionality — per tester-brief.md):**
 
 Read `tester-brief.md`. Substitute:
+- `{PLAN_FILE_PATH}` → the plan file's path
 - `{SCOPE_TAG}` → `"Phase N, Group M"`
-- `{CHECKS_BLOCK}` → the Group's `**Functionality tests / checks (Group N):**` block verbatim (functionality checks only — not architecture checks)
 
-Dispatch one `Explore` (haiku) per Group. The tester returns `Status: PASS` or `Status: FAIL` + failing checks per the PASS/FAIL contract in `tester-brief.md`. The Supervisor judges: PASS → proceed; FAIL → apply retry rule.
+Dispatch one `Explore` (haiku) per Group. The tester reads its own checks block from the plan file (functionality checks only — not architecture checks) and returns `Status: PASS` or `Status: FAIL` + failing checks per the PASS/FAIL contract in `tester-brief.md`. The Supervisor judges: PASS → proceed; FAIL → apply retry rule.
 
 **Architecture tester brief (per Group, parallel with Group tester):**
 
 Dispatch one `Explore` (haiku) per Group with this inline brief:
-- The AD-N items and "Files affected" rows that this Group's tasks cite via `(per AD-N)` annotations — scoped to this Group, not the whole plan. Also include the relevant subset of the mock code snippet.
+- `{PLAN_FILE_PATH}` and `{GROUP_LABEL}` (`"Phase N, Group M"`). Instruct it to read, from the plan file itself, only the `AD-N` items and "Files affected" rows that this Group's tasks cite via `(per AD-N)` annotations, plus the relevant subset of the mock code snippet — not the whole plan.
 - Instruction: *"Return one line per AD-N: `[FOUND] <evidence>` / `[NOT FOUND] <what was searched>` / `[UNCLEAR] <reason>`. Return one line per 'Files affected' row in scope: same format. Return one block on principles/patterns: `[NO VIOLATION FOUND]` or `[POSSIBLE VIOLATION: <principle/pattern> — <evidence>]`."*
 
 **Supervisor judgment:**
@@ -248,13 +259,13 @@ When the Phase tester reports failure:
 The plan's last phase is always `## Phase N — Verification`. No new code is written here. It has two Groups, both validated by `Explore` (haiku) testers, no implementer dispatches.
 
 1. **Group 1 — Architecture sweep.** Dispatch one `Explore` (haiku) tester with the brief:
-   - The plan's **full** `## Architecture decisions` section (every `AD-N`, full Files affected list, directory shape, full mock snippet).
+   - `{PLAN_FILE_PATH}`, with instruction to read the plan's **full** `## Architecture decisions` section itself (every `AD-N`, full Files affected list, directory shape, full mock snippet) — do not paste it into the prompt.
    - The list of files actually modified across all feature phases.
    - Instruction: *"For every `AD-N`, return `[FOUND] <evidence: file:line>` / `[NOT FOUND] <what was searched>` / `[UNCLEAR] <reason>`. For every Files affected row, same format. Verify directory shape matches the post-change tree. Verify code shape matches the mock code snippet — class/function names, file locations, dependency direction, public surface. Return one block on principles/patterns: `[NO VIOLATION FOUND]` or `[POSSIBLE VIOLATION: …]`."*
    - Supervisor judges per **Tester report contract**. On combined pass, flip Group 1 ✅. On any `[NOT FOUND]` or `[POSSIBLE VIOLATION]`, **do not retry automatically** — escalate to user with the report and a Supervisor recommendation: *amend an AD (requires explicit user approval), open a follow-up, or fix now*. AD rules are the single source of truth; do not silently amend.
 
 2. **Group 2 — Acceptance criteria.** After Group 1 is ✅, dispatch one `Explore` (haiku) tester with the brief:
-   - The plan's full `## Acceptance criteria` section.
+   - `{PLAN_FILE_PATH}`, with instruction to read the plan's full `## Acceptance criteria` section itself — do not paste it into the prompt.
    - Instruction: *"For each `AC-N`, run the `Verify by:` check and return `[PASS] <evidence>` / `[FAIL: <evidence>]` / `[MANUAL CHECK REQUIRED: <reason>]`. Do not skip criteria tagged `(manual)` — return `[MANUAL CHECK REQUIRED]` for those by default with a one-line description of what the user needs to look at."*
    - Supervisor judges:
      - All `[PASS]` (with any `[MANUAL CHECK REQUIRED]` items confirmed by the user) → flip Group 2 ✅, proceed to Finalization.

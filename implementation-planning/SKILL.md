@@ -7,12 +7,21 @@ description: Run a grill-me interview to stress-test a plan, then automatically 
 
 Two-phase workflow: grill the user to surface all decisions, then write the plan.
 
-**Tester-role scoping (binds all generated plans):**
-The Group tester and Phase tester subagents check **functionality only** — that the code satisfies the `AC-N` criteria from `## Acceptance criteria` that apply to their scope. They do **not** check design, structure, or architecture. Architecture review is a separate role, owned by either an architecture-review subagent or a human reviewer named in the Group's `**Architecture tests / checks (Group N):**` block. Generated plans must reflect this split verbatim and never mix structural assertions into a functionality block.
+**Group & Phase check blocks (binds all generated plans, single source of truth):**
+Every Group and every feature phase carries the same four blocks, and no other wording for them is authoritative — everywhere else in this skill that mentions these blocks is pointing back here:
+
+- `**Architecture decisions (Group N):**` — which `AD-N` items the Group implements, plus any `ADR-NNNN` references.
+- `**Functionality tests / checks (Group N):**` — concrete checks that the Group satisfies the `AC-N` criteria within its scope. **Functionality only** — no structural assertions. A check that needs another Group's file belongs in the phase-integration block instead.
+- `**Architecture tests / checks (Group N):**` — structural/conformance checks, each naming its runner as `(subagent)` or `(human)`. This is the only place structure is judged for a Group.
+- Two phase-level integration blocks, one per feature phase: `### Functionality tests / checks (Phase N — integration)` (cross-Group `AC-N` checks) and `### Architecture tests / checks (Phase N — integration)` (cross-Group structural checks, runner named).
+
+Group testers and Phase testers only ever run the functionality blocks; architecture review (subagent or human) only ever runs the architecture blocks. Never mix a structural assertion into a functionality block.
 
 ---
 
 ## Phase 1 — Grill session
+
+Every question asked anywhere in this phase — WHAT topics, HOW topics, Architecture topics — runs under the `grilling` skill's interview mechanics: invoke it. This skill supplies *what* to ask and in what order; `grilling` supplies *how* (one question at a time, your recommendation first, explore before asking, walk each branch to resolution). Don't restate those mechanics inline elsewhere in this phase.
 
 ### Detection order
 
@@ -55,52 +64,20 @@ Present the full `AC-N` list back to the user before moving on. **Wait for confi
 
 ### Standalone grill
 
-After Exploration, interview the user relentlessly about every aspect of their plan until all decisions are resolved:
+After Exploration, work through every remaining decision (see `grilling` invocation note above):
 
-- Ask questions **one at a time**
-- For each question, provide your recommended answer with brief reasoning
-- Walk down each branch of the decision tree, resolving dependencies between decisions
-- If a question can be answered by exploring the codebase, do that instead of asking
 - **Order:** WHAT topics (scope, behavior, out-of-scope) → **Acceptance-criteria step** (see above) → **Architecture topic block** (see below) → rest of HOW (data model, API contracts, error handling, testing approach, rollout order, known constraints). On the from-issue path the WHAT topics are skipped — the order collapses to Exploration → Acceptance-criteria step → Architecture block → rest of HOW.
 - For each phase, ask how tasks group into Groups — **each Group is a fully independent vertical slice**: verifiable on its own, with no read-dependency on any sibling Group in the same phase. If two task bundles can't be verified independently, they belong in the same Group, or one belongs in a later phase. (See CONTEXT.md → Group.)
-- For each Group, elicit three sub-blocks: (a) **Architecture decisions (Group N)** — which `AD-N` items the Group implements and any relevant ADR references; (b) **Functionality tests / checks (Group N)** — concrete checks that verify the Group satisfies the `AC-N` criteria that fall within its scope (commands, file/symbol presence, HTTP responses, etc.) — no structural assertions; (c) **Architecture tests / checks (Group N)** — structural/conformance checks naming the runner (subagent or human reviewer). A Group-level functionality check that requires another Group's output is a sign the Groups are wrongly split.
-- For each phase, elicit integration-level test/check items split into: **Functionality tests / checks (Phase N — integration)** — checks that verify the composed result satisfies the `AC-N` criteria that span multiple Groups (Phase tester's job); and **Architecture tests / checks (Phase N — integration)** — structural cross-group checks run by an architecture-review subagent or human reviewer. These are the only places cross-Group behavior and structure are verified end-to-end.
+- For each Group, elicit the three Group sub-blocks (see **Group & Phase check blocks** above). A Group-level functionality check that requires another Group's output is a sign the Groups are wrongly split.
+- For each phase, elicit the two phase-integration blocks (see **Group & Phase check blocks** above) — the only places cross-Group behavior and structure are verified end-to-end.
 
 ### Architecture topic block (runs on both paths, after Exploration)
 
 The point of this block is to put the **user** in charge of structural choices so implementation phases become recipes, not goals Claude reinterprets. Decisions made here are persisted to the plan's `## Architecture decisions` section (see Phase 2 template) and bind the implementer.
 
-**Mandatory topics** (every plan must resolve these):
+Use judgment on what's worth raising for *this* change — there's no fixed checklist. The usual suspects: module/file placement, dependency direction, public interface shape, extend-vs-create (is there an existing piece that should grow instead of a new one?), shared-file write conflicts across Groups, data model touchpoints, design principles under pressure, patterns followed or introduced, error-handling/concurrency/testability/config/observability boundaries. Raise the ones the change actually puts pressure on; skip the rest silently rather than asking about them just to rule them out.
 
-- **a. Module/file placement** — where does each new piece of code live? Extend an existing module or create a new one?
-- **b. Dependency direction** — what depends on what? Any new cross-layer/cross-module dependencies? Any cycles?
-- **c. Boundary/interface shape** — what's the public surface of the new code (functions, types, endpoints)? What stays private?
-- **d. Extend-vs-create** — for each new behavior, is there an existing function/class/module that should grow, or is a new one justified? (Anti-premature-abstraction check.)
-- **g. Shared-file write conflicts** — does any Group write to the same file as another Group in the same phase? If yes, split the file first or merge the Groups.
-
-**Conditional topics** (raise only when exploration or the mandatory topics surface a signal):
-
-- **e. Data model touchpoints** — only if the change crosses a shared schema/type/contract.
-- **Design principles** — cohesion, coupling, encapsulation, SOLID dimensions, DRY/YAGNI/KISS, composition-over-inheritance, immutability — raise the ones the change actually puts pressure on.
-- **Patterns** — GoF (Strategy, Adapter, Observer, …) or architectural (layered, hexagonal/ports-and-adapters, clean, DI, event-driven, sync-vs-async boundaries) — raise when the change either follows an existing pattern in the codebase or could introduce a new one.
-- **Error-handling strategy, concurrency model, testability seams, configuration boundaries, observability boundaries** — raise only when the change touches them.
-
-**Hybrid behavior — derive, then ask:**
-
-1. **Draft from exploration first.** Use the "What I found" summary plus the WHAT answers to draft tentative answers to the mandatory topics, and to identify which conditional topics apply. For small changes that follow existing conventions 1:1, the draft is mostly *"follows existing X in module Y"* and only needs confirmation.
-2. **Ask only on ambiguity or deliberate divergence.** A targeted question looks like: *"I see Strategy pattern in `handlers/`. Should the new code follow it, or introduce something different?"* — not *"which GoF pattern do you want?"*
-
-**Per-topic format (mandatory whenever a topic is raised):**
-
-When you raise an architecture topic with the user, the message must contain, in order:
-
-1. **What it is** — one-sentence definition plus a tiny concrete example of how it works.
-2. **Why it exists** — what problem it solves in general.
-3. **How it could help this project** — grounded in what Exploration found (cite specific files/modules/ADRs).
-4. **Recommendation** — whether it's worth applying here, and why or why not.
-5. **Ask the user to decide.** The recommendation is input, not the decision.
-
-This format applies to both mandatory and conditional topics — the user must understand the topic before choosing, and the final call is theirs.
+Draft from Exploration first — for a change that follows existing convention 1:1, most topics collapse to a one-line *"follows existing X in module Y, confirm?"*. Go deeper only where the choice is genuinely ambiguous or you're proposing a deliberate divergence: say what the option is, why it might apply here (grounded in what Exploration found), and your recommendation — then let the user decide. The recommendation is input, not the decision.
 
 ### Final four grill steps — universal
 
@@ -109,18 +86,7 @@ These four steps run **regardless of which Detection-order branch you took** —
 1. **Propose `## Acceptance criteria` section with recommendation.** Draft the full `## Acceptance criteria` section (see Phase 2 template for shape): numbered `AC-N` list with one-line outcome + `Verify by:` clause per criterion, with `(manual)` tagged where mechanical verification isn't possible. From-issue plans render the issue's criteria; standalone plans render the criteria produced during the Acceptance-criteria step. Present the full draft and **wait for user confirmation or adaptation** — iterate until the user confirms. This is the contract the final Verification phase tests against.
 2. **Propose `## Architecture decisions` section with recommendation.** Once `## Acceptance criteria` is confirmed, draft the full `## Architecture decisions` section (see Phase 2 template for shape): files affected, directory shape after change, each decision tagged `AD-N` with rationale and a principle/pattern/convention tag, design principles in play, patterns used/avoided, and — for any plan that adds or edits code — a **mock code snippet** that shows every architectural choice in code form (class/function shapes, file-location comments, dependency direction, public-vs-private surface, pattern wiring). Skip the mock snippet only when the plan exclusively touches non-code artifacts (e.g., `.md` files). Decisions here should be **derived from `## Acceptance criteria`** — every AD should trace back to a structural need raised by one or more `AC-N`. Present the full draft and **wait for user confirmation or adaptation** — iterate until the user confirms. This is the most load-bearing structural artifact in the plan; do not collapse it into the plan-structure step.
 3. **Propose plan structure with recommendation.** Once Architecture decisions are confirmed, propose a recommended plan structure: the number of phases, the Groups per phase, and what each Group covers. **Every plan must end with a mandatory `## Phase N — Verification` phase** (see template) containing exactly two Groups — Group 1 Architecture sweep (full AD list + mock snippet vs codebase) and Group 2 Acceptance criteria (one row per `AC-N` rendered from `## Acceptance criteria`). The Verification phase writes **no new code** — it is verification only. **Every Group within a feature phase must be a fully independent vertical slice** — verifiable on its own, with no read-dependency on any sibling Group in the same phase, and no shared-file writes with any sibling Group (`implementation-plan-execute` in supervise mode dispatches all Groups in a phase in parallel; a cross-Group read-dependency or a shared-file write is a plan defect — last-writer-wins races aside, two slices touching one file's different parts usually means the file is doing too much or the slices aren't really independent). Before presenting the structure, self-check each feature phase: *"If I dispatched all Groups in this phase in parallel right now, would any implementer (a) be blocked waiting for another's output, or (b) write to the same file as another?"* If either, merge those Groups, split the file first, or move one Group to a later phase. If the plan-structure work surfaces a missing architecture decision, loop back to step 2 and update `## Architecture decisions` rather than letting the structure carry an undecided choice. If it surfaces a missing acceptance criterion, loop back to step 1. Include 1-2 sentences of reasoning per Group. Then **wait for user confirmation or adaptation** — iterate until the user confirms.
-4. **Propose tests/checks with recommendation.** For each Group in a feature phase, propose three sub-blocks:
-   - `**Architecture decisions (Group N):**` — which `AD-N` items the Group implements and any `ADR-NNNN` references (sits above the task table).
-   - `**Functionality tests / checks (Group N):**` — concrete checks that verify this Group satisfies the `AC-N` criteria within its scope. No structural assertions; a check that requires reading another Group's file belongs in the phase-integration block instead.
-   - `**Architecture tests / checks (Group N):**` — structural/conformance checks naming the runner (subagent or human reviewer) for each bullet.
-
-   For each feature phase, also propose two integration blocks:
-   - `### Functionality tests / checks (Phase N — integration)` — checks that verify the composed result satisfies the `AC-N` criteria that span multiple Groups. This is the Phase tester's only check block; surface every cross-Group AC-N here.
-   - `### Architecture tests / checks (Phase N — integration)` — structural cross-group checks run by an architecture-review subagent or human reviewer.
-
-   The Verification phase's check blocks are auto-rendered from `## Architecture decisions` (Group 1) and `## Acceptance criteria` (Group 2) — do not invent independent checks for them.
-
-   Include 1-2 sentences of reasoning. Then **wait for user confirmation or adaptation** — iterate until the user confirms.
+4. **Propose tests/checks with recommendation.** For each Group in a feature phase, propose the three Group sub-blocks; for each feature phase, propose the two phase-integration blocks (see **Group & Phase check blocks** above). The Verification phase's check blocks are auto-rendered from `## Architecture decisions` (Group 1) and `## Acceptance criteria` (Group 2) — do not invent independent checks for them. Include 1-2 sentences of reasoning. Then **wait for user confirmation or adaptation** — iterate until the user confirms.
 
 Only **after all four proposals are confirmed** by the user, say:
 
@@ -142,16 +108,8 @@ Then proceed immediately to Phase 2 — do not wait for the user to prompt you.
    - **From-issue path (cases 1 and 2):** `short_name` is **1–3 words, snake_case, no articles** — just enough to skim a directory listing. The ID tag already identifies which issue the plan tackles, so the slug does not need to mirror the full issue title. Pick the most load-bearing nouns/verbs from the issue title; drop the ID tag, the `[feature]` / `[bug]` prefix, and any filler. Example: issue `(1.3) [feature] Add OAuth login for admin dashboard` → `1.3_oauth_login.md`. Example: issue `(2.1) [feature] skill: generate test structure from codebase + docs` → `2.1_test_structure.md`.
    - **Standalone path (case 3):** `short_name` is 2–4 words, snake_case, no articles.
 
-4. **Follow the template exactly**:
-   - Title line: `# <slot> — Plan Name` — on the from-issue path, `Plan Name` is the **verbatim issue title with the ID tag stripped** (keep the `[feature]` / `[bug]` prefix and original casing/punctuation) followed by ` (#<issue-number>)`. Example: `# 1.3 — [feature] Add OAuth login for admin dashboard (#42)`. On the standalone path, use a short human-readable title derived from the grill.
-   - One-sentence summary + Goal statement
-   - Status legend
-   - **`## Acceptance criteria` section** (sits **above `## Architecture decisions`**) — populated from the confirmed AC proposal. Numbered `AC-N` list with one-line outcome + `Verify by:` clause per criterion, with `(manual)` tags where mechanical verification isn't possible. This is the contract the Verification phase tests against.
-   - **`## Architecture decisions` section** (sits **above Phase 0**, below `## Acceptance criteria`) — populated from the confirmed Architecture proposal. Includes files affected, directory shape after change, each decision tagged `AD-N` with rationale and a principle/pattern/convention tag, design principles in play, patterns used/avoided, and a **mock code snippet** that sketches every architectural choice in code form (class/function shapes, file locations, dependency direction, pattern wiring). The mock snippet is **required for any plan that adds or edits code**; skip it only when the plan exclusively touches non-code artifacts (e.g., `.md` files, prose). This section is the user's structural contract with the implementer.
-   - Phase 0 — Prerequisites (external deps, blockers, decisions to confirm before coding starts)
-   - Numbered feature phases, each with a task table: Task | File | Status. Where a task implements or depends on a specific architecture decision, cite it inline with `(per AD-N)`.
-   - **`## Phase N — Verification`** as the mandatory final phase. No new code; Group 1 is the Architecture sweep (full `AD-N` list + mock snippet vs codebase), Group 2 is the Acceptance criteria check (one row per `AC-N`, rendered from `## Acceptance criteria`). Render the Group 2 task table and check block by listing each `AC-N` verbatim — the `Verify by:` clause is the check.
-   - Claude Instructions section: Architecture binding, Conventions, Constraints, Order dependency, Testing.
+4. **Follow the template exactly** for section shape, order, and content — it was already read in step 1. Populate `## Acceptance criteria` from the confirmed AC proposal and `## Architecture decisions` from the confirmed Architecture proposal; don't invent content beyond what step 1 (Phase 1) confirmed. The one thing the template can't tell you — the title line derivation:
+   - Title line: `# <slot> — Plan Name`. From-issue path: `Plan Name` is the **verbatim issue title with the ID tag stripped** (keep the `[feature]` / `[bug]` prefix and original casing/punctuation) followed by ` (#<issue-number>)`. Example: `# 1.3 — [feature] Add OAuth login for admin dashboard (#42)`. Standalone path: a short human-readable title derived from the grill.
 
 5. **Rules**:
    - Name a specific file in every task row where possible; use `—` only when genuinely unknown
@@ -159,8 +117,6 @@ Then proceed immediately to Phase 2 — do not wait for the user to prompt you.
    - The Claude Instructions section must capture all constraints and "do not" rules surfaced during grilling
    - The Claude Instructions section must include an `**Architecture binding:**` rule: *"Do not introduce structural choices (new modules, new patterns, new dependency directions, new cross-layer dependencies) not covered by `## Architecture decisions`. If a task requires one, stop and surface it to the user before writing code — never improvise structure."*
 
-6. **Phase shape**:
-   - Render each Phase 1+ as N `### Group N — short name` sub-sections. Each Group sub-section contains, in order: (1) a one-line description, (2) `**Architecture decisions (Group N):**` sub-block listing the `AD-N` items the Group implements and any `ADR-NNNN` references (sits above the task table), (3) the task table, (4) `**Functionality tests / checks (Group N):**` bullet list — checks that verify this Group satisfies the `AC-N` criteria within its scope; no structural assertions, (5) `**Architecture tests / checks (Group N):**` bullet list (structural/conformance checks, each bullet names the runner as `(subagent)` or `(human)`). After all Group sub-sections, render two integration blocks: `### Functionality tests / checks (Phase N — integration)` (checks that verify `AC-N` criteria spanning multiple Groups) and `### Architecture tests / checks (Phase N — integration)` (structural cross-group checks naming the runner).
-   - Phase 0 stays a single task table with no groups and no tester block; each row is a confirmation or prerequisite the user walks through interactively.
+6. **Phase shape**: each Phase 1+ renders as `### Group N — short name` sub-sections (description, then the three Group sub-blocks from **Group & Phase check blocks** above, in that order) followed by the two phase-integration blocks — see the template for the exact rendering. Phase 0 stays a single task table with no groups and no tester block; each row is a confirmation or prerequisite the user walks through interactively.
 
 7. Output a clickable markdown link to the new plan file as the last line of your response.
