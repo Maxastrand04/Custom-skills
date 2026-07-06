@@ -31,7 +31,7 @@ Execute this check at the very start of every invocation, immediately after scop
 1. If the manifest file does not exist, proceed normally — no tests have been generated yet.
 2. For every source file in scope, compute the SHA-256 of its current contents. Look up the `source_sha` for that file in the manifest.
 3. Check whether any source file in scope has no manifest entry at all (new untested file).
-4. If ALL of the following are true, print `all tests are up to date — nothing to do` and exit:
+4. Signal fast-exit (SKILL.md prints the up-to-date message and stops) when ALL of the following are true:
    - Every source file in scope has a manifest entry.
    - Every computed SHA-256 matches the `source_sha` in its manifest entry.
    - No source file in scope is missing a manifest entry.

@@ -3,142 +3,69 @@ name: generate-framework-tests
 description: >
   Scaffold and maintain a project's framework-executable test suite through a
   guided, approval-gated workflow. Use when the user says "generate framework
-  tests", "generate unit tests", "write tests for this", "add test coverage",
-  "generate runnable tests", or "scaffold tests". Creates real tests runnable
-  by pytest, vitest, jest, go test, cargo test, or JUnit Jupiter — not
-  markdown scaffolds.
+  tests", "write tests for this", "add test coverage", "generate runnable
+  tests", or "scaffold tests". Creates real tests runnable by pytest, vitest,
+  jest, go test, cargo test, or JUnit Jupiter — not markdown scaffolds.
 ---
 
 # generate-framework-tests
 
-Guided skill for writing real, framework-executable test files. Every decision requires explicit approval before the skill advances. The skill writes plain code files that the project's test runner can execute directly — no frontmatter, no skill-specific markers.
+Writes real, framework-executable test files — plain source the project's test runner executes directly, with no frontmatter or skill markers.
 
-## Invocation
+The skill advances through **gates**. A gate opens only on an explicit affirmative from the user ("yes", "approve", "looks good", or equivalent); silence never advances it.
 
-- Slash command: `/generate-framework-tests`
-- Natural-language triggers: "generate framework tests", "generate unit tests", "write tests for this", "add test coverage", "generate runnable tests", "scaffold tests"
-- Optional path argument: a file path, directory path, or nothing (whole project). Examples:
-  - `/generate-framework-tests src/auth.py` — scope to one file
-  - `/generate-framework-tests src/` — scope to a directory
-  - `/generate-framework-tests` — whole project (ask or infer)
+## Stage 0 — Scope
 
----
+Resolve the optional path argument:
 
-## Stage 0 — Scope Parsing
+- **File path** — scope to that file.
+- **Directory path** — scope to source files under it.
+- **No argument** — check the conversation for a file clearly in scope; if found, use it and state the assumption. Otherwise ask: "Which file or directory should I generate tests for, or the whole project?"
 
-Parse the optional path argument from the invocation:
+Confirm the scope in one sentence. This is a **gate**.
 
-- **File path given** — scope to that single file.
-- **Directory path given** — scope to all source files inside that directory.
-- **No argument** — check conversation context for a recently mentioned file or module. If one is clearly in scope, use it and state the assumption. If none is clear, ask the user: "Which file or directory should I generate tests for? Or should I cover the whole project?" Do not advance until scope is confirmed.
+## Stage 1 — Fast-exit
 
-Once scope is determined, confirm it in one sentence before proceeding. Silence from the user is not confirmation — wait for an explicit "yes", "correct", or equivalent.
+`drift-detection.md` owns the manifest and the fast-exit rule. Run its fast-exit check against the confirmed scope.
 
----
-
-## Stage 1 — Manifest Check (fast exit)
-
-On invocation, check for the manifest at `.generate-framework-tests/sidecar-manifest.json`.
-
-If the manifest exists:
-
-1. For each source file recorded in the manifest, compute its current SHA-256 hash and compare it to the stored hash.
-2. Check whether any source files in scope are absent from the manifest (i.e. new untested files).
-3. Consult `drift-detection.md` for the full comparison algorithm and hash format.
-
-If all hashes match **and** no new untested source files exist within scope → print exactly:
+If it reports every in-scope source unchanged and none untested, print exactly:
 
 > All tests are up to date — nothing to do.
 
-Then stop. Do not proceed to detection or approval.
+Then stop. Otherwise continue with the changed and untested files as the effective scope.
 
-If any hash has changed, or any untested source file is found, proceed to Stage 2 with the changed/new files as the effective scope.
+## Stage 2 — Detect and report
 
-If no manifest exists, proceed to Stage 2 with the full confirmed scope.
+`language-detection.md` owns language and framework detection, including the mirror-existing-convention rule. Detect, then print a short **informational** report — do not gate here:
 
----
+- Detected language and version, if determinable
+- Proposed framework and a one-line reason
+- Existing test layout, or "none found"
+- In-scope source files with no current test
 
-## Stage 2 — Detection and Report
+Proceed directly to Stage 3.
 
-Detect the project language and appropriate test framework. Delegate the detection logic to `language-detection.md`, which specifies the signals to inspect (file extensions, config files, lock files, existing test files) and how to resolve ambiguity when multiple frameworks are present.
+## Stage 3 — Plan and approval gate
 
-After detection, print a short report:
+Build the full plan per `plan-template.md`, computing drift for existing test files via `drift-detection.md`. The plan covers framework choice with rationale, files to create, files to update with drift notes, and the per-file case list.
 
-- Detected language and version (if determinable)
-- Proposed test framework and the reason it was chosen
-- Existing test directory layout (or "none found")
-- List of source files in scope that have no corresponding test file, or whose test file is out of date per the manifest
+**New-framework mini-gate:** if the project has no test framework, ask "No test framework detected. Set up [framework], or name another?" before building the plan.
 
-Do not ask for approval here. This report is informational. Proceed directly to Stage 3.
+Present the plan and stop — this is the approval **gate**. The user may inline-edit it (add, remove, or rename cases; drop or re-scope files). Apply the edits, re-present the affected section, and gate again.
 
----
+## Stage 4 — Write and run
 
-## Stage 3 — Combined Approval Gate
+Write the approved files as plain framework-executable code — no frontmatter, no skill markers — runnable by the project's test command unmodified.
 
-Build the full plan and present it for a single approval before writing anything. Reference `plan-template.md` for the exact structure of the plan document to render.
+Enforce **user-added-case immunity** and update the manifest, both per `drift-detection.md`: cases the user added (absent from the manifest's `cases[]`) are never moved, changed, or removed.
 
-The plan must include:
+Then run only the just-written and just-updated files with the project's scoped command — never the full suite, never installing toolchains. Report the outcome and stop; do not retry, auto-fix, or re-open a gate:
 
-- **Framework choice** — the selected framework, with a one-line rationale.
-- **Files to create** — each new test file path, with the source file it covers.
-- **Files to update** — each existing test file that needs changes, annotated with drift notes (which cases are new, which are stale). Drift annotation logic is owned by `drift-detection.md`.
-- **Per-file case list** — for each file, every test case: its name and a one-line statement of intent.
+- **Pass** — short summary (test count, files covered).
+- **Failure or execution error** — print the output verbatim.
 
-**Mini-confirm (new framework only):** If no test framework exists in the project yet, pause before building the full plan and ask: "No test framework detected. I'll set up [framework] — does that work, or would you prefer a different one?" Wait for a response before continuing plan construction.
+## Bundled files
 
-Present the completed plan to the user and halt. Do not write any files until the user approves the plan with an explicit phrase ("approve", "looks good", "go ahead", or equivalent). Silence is not approval.
-
-The user may inline-edit the plan before approving: add cases, remove cases, rename test files, drop files from scope, or re-scope entirely. Apply all edits to the internal plan before writing. Confirm that edits have been applied in a short acknowledgement, then re-present the affected section and ask for final approval.
-
----
-
-## Stage 4 — Drift Handling
-
-Before writing, reconcile the approved plan against any existing test files using `drift-detection.md`. That file owns the full drift algorithm; this skill does not duplicate it.
-
-One invariant this skill enforces unconditionally:
-
-**User-added test cases are never proposed for removal or change.** A user-added case is any case present in an existing test file that is not recorded in the manifest's `cases[]` array for that file. The manifest is the only source of truth for "did the skill write this case?" If a case is not in `cases[]`, treat it as user-owned and leave it untouched.
-
-Proceed to Stage 5 only after drift reconciliation is complete.
-
----
-
-## Stage 5 — Write and Run
-
-Write the approved test files. Each file must be plain, framework-executable source code with no YAML frontmatter, no skill-specific markers, and no embedded metadata. The file must be runnable by the project's test command without modification.
-
-After writing, update `.generate-framework-tests/sidecar-manifest.json` with the new manifest state: source file paths, their SHA-256 hashes, and the `cases[]` array for each test file (recording only the cases this skill wrote). Manifest format and field names are specified in `drift-detection.md`.
-
-Then run only the just-written or just-updated test files using the project's scoped test command. Do not run the full suite. Do not install toolchains or package managers. Three outcomes:
-
-- **All pass** — print a short pass summary (number of tests, files covered).
-- **Failures** — print the failure output verbatim. Do not retry, do not auto-fix.
-- **Failed to execute** — print the error output verbatim. Do not retry, do not auto-fix.
-
-In all three outcomes, stop after printing. Do not re-enter the approval loop or propose additional changes.
-
----
-
-## Bundled Files
-
-The three files below are bundled with this skill. Each owns a specific domain. SKILL.md references them by name and role; their content is not duplicated here.
-
-| File | Role |
-|---|---|
-| `language-detection.md` | Specifies how to detect the project language and select the appropriate test framework: which signals to inspect, how to handle ambiguity, and framework-specific conventions to follow. |
-| `plan-template.md` | Defines the exact structure and formatting of the plan presented at Stage 3, including how to render framework choice, file lists, drift annotations, and per-file case tables. |
-| `drift-detection.md` | Owns the manifest schema, SHA-256 hashing algorithm, drift comparison logic, and the rules for which cases count as user-owned vs. skill-owned. |
-
----
-
-## Constraints
-
-- Generated test files must be plain framework-executable code. No YAML frontmatter, no skill markers, no embedded metadata of any kind.
-- The manifest path is always `.generate-framework-tests/sidecar-manifest.json`. It is never placed elsewhere.
-- User-added test cases (those absent from the manifest's `cases[]`) are never proposed for removal or change.
-- Approval is always explicit. "approve", "looks good", "go ahead", or equivalent. Silence does not advance the workflow.
-- The skill does not install toolchains, package managers, or test runners. If the project's test command cannot execute, surface the error and stop.
-- The skill does not retry failing tests or auto-fix test failures. Failures are reported and the skill stops.
-- This is a markdown-only skill. There are no compiled artifacts, executables, or code files in the skill bundle itself.
-- Do not modify files in `generate-test/` or `run-tests/`.
+- `language-detection.md` — language and framework detection, the mirror-existing-convention rule, per-language placement and test commands.
+- `plan-template.md` — structure of the Stage 3 approval plan.
+- `drift-detection.md` — manifest schema, fast-exit rule, drift diff, user-added-case immunity, orphan handling, and manifest writes.
