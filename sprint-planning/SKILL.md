@@ -1,13 +1,19 @@
 ---
 name: sprint-planning
-description: Take one sprint from project_plan.md, slice its goal into caveman-style (N.M) tasks written under that sprint, and create the sprint's parent (N) GitHub issue. Middle link of the scrum chain: project-planning → sprint-planning → new-issue. Use when user says "sprint-planning", "plan this sprint", "break down sprint N", or "create tasks for sprint N".
+description: Chart one sprint from project_plan.md as a GitHub-native map — breadth-first grill the sprint goal, publish every task/research/prototype ticket as a sub-issue with native blocking, then on re-run graduate newly-resolved tickets out of the fog. Middle link of the scrum chain: project-planning → sprint-planning → implementation-planning. Use when user says "sprint-planning", "chart sprint N", or "plan this sprint".
 ---
 
 # sprint-planning
 
 You are Opus in the main thread. All work in this skill is Opus-direct — no subagent dispatch.
 
-Read `project_plan.md` at the consuming project's repo root, let the user pick a sprint, slice its goal into caveman-style task rows, write them into the plan, and create (or update) the sprint's parent `(N)` GitHub issue.
+Read `project_plan.md` at the consuming project's repo root, let the user pick a sprint, and turn its goal into a GitHub-native **map**: the sprint's `(N)` issue holds the destination and a running decision log, and its **tickets** — native GitHub sub-issues, typed `task` / `research` / `prototype` — are the actual work items, wired together with native blocking. Everything reachable now gets grilled and published in this session; anything not yet specifiable is written down as fog and revisited on a later run.
+
+This skill owns every sprint-linked ticket end to end — `new-issue` is only for cold-start/standalone issues with no sprint. Invoke the `grilling` skill for interview mechanics throughout; this document only defines the agenda and ticket typing. It reads three bundled templates at runtime — do not assume their contents from this document:
+
+- `template_sprint_issue.md` — the map body (Destination / Notes / Decisions so far / Not yet specified)
+- `template_task_ticket.md` — deliverable ticket body (Goal / Acceptance criteria / Out of scope)
+- `template_question_ticket.md` — research/prototype ticket body (Question only)
 
 ---
 
@@ -43,123 +49,156 @@ If the file does not exist, stop and tell the user to run `/project-planning` fi
 
 **If a sprint number `N` was provided as an arg:** locate `### Sprint N` in the plan. If not found, list available sprints and ask the user to pick.
 
-**If no arg was provided:** list all sprints with their goals and status markers, then ask the user to pick one. Example output:
-
-```
-Available sprints:
-  Sprint 1 — Auth backend ✅
-  Sprint 2 — Dashboard UI ⬜
-  Sprint 3 — Export feature ⬜
-
-Which sprint do you want to plan?
-```
+**If no arg was provided:** list all sprints with their goals and status markers, then ask the user to pick one.
 
 Do not proceed until a sprint is selected.
 
 ---
 
-## Step 3 — Read sprint goal (read-only)
+## Step 3 — Detect mode: charting or graduating
 
-Read the selected `### Sprint N` block. Extract and display the sprint goal line.
-
-**The sprint goal is immutable.** Never edit it. The goal line is the input to task slicing — not a target for revision.
-
----
-
-## Step 4 — Slice into caveman tasks
-
-Generate a proposed list of tasks that collectively deliver the sprint goal.
-
-**Caveman task format:** each task is a short, direct description of one concrete deliverable — not a user story ("as a user…"). Use simple imperative language.
-
-Example of good caveman tasks:
-- `create a login endpoint that accepts email + password and returns a JWT`
-- `add a logout button to the nav bar that clears the session`
-- `write a migration that adds the users table with email, hashed_password, created_at`
-
-**One-issue sizing:** each task should be a thin vertical slice that is independently demoable as a single GitHub issue. If a task would take more than a day or two to implement, split it. If two tasks always ship together, merge them.
-
-**`(N.M)` append-only numbering:** read the sprint block for any existing task rows. Find the maximum existing M under sprint N. Start new tasks from `max(M) + 1`. If no tasks exist yet, start at 1. Never renumber or delete existing task rows.
-
-Show the proposed task list to the user for review before writing anything. Support natural-language edits ("add a task for X", "split task 2", "drop task 3").
-
----
-
-## Step 5 — Preview and confirm gate
-
-Before writing anything, show:
-
-1. **Task rows** to be appended — formatted as the table rows that will be written:
-
-   ```
-   | N.M | task description | — | — | ⬜ |
-   ```
-
-2. **Parent issue body** — rendered from `template_sprint_issue.md` with the sprint goal and task checklist filled in.
-
-Ask for explicit confirmation: **"Write tasks to the plan and create/update the (N) issue?"**
-
-Do not write anything until the user confirms. Support inline edits during preview — re-render after each edit.
-
----
-
-## Step 6 — Write task rows to plan
-
-After confirmation, write the task rows into the `### Sprint N` block in `project_plan.md`.
-
-The sprint's task table uses this header and row format:
-
-```
-| # | Task | Issue | Plan | Status |
-|---|------|-------|------|:------:|
-| N.M | task description | — | — | ⬜ |
-```
-
-If the header row already exists, append only the new task rows below any existing rows. If the header does not yet exist (empty sprint placeholder), write the full header + rows.
-
-**The plan is the source of truth.** Write the plan before creating the issue. Do not roll back the plan write if the `gh` call fails — surface the error and let the user retry the issue step.
-
----
-
-## Step 7 — Create or update parent `(N)` issue
-
-Detect whether a `(N) [feature]` issue for this sprint already exists:
+Scan for an existing map issue for this sprint:
 
 ```
 gh issue list --state all --limit 500 --json number,title
 ```
 
-(Add `--repo owner/name` if the preflight fallback captured one.)
+Parse the leading `(N)` token from each title.
 
-Parse the leading `(N)` token from each title. Look for an exact match on the sprint number N.
+- **No match** → **Charting mode** (Steps 4–9). This is the sprint's first sprint-planning run.
+- **Match found** → **Graduating mode** (Step 10). The map already exists; this run looks for newly-resolved tickets and graduates fog.
 
-**If no match:** create the issue.
+---
+
+## Charting mode
+
+### Step 4 — Read the destination (read-only)
+
+Read the selected `### Sprint N` block. Extract and display the sprint goal line. **The sprint goal is immutable** — it is the map's Destination. Never edit it; it was set by `project-planning`.
+
+### Step 5 — Breadth-first grill
+
+Grill the user (via the `grilling` skill) across the **whole sprint scope at once** — fan out, don't go deep on any one item yet. The goal is to surface every task the sprint needs, not to fully specify each one.
+
+For each item that surfaces, classify it:
+
+- **`task`** — a deliverable, ready to be spec'd now (goal and acceptance criteria are already clear enough to state).
+- **`research`** — an open question blocking a later task (unknown API, library choice, unclear fact) that a separate session should resolve.
+- **`prototype`** — needs a cheap concrete artifact (UI sketch, behavior stub) before it can be spec'd, via a separate `/prototype` session.
+- **fog** — you can sense it's coming but can't state it precisely yet. Don't force it into a ticket. Write a loose one-line sketch instead.
+
+Also propose **blocking edges**: which items can't be worked until another closes (e.g. a `task` blocked by a `research` question, or one `task` blocked by another). Propose this as part of the same pass, don't ask the user to enumerate dependencies from scratch.
+
+**One-issue sizing** for `task` items: each should be a thin vertical slice, independently demoable as a single GitHub issue. Split anything bigger; merge anything that always ships together.
+
+### Step 6 — Batch confirm gate
+
+Show the user, together:
+
+1. The full item list, each with its type (`task` / `research` / `prototype`) and one-line description.
+2. The proposed blocking edges (`X blocked by Y`).
+3. The fog sketch (items not yet ticketed).
+
+Support natural-language edits — add an item, change its type, drop a blocking edge, retype a fog line into a real ticket or vice versa. Ask: **"Publish this batch?"** Do not create anything until the user confirms.
+
+### Step 7 — Create the map issue
+
+Render `template_sprint_issue.md`:
+
+- **Destination** = the sprint goal (verbatim).
+- **Notes** = domain pointers or standing preferences relevant to this sprint (keep short; empty is fine).
+- **Decisions so far** = empty on first creation.
+- **Not yet specified** = the confirmed fog sketch, one line per item.
 
 ```
-gh issue create \
-  --title "(N) [feature] <sprint name>" \
-  --body "$(cat sprint-planning/template_sprint_issue.md | ...rendered body...)"
+gh issue create --title "(N) [sprint] <sprint name>" --body "$(cat ...rendered...)"
 ```
 
-The title uses the sprint number N from the **plan** — not `max+1` from existing issues. The `<sprint name>` is the sprint's short name from the plan heading (e.g. `(2) [feature] Dashboard UI`).
-
-**If a match exists:** update its body with the current task checklist.
+Note the issue number — every wiring call below needs the **numeric database id** of an issue, not its number. Get it with:
 
 ```
-gh issue edit <issue-number> --body "$(cat ...rendered body...)"
+gh api repos/{owner}/{repo}/issues/<issue-number> --jq .id
 ```
 
-Render the issue body from `template_sprint_issue.md` (relative path — the template is in the same directory as this SKILL.md).
+### Step 8 — Publish tickets
 
-After the `gh` call, surface the issue URL to the user.
+**Research / prototype tickets** — for each, render `template_question_ticket.md` with the question filled in, then:
+
+```
+gh issue create --title "[research] <short title>" --body "$(cat ...rendered...)" --label "sprint:research"
+```
+
+(or `[prototype]` / `sprint:prototype`). No `(N.M)` id tag — these aren't implementation-plan targets. Publish the whole batch of these directly; no further per-item discussion.
+
+**Task tickets** — process **one at a time**, sequentially. For each:
+
+1. Draft the Goal and a short rationale for the proposed Acceptance criteria (and Out of scope) from what the breadth-first grill already surfaced.
+2. Present the draft to the user; discuss and refine. The acceptance criteria carry the most weight here — spend the discussion on those, not on prose.
+3. Assign the `(N.M)` id: read `project_plan.md`'s existing rows under `### Sprint N`, take `max(M) + 1` (start at 1 if none exist). Append-only — never renumber existing rows.
+4. Publish:
+   ```
+   gh issue create --title "(N.M) [feature] <short title>" --body "$(cat ...rendered template_task_ticket.md...)" --label "sprint:task"
+   ```
+   Every task defaults to feature-shaped — do not ask feature vs bug here.
+5. Move to the next task ticket.
+
+**Wire sub-issue + blocking for every ticket published** (task, research, and prototype alike). Fetch each ticket's numeric id the same way as Step 7, then:
+
+```
+gh api repos/{owner}/{repo}/issues/<map-issue-number>/sub_issues -X POST -F sub_issue_id=<ticket-numeric-id>
+```
+
+For each confirmed blocking edge (`X blocked by Y`):
+
+```
+gh api repos/{owner}/{repo}/issues/<X-issue-number>/dependencies/blocked_by -X POST -F issue_id=<Y-numeric-id>
+```
+
+After the `gh` calls, surface the map issue URL and every ticket's URL to the user.
+
+### Step 9 — Regenerate the plan's task-row table
+
+`project_plan.md`'s per-sprint task table is a **synced view of GitHub, not hand-authored**. After publishing, list the map's current sub-issues:
+
+```
+gh api repos/{owner}/{repo}/issues/<map-issue-number>/sub_issues --jq '.[] | {number, title, state, labels: [.labels[].name]}'
+```
+
+Rebuild the `### Sprint N` task table from this list, one row per `task`-type ticket (filter on the `sprint:task` label):
+
+```
+| # | Task | Issue | Plan | Status |
+|---|------|-------|------|:------:|
+| N.M | <task title, stripped of id/type prefix> | #<issue-number> | — | ⬜ or ✅ (from issue state) |
+```
+
+`research`/`prototype` tickets are not rows in this table — they only exist as sub-issues of the map. Rewrite the whole table for this sprint; do not hand-edit individual cells (GitHub is the source of truth).
+
+---
+
+## Graduating mode (re-run on an existing map)
+
+### Step 10 — Detect resolved tickets and graduate fog
+
+1. List the map's sub-issues (same query as Step 9) and find any that are **closed** but not yet reflected in the map's Decisions so far section.
+2. For each newly-closed ticket, read its closing comment/resolution, and append one line to **Decisions so far**:
+   ```
+   - [<ticket title>](<url>) — <one-line gist of the answer/outcome>
+   ```
+3. With these resolutions in hand, grill the user (via the `grilling` skill): **"Given this, what from Not yet specified is now specifiable?"** Fan out across the fog section only — not the whole sprint again.
+4. Whatever graduates gets the same typing (`task` / `research` / `prototype`) and the same publish flow as Step 8 (including sub-issue + blocking wiring). Remove graduated lines from **Not yet specified**; anything still too vague stays in the fog.
+5. Update the map issue body (`gh issue edit <N> --body "..."`) with the refreshed Decisions so far and Not yet specified sections.
+6. Re-run Step 9 to refresh `project_plan.md`'s task-row table.
+
+If nothing has closed since the last run, tell the user there's nothing to graduate yet and stop.
 
 ---
 
 ## Constraints
 
-- **Never edit the sprint goal.** Read it, slice it, but never write to the goal line (AD-4).
-- **Never call `new-issue`.** `(N.M)` sub-issues are filed later by `new-issue`; the Issue and Plan columns stay blank (`—`) at write time (AD-11).
-- **Never auto-increment the sprint number** from existing GitHub issues. The title `(N)` must use the plan's sprint number (AD-8).
-- **Append-only task rows.** Never renumber or delete existing `(N.M)` rows on re-run (AD-7).
-- **Write order: plan first, then issue.** No rollback on `gh` failure (AD-9).
-- **Opus-direct.** No subagent dispatch (AD-14).
+- **Never edit the sprint goal / Destination.** Read it, grill from it, never write to it.
+- **Never resolve `research` or `prototype` tickets inline.** They're published open and picked up in their own separate sessions (a `/research` pass, a `/prototype` session). Sprint-planning only detects their closure on a later run.
+- **Claim and frontier are out of scope for this skill.** Self-assigning a ticket and querying "what's pickable now" belongs to `implementation-planning`, at the point work actually begins — not here.
+- **Append-only `(N.M)` numbering** for task tickets. Never renumber or delete existing rows on re-run.
+- **`project_plan.md`'s task table is regenerated from GitHub, never hand-authored.** If GitHub and the plan ever disagree, GitHub wins.
+- **Opus-direct.** No subagent dispatch.

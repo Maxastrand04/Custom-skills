@@ -12,10 +12,10 @@
 
 **Goal:** [One-sentence observable outcome at the end of this sprint.]
 
-| # | Task | Plan | Status |
-|---|------|------|:------:|
-| 1.1 | [Task name] | `implementation_plans/1.1_name.md` | ⬜ |
-| 1.2 | [Task name] | `implementation_plans/1.2_name.md` | ⬜ |
+| # | Task | Issue | Plan | Status |
+|---|------|-------|------|:------:|
+| 1.1 | [Task name] | #— | `implementation_plans/1.1_name.md` | ⬜ |
+| 1.2 | [Task name] | #— | `implementation_plans/1.2_name.md` | ⬜ |
 
 ---
 
@@ -23,10 +23,10 @@
 
 **Goal:** [One-sentence observable outcome at the end of this sprint.]
 
-| # | Task | Plan | Status |
-|---|------|------|:------:|
-| 2.1 | [Task name] | `implementation_plans/2.1_name.md` | ⬜ |
-| 2.2 | [Task name] | `implementation_plans/2.2_name.md` | ⬜ |
+| # | Task | Issue | Plan | Status |
+|---|------|-------|------|:------:|
+| 2.1 | [Task name] | #— | `implementation_plans/2.1_name.md` | ⬜ |
+| 2.2 | [Task name] | #— | `implementation_plans/2.2_name.md` | ⬜ |
 
 ---
 
@@ -34,10 +34,10 @@
 
 **Goal:** [One-sentence observable outcome at the end of this sprint.]
 
-| # | Task | Plan | Status |
-|---|------|------|:------:|
-| N.1 | [Task name] | `implementation_plans/N.1_name.md` | ⬜ |
-| N.2 | [Task name] | `implementation_plans/N.2_name.md` | ⬜ |
+| # | Task | Issue | Plan | Status |
+|---|------|-------|------|:------:|
+| N.1 | [Task name] | #— | `implementation_plans/N.1_name.md` | ⬜ |
+| N.2 | [Task name] | #— | `implementation_plans/N.2_name.md` | ⬜ |
 
 ---
 

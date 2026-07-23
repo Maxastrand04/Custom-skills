@@ -1,6 +1,6 @@
 ---
 name: project-planning
-description: Run a sprint-roadmap planning session inside an existing git repo — adaptively grill to mutual understanding, propose vertical-slice sprints each with a sprint goal, then write/update CONTEXT.md and project_plan.md. Use when user says "project-planning", "plan this project", "roadmap", "sprint planning", or "set up a project plan".
+description: Run a sprint-roadmap planning session inside an existing git repo — adaptively grill to mutual understanding, propose vertical-slice sprints each with a sprint goal, then write/update CONTEXT.md and project_plan.md. Use when user says "project-planning", "plan this project", "roadmap", or "set up a project plan". For breaking one sprint into tasks, use `sprint-planning` instead.
 ---
 
 # project-planning
@@ -33,12 +33,28 @@ Then **stop immediately. Write nothing.**
 
 ---
 
+## Sync sprint status from GitHub
+
+Before the grill, if `project_plan.md` exists, refresh each sprint's status marker from GitHub:
+
+```
+gh issue list --state all --limit 500 --json number,title,state
+```
+
+Parse the leading `(N)` token from each title. For every sprint whose `(N)` issue is found: `state == CLOSED` → `✅`, `state == OPEN` → keep `🟡` if the sprint already has any published sub-issue tasks, otherwise `⬜`. Write the refreshed markers back into `project_plan.md`'s `### Sprint N — ... <marker>` heading lines before continuing. Sprints with no matching `(N)` issue yet are left as `⬜` (not yet charted).
+
+This sync only touches the sprint-level status marker in each heading — it never touches sprint goals, scope, or the per-sprint task tables (those are `sprint-planning`'s responsibility, regenerated when it runs).
+
+If `gh` is unavailable or unauthenticated, skip this step silently and proceed with whatever `project_plan.md` already has — this sync is a freshness nicety, not a hard requirement for `project-planning` to run.
+
+---
+
 ## Adaptive grill
 
 **Read first.** Before asking anything, check for existing artifacts:
 
 1. Read `CONTEXT.md` at the project root if it exists.
-2. Read `project_plan.md` at the project root if it exists.
+2. Read `project_plan.md` at the project root if it exists (post-sync, if the sync above ran).
 
 Summarize your current understanding back to the user in two to four sentences: what the project is, who it's for, what's already planned, and what's already done (completed sprints). Be explicit about what you do and do not yet know.
 

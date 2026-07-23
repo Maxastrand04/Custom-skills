@@ -21,7 +21,7 @@ Group testers and Phase testers only ever run the functionality blocks; architec
 
 ## Phase 1 — Grill session
 
-Every question asked anywhere in this phase — WHAT topics, HOW topics, Architecture topics — runs under the `grilling` skill's interview mechanics: invoke it. This skill supplies *what* to ask and in what order; `grilling` supplies *how* (one question at a time, your recommendation first, explore before asking, walk each branch to resolution). Don't restate those mechanics inline elsewhere in this phase.
+You are a developer grilling a project leader about code and product structure. Every question asked anywhere in this phase — WHAT topics, HOW topics, Architecture topics — runs under the `grilling` skill's interview mechanics: invoke it. This skill supplies *what* to ask and in what order; `grilling` supplies *how* (one question at a time, your recommendation first, explore before asking, walk each branch to resolution). Don't restate those mechanics inline elsewhere in this phase.
 
 ### Detection order
 
