@@ -15,7 +15,7 @@ A collection of personal Claude Code skills. Each skill is a directory with a `S
 | `new-issue` | Grill WHAT (behavior, scope, acceptance criteria) and publish a GitHub Issue; supports plan-driven invocation (`N.M`) to seed from `project_plan.md`, file as a sub-issue under the sprint parent, and write the issue number back to the plan |
 | `project-planning` | Run a sprint-roadmap planning session inside an existing git repo — adaptively grill to mutual understanding, propose vertical-slice sprints each with a sprint goal, then write/update CONTEXT.md and project_plan.md |
 | `run-tests` | Discover and run the project's test suite, then report pass/fail results with failure details |
-| `implementation-plan-execute` | Drive an implementation plan to completion in hands-on mode (model implements inline, user reviews architecture) or supervise mode (parallel implementer subagents, Architecture tester reviews architecture) |
+| `implementation-plan-execute` | Drive an implementation plan to completion — model implements each Group inline, user reviews architecture per Group in real time; all testing runs once, in the plan's final Verification phase |
 | `sprint-planning` | Take one sprint from `project_plan.md`, slice its goal into caveman-style `(N.M)` tasks, and create the sprint's parent `(N)` GitHub issue — middle link of the chain: `project-planning` → `sprint-planning` → `new-issue` |
 
 ## Installation

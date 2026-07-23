@@ -4,22 +4,21 @@ One sentence describing what this plan accomplishes.
 
 **Goal:** What the completed plan should achieve — the concrete outcome or capability that will exist when all phases are done.
 
+**Branch:** Branch the implementer works from (new branch name, or an existing branch the user named).
+
 **Status legend:**  ⬜ Not started · 🟡 In progress · ✅ Done
 
 ---
 
 ## Acceptance criteria
 
-What "done" means for this plan, expressed as a numbered list of verifiable criteria. **This is the contract the final Verification phase tests against.** If a criterion can't be verified mechanically, mark it `(manual)` — the Supervisor will ask the user to confirm.
+What "done" means, terse — sacrifice grammar for brevity. **This is the contract the final Verification phase tests against**, and the only place testing is verified end-to-end in this plan. If a criterion can't be verified mechanically, mark it `(manual)` — the Supervisor will ask the user to confirm.
 
-- **AC-1 — [Short title]** — The observable outcome.
-  *Verify by:* concrete check (command, behavior, file/symbol presence, HTTP response, screenshot, etc.).
-- **AC-2 — [Short title]** — The observable outcome.
-  *Verify by:* concrete check.
-- **AC-3 — [Short title]** *(manual)* — The observable outcome.
-  *Verify by:* what the user needs to look at to confirm.
+- AC-1: outcome. Verify: `tests/path/test_file.py::test_name` (written in Phase 1, re-run in Verification).
+- AC-2: outcome. Verify: `tests/path/test_file.py::test_name`.
+- AC-3 (manual): outcome. Verify: what the user looks at to confirm — no automated test, skipped in Phase 1.
 
-On from-issue plans, these are lifted verbatim from the issue body and assigned `AC-N` IDs. On standalone plans, they are produced during the grill. Architecture decisions below should be derived from these criteria.
+On from-issue plans, these are lifted from the issue body and assigned `AC-N` IDs. On standalone plans, they come out of the grill. Architecture decisions below are derived from these criteria.
 
 ---
 
@@ -40,9 +39,9 @@ src/
     new_thing.py   ← new
 ```
 
-**Decisions:**
-- **AD-1 — [Short title]** — The decision. *Rationale.* *(Principle: SRP / Pattern: Strategy / Convention: matches existing X)*
-- **AD-2 — [Short title]** — The decision. *Rationale.* *(Principle / Pattern / Convention tag.)*
+**Decisions** (terse — sacrifice grammar for brevity):
+- AD-1: decision. Why. (Principle: SRP / Pattern: Strategy / Convention: matches existing X)
+- AD-2: decision. Why. (tag)
 
 **Design principles in play:** cohesion target, coupling boundaries, encapsulation rules, SOLID/DRY/KISS dimensions that this change puts pressure on.
 
@@ -73,7 +72,7 @@ def existing_entry(...):
 
 ## Phase 0 — Prerequisites
 
-Phase 0 is an **interactive walkthrough** with the user, not an automated step. Each row is a confirmation, decision, or external prerequisite. The Supervisor walks the rows one at a time with the user; rows that need code (e.g., a quick check) may be handed to a `claude` subagent, but no Group tester or Phase tester runs against Phase 0. A row flips ✅ on user confirmation.
+Phase 0 is an **interactive walkthrough** with the user, not an automated step. Each row is a confirmation, decision, or external prerequisite. The Supervisor walks the rows one at a time with the user; rows that need code (e.g., a quick check) may be handed to a `claude` subagent, but no test block runs against Phase 0. A row flips ✅ on user confirmation.
 
 | Task | File | Status |
 |------|------|--------|
@@ -81,63 +80,20 @@ Phase 0 is an **interactive walkthrough** with the user, not an automated step. 
 
 ---
 
-## Phase 1 — [Phase Name]
+## Phase 1 — Write acceptance tests
 
-Brief description of what this phase delivers.
+**This phase is mandatory and always second.** Write the actual failing (red) automated tests named in every non-`(manual)` `AC-N`'s verify clause, using the project's existing test framework and conventions. No implementation code — a test in this phase must fail because the behavior doesn't exist yet, never because of a broken test. Implementation phases below make these tests pass; Verification re-runs them as proof.
 
 ### Group 1 — [short name]
 
-One line describing what this group changes and why these tasks bundle together (shared file or single atomic change).
+One line describing which `AC-N` tests this group writes and why they bundle together (shared test file or single atomic change).
 
-**Architecture decisions (Group 1):**
-- Follows AD-N ([short title]) and AD-N ([short title]).
-- References ADR-NNNN ([short title]) where relevant.
+**Architecture decisions (Group 1):** No architectural decisions apply. (Or: follows AD-N if it governs test placement/structure.)
 
 | Task | File | Status |
 |------|------|--------|
-| Description of task | [filename](../path/to/file.py) | ⬜ |
-| Description of task | [filename](../path/to/file.py) | ⬜ |
-
-**Functionality tests / checks (Group 1):**
-- AC-N: concrete check verifying the Group satisfies this criterion (command, file/symbol presence, HTTP response, etc.)
-- AC-N: another check
-
-**Architecture tests / checks (Group 1):**
-- (subagent) AD-N present in `path/to/file.py` — verify shape.
-- (human) AD-N — no new import from `core/` into `handlers/`.
-
-### Group 2 — [short name]
-
-One line describing this group.
-
-**Architecture decisions (Group 2):**
-- Follows AD-N ([short title]).
-- No architectural decisions apply (or list the relevant AD-N items).
-
-| Task | File | Status |
-|------|------|--------|
-| Description of task | [filename](../path/to/file.py) | ⬜ |
-
-**Functionality tests / checks (Group 2):**
-- AC-N: concrete check verifying the Group satisfies this criterion
-- AC-N: another check
-
-**Architecture tests / checks (Group 2):**
-- (subagent) AD-N conformance check — verify structure in `path/to/file.py`.
-
-### Functionality tests / checks (Phase 1 — integration)
-
-Cross-group checks the Phase tester runs after all groups in this phase are ✅. These verify the `AC-N` criteria that span multiple Groups; they are not a re-run of the per-group checks.
-
-- AC-N: cross-group check verifying the criterion spanning Group 1 + Group 2
-- AC-N: another cross-group check
-
-### Architecture tests / checks (Phase 1 — integration)
-
-Cross-group structural checks. The architecture reviewer (subagent or human) verifies that the composed result respects all AD-N decisions across both Groups.
-
-- (subagent) Composed code respects AD-N dependency direction across both Groups.
-- (human) No top-level section renamed; additive-only changes verified.
+| Write test for AC-1 | [test_file.py](../tests/path/test_file.py) | ⬜ |
+| Write test for AC-2 | [test_file.py](../tests/path/test_file.py) | ⬜ |
 
 ---
 
@@ -147,35 +103,46 @@ Brief description of what this phase delivers.
 
 ### Group 1 — [short name]
 
+One line describing what this group changes and why these tasks bundle together (shared file or single atomic change).
+
+**Architecture decisions (Group 1):** Follows AD-N ([short title]) and AD-N ([short title]). References ADR-NNNN ([short title]) where relevant.
+
+| Task | File | Status |
+|------|------|--------|
+| Description of task | [filename](../path/to/file.py) | ⬜ |
+| Description of task | [filename](../path/to/file.py) | ⬜ |
+
+### Group 2 — [short name]
+
 One line describing this group.
 
-**Architecture decisions (Group 1):**
-- Follows AD-N ([short title]).
-- No architectural decisions apply (or list the relevant AD-N items).
+**Architecture decisions (Group 2):** Follows AD-N ([short title]). (Or: no architectural decisions apply.)
 
 | Task | File | Status |
 |------|------|--------|
 | Description of task | [filename](../path/to/file.py) | ⬜ |
 
-**Functionality tests / checks (Group 1):**
-- AC-N: concrete check verifying the Group satisfies this criterion
+---
 
-**Architecture tests / checks (Group 1):**
-- (subagent) AD-N conformance check — verify structure in `path/to/file.py`.
+## Phase 3 — [Phase Name]
 
-### Functionality tests / checks (Phase 2 — integration)
+Brief description of what this phase delivers.
 
-- AC-N: cross-group check verifying the criterion that spans both Groups
+### Group 1 — [short name]
 
-### Architecture tests / checks (Phase 2 — integration)
+One line describing this group.
 
-- (subagent) Composed code respects AD-N dependency direction.
+**Architecture decisions (Group 1):** Follows AD-N ([short title]). (Or: no architectural decisions apply.)
+
+| Task | File | Status |
+|------|------|--------|
+| Description of task | [filename](../path/to/file.py) | ⬜ |
 
 ---
 
 ## Phase N — Verification
 
-**This phase is mandatory and always last. No new code is written here — verification only.** If any check fails, the Supervisor escalates to the user; nothing is auto-fixed.
+**This phase is mandatory and always last. No new code is written here — verification only, and the single source of truth for testing this plan.** No other phase or Group carries a test block. On any failure, the Supervisor stops immediately and escalates to the user — no automatic retry, no fixed attempt cap; the user decides what happens next each time.
 
 ### Group 1 — Architecture sweep
 
@@ -184,7 +151,7 @@ One line describing this group.
 | Verify codebase matches every `AD-N` in `## Architecture decisions` | — | ⬜ |
 | Verify code shape matches the mock code snippet | — | ⬜ |
 
-**Tests / checks (Group 1):**
+**Checks:**
 - Each `AD-N` is `[FOUND]` in the codebase with evidence (file:line).
 - Each entry in `## Architecture decisions` → Files affected exists and matches its stated change.
 - Directory shape matches the post-change tree.
@@ -199,12 +166,7 @@ One line describing this group.
 | Verify AC-2 | — | ⬜ |
 | Verify AC-3 (manual) | — | ⬜ |
 
-**Tests / checks (Group 2):**
-- One row per `AC-N` from `## Acceptance criteria`, each tested by the `Verify by:` line in that section. Auto-rendered from the AC section by the planner — do not edit independently.
-
-### Tests / checks (Phase N — integration)
-
-- All `AC-N` `[PASS]` and all `AD-N` `[FOUND]`, with no outstanding `[POSSIBLE VIOLATION]` or unresolved `[MANUAL CHECK REQUIRED]`.
+**Checks:** one row per `AC-N` from `## Acceptance criteria` — re-run the exact test named in its `Verify:` line (written in Phase 1) and confirm it now passes green; `(manual)` rows are confirmed with the user instead. Auto-rendered from the AC section by the planner — do not edit independently.
 
 ---
 
@@ -216,4 +178,5 @@ Context and constraints that help Claude implement this plan correctly:
 - **Conventions:** Naming, file structure, patterns to follow from the existing codebase (beyond what's already pinned in `## Architecture decisions`).
 - **Constraints:** What NOT to do — things to avoid or stay in scope of.
 - **Order dependency:** Any phases or tasks that must complete before others can start.
-- **Testing:** How to verify each phase works before moving on.
+- **Testing:** `## Phase 1 — Write acceptance tests` writes the tests red; nothing is *verified* (i.e., no test is run and judged) until `## Phase N — Verification`, which re-runs those same tests and expects green. No Group or Phase before Verification carries a test/check block. Any Verification failure stops the plan immediately and goes to the user — there is no automatic retry.
+</content>
