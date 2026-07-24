@@ -41,3 +41,7 @@
 ## Workarounds known
 
 <List any user-facing workarounds that exist today, or state "None known".>
+
+---
+
+> **Branch naming:** implement this issue on a branch whose name includes its GitHub issue number (e.g. `42-short-slug`), so the code review (`review-edits`) links the work back to this issue and its acceptance criteria.

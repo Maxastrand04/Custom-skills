@@ -37,3 +37,7 @@
 ## Dependencies on existing functionality
 
 <List existing user-visible behaviors this change relies on or interacts with. Behavior-level only — no module or file names.>
+
+---
+
+> **Branch naming:** implement this issue on a branch whose name includes its GitHub issue number (e.g. `42-short-slug`), so the code review (`review-edits`) links the work back to this issue and its acceptance criteria.

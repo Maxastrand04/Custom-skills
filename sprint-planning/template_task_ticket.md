@@ -12,3 +12,7 @@
 ## Out of scope
 
 {OUT_OF_SCOPE}
+
+---
+
+> **Branch naming:** implement this ticket on a branch whose name includes its GitHub issue number (e.g. `57-short-slug`), so the code review (`review-edits`) links the work back to this issue and its acceptance criteria.

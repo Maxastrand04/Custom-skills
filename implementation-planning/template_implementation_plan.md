@@ -18,77 +18,38 @@ What "done" means, terse — sacrifice grammar for brevity. **This is the contra
 - AC-2: outcome. Verify: `tests/path/test_file.py::test_name`.
 - AC-3 (manual): outcome. Verify: what the user looks at to confirm — no automated test, skipped in Phase 1.
 
-On from-issue plans, these are lifted from the issue body and assigned `AC-N` IDs. On standalone plans, they come out of the grill. Architecture decisions below are derived from these criteria.
+On from-issue plans, these are lifted from the issue body and assigned `AC-N` IDs. On standalone plans, they come out of the grill.
 
 ---
 
-## Architecture decisions
+## Rules in play
 
-Structural choices the user has made for this plan. Implementers MUST NOT deviate. If a task surfaces a structural choice not covered here, stop and surface it to the user before writing code.
+The project's architecture and coding rules live as one-rule-per-ADR files in `docs/adr/` (authored by `codebase-rules`), **not** in this plan. This section only points at the rule-ADRs this change operates under, so the implementer loads the right boundaries and the reviewer knows where to look. The implementer keeps freedom on *how* the code is written within these rules; the code-review session enforces them against the committed diff.
 
-**Files affected:**
-- `path/to/file.py` — what changes
-- `path/to/new_module/` — new
+- [ADR-0007 — Handlers depend inward](../docs/adr/0007-handlers-depend-inward.md) — handlers MUST NOT import from `infra/`.
+- [ADR-0012 — No ORM in domain](../docs/adr/0012-no-orm-in-domain.md) — domain models MUST be persistence-agnostic.
 
-**Directory shape (after change):**
-
-```
-src/
-  module/
-    existing.py
-    new_thing.py   ← new
-```
-
-**Decisions** (terse — sacrifice grammar for brevity):
-- AD-1: decision. Why. (Principle: SRP / Pattern: Strategy / Convention: matches existing X)
-- AD-2: decision. Why. (tag)
-
-**Design principles in play:** cohesion target, coupling boundaries, encapsulation rules, SOLID/DRY/KISS dimensions that this change puts pressure on.
-
-**Patterns:** GoF or architectural patterns used (e.g., Strategy in `handlers/`, layered separation between `api/` and `core/`), and any deliberately avoided with a one-line reason.
-
-**Mock code snippet:**
-
-A non-runnable sketch that shows every architectural/design choice made above in code form — class/function shapes, where each piece lives, dependency direction, public-vs-private surface, pattern wiring. The goal is one place a human or Claude can read to see the final shape before any task is implemented. Use file-name comments to anchor each block to its target location.
-
-**Required for any plan that adds or edits code.** Skip only when the plan touches non-code artifacts exclusively (e.g., docs, `.md` files, prose-only changes).
-
-```python
-# src/module/new_thing.py
-class NewThing:                       # AD-1: lives in module/, not core/
-    def __init__(self, dep: Dep):     # AD-2: dependency injected, not imported
-        self._dep = dep
-
-    def run(self) -> Result:          # AD-3: public surface
-        ...
-
-# src/module/existing.py — extended, not duplicated (AD-4)
-def existing_entry(...):
-    thing = NewThing(dep=...)
-    return thing.run()
-```
+If no rule-ADR applies directly, replace the list with a single line: _"No specific rule-ADR applies; the general rule set in `docs/adr/` governs at review."_ If planning surfaced a project-wide structural choice no rule covers, that was turned into a new rule-ADR via `codebase-rules` before this plan was written — reference it here, don't decide it inline.
 
 ---
 
-## Phase 0 — Prerequisites
+## Phase 0 — Preflight
 
-Phase 0 is an **interactive walkthrough** with the user, not an automated step. Each row is a confirmation, decision, or external prerequisite. The Supervisor walks the rows one at a time with the user; rows that need code (e.g., a quick check) may be handed to a `claude` subagent, but no test block runs against Phase 0. A row flips ✅ on user confirmation.
+Preflight holds only genuine **blockers** that must clear before execution can start — an external credential, a created resource, a decision that can't be made until execution time. It is **not** an assumption-confirmation checklist. Rows needing a code fact may be handed to a `claude` subagent; a row flips ✅ when the blocker actually clears. If there are no blockers, keep the single `None` row so execution goes straight to Red.
 
 | Task | File | Status |
 |------|------|--------|
-| Description of prerequisite task | — | ⬜ |
+| None — no blockers | — | ✅ |
 
 ---
 
-## Phase 1 — Write acceptance tests
+## Phase 1 — Red
 
 **This phase is mandatory and always second.** Write the actual failing (red) automated tests named in every non-`(manual)` `AC-N`'s verify clause, using the project's existing test framework and conventions. No implementation code — a test in this phase must fail because the behavior doesn't exist yet, never because of a broken test. Implementation phases below make these tests pass; Verification re-runs them as proof.
 
 ### Group 1 — [short name]
 
 One line describing which `AC-N` tests this group writes and why they bundle together (shared test file or single atomic change).
-
-**Architecture decisions (Group 1):** No architectural decisions apply. (Or: follows AD-N if it governs test placement/structure.)
 
 | Task | File | Status |
 |------|------|--------|
@@ -97,15 +58,13 @@ One line describing which `AC-N` tests this group writes and why they bundle tog
 
 ---
 
-## Phase 2 — [Phase Name]
+## Phase 2 — Green: [Phase Name]
 
-Brief description of what this phase delivers.
+Brief description of what this phase delivers. A Green phase makes the Red tests pass.
 
 ### Group 1 — [short name]
 
 One line describing what this group changes and why these tasks bundle together (shared file or single atomic change).
-
-**Architecture decisions (Group 1):** Follows AD-N ([short title]) and AD-N ([short title]). References ADR-NNNN ([short title]) where relevant.
 
 | Task | File | Status |
 |------|------|--------|
@@ -116,23 +75,19 @@ One line describing what this group changes and why these tasks bundle together 
 
 One line describing this group.
 
-**Architecture decisions (Group 2):** Follows AD-N ([short title]). (Or: no architectural decisions apply.)
-
 | Task | File | Status |
 |------|------|--------|
 | Description of task | [filename](../path/to/file.py) | ⬜ |
 
 ---
 
-## Phase 3 — [Phase Name]
+## Phase 3 — Green: [Phase Name]
 
 Brief description of what this phase delivers.
 
 ### Group 1 — [short name]
 
 One line describing this group.
-
-**Architecture decisions (Group 1):** Follows AD-N ([short title]). (Or: no architectural decisions apply.)
 
 | Task | File | Status |
 |------|------|--------|
@@ -142,23 +97,9 @@ One line describing this group.
 
 ## Phase N — Verification
 
-**This phase is mandatory and always last. No new code is written here — verification only, and the single source of truth for testing this plan.** No other phase or Group carries a test block. On any failure, the Supervisor stops immediately and escalates to the user — no automatic retry, no fixed attempt cap; the user decides what happens next each time.
+**This phase is mandatory and always last. No new code is written here — it checks one thing: that the code works, every `AC-N` test green.** It does **not** sweep architecture; a separate code-review session judges the committed diff against the rule-ADRs in `docs/adr/` (see `## Rules in play`). No other phase or Group carries a test block. On any failure, the Supervisor stops immediately and escalates to the user — no automatic retry, no fixed attempt cap; the user decides what happens next each time.
 
-### Group 1 — Architecture sweep
-
-| Task | File | Status |
-|------|------|--------|
-| Verify codebase matches every `AD-N` in `## Architecture decisions` | — | ⬜ |
-| Verify code shape matches the mock code snippet | — | ⬜ |
-
-**Checks:**
-- Each `AD-N` is `[FOUND]` in the codebase with evidence (file:line).
-- Each entry in `## Architecture decisions` → Files affected exists and matches its stated change.
-- Directory shape matches the post-change tree.
-- Mock snippet shape (class/function names, file locations, dependency direction, public surface) matches the implementation.
-- No `[POSSIBLE VIOLATION]` of stated design principles or patterns.
-
-### Group 2 — Acceptance criteria
+### Group 1 — Acceptance criteria
 
 | Task | File | Status |
 |------|------|--------|
@@ -174,9 +115,9 @@ One line describing this group.
 
 Context and constraints that help Claude implement this plan correctly:
 
-- **Architecture binding:** Do not introduce structural choices (new modules, new patterns, new dependency directions, new cross-layer dependencies) not covered by `## Architecture decisions` above. If a task requires one, stop and surface it to the user before writing code — never improvise structure. Cite the relevant `AD-N` when a task implements a decision.
-- **Conventions:** Naming, file structure, patterns to follow from the existing codebase (beyond what's already pinned in `## Architecture decisions`).
+- **Rules binding:** Stay within the rule-ADRs in `docs/adr/` (those in `## Rules in play` apply directly). You have freedom on *how* to implement within them — no per-Group architecture approval is required. If the change forces a structural choice no rule covers and it's project-wide, stop and flag it for a `codebase-rules` ADR rather than improvising a one-off. The code-review session enforces the rule-ADRs on the commit.
+- **Conventions:** Naming, file structure, patterns to follow from the existing codebase (beyond what's already pinned in the rule-ADRs).
 - **Constraints:** What NOT to do — things to avoid or stay in scope of.
 - **Order dependency:** Any phases or tasks that must complete before others can start.
-- **Testing:** `## Phase 1 — Write acceptance tests` writes the tests red; nothing is *verified* (i.e., no test is run and judged) until `## Phase N — Verification`, which re-runs those same tests and expects green. No Group or Phase before Verification carries a test/check block. Any Verification failure stops the plan immediately and goes to the user — there is no automatic retry.
+- **Testing:** `## Phase 1 — Red` writes the tests red; nothing is *verified* (i.e., no test is run and judged) until `## Phase N — Verification`, which re-runs those same tests and expects green. No Group or Phase before Verification carries a test/check block. Any Verification failure stops the plan immediately and goes to the user — there is no automatic retry.
 </content>

@@ -16,3 +16,7 @@
 ## Blocked by
 
 - <Other sub-issue refs, or "None — can start immediately".>
+
+---
+
+> **Branch naming:** implement this sub-issue on a branch whose name includes its GitHub issue number (e.g. `57-short-slug`), so the code review (`review-edits`) links the work back to this issue and its acceptance criteria.

@@ -169,3 +169,5 @@ Every published issue body — parent and sub — starts with the disclaimer blo
 ```
 
 This is enforced by the three body templates themselves (`template_feature_issue.md`, `template_bug_issue.md`, `template_subissue.md`), so as long as you start from the templates the disclaimer is already there. Do not strip it during inline edits.
+
+The same templates also carry a standing **Branch naming** footer (implement on a branch whose name includes the issue's GitHub number, so `review-edits` links the work back to this issue). Like the disclaimer, it is template-enforced — do not strip it during inline edits.

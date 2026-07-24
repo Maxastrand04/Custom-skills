@@ -202,3 +202,4 @@ If nothing has closed since the last run, tell the user there's nothing to gradu
 - **Append-only `(N.M)` numbering** for task tickets. Never renumber or delete existing rows on re-run.
 - **`project_plan.md`'s task table is regenerated from GitHub, never hand-authored.** If GitHub and the plan ever disagree, GitHub wins.
 - **Opus-direct.** No subagent dispatch.
+- **Keep the Branch-naming footer.** `template_task_ticket.md` carries a standing footer (branch name includes the ticket's GitHub issue number) so `review-edits` can link the work back — do not strip it when refining task drafts in Step 8.
