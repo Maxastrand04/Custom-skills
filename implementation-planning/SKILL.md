@@ -24,7 +24,7 @@ The whole phase runs as **one continuous session toward a single reached underst
 
 Before any grill content runs, route the session by checking these three cases in order. Stop at the first match:
 
-1. **Explicit `<issue-ref>` arg** — the user invoked the skill with an issue number (e.g., `42`), a full GitHub issue URL, or a natural-language description of an existing issue. Resolve natural-language descriptions against open issues via `gh issue list` / `gh issue view`. When an arg is present, jump directly to the **from-issue path** (see below) — do not run the WHAT-grill.
+1. **Explicit `<issue-ref>` arg** — the user invoked the skill with the **GitHub issue number** (`42` or `#42`), a full GitHub issue URL, or a natural-language description of an existing issue. The GitHub number is the canonical way in; resolve URLs and natural-language descriptions down to it via `gh issue list` / `gh issue view`. When an arg is present, jump directly to the **from-issue path** (see below) — do not run the WHAT-grill.
 2. **Auto-detect (strict + confirm)** — only consider this case when **both** gates hold: (a) `new-issue` ran in the **current session** and posted an issue (you have a fresh issue URL in conversation context), AND (b) the user explicitly confirms when prompted. Even when (a) holds, **always prompt the user to confirm** before skipping the WHAT-grill — never auto-route silently. This is the strict + confirm rule: gated on a same-session `new-issue` post **and** an explicit user confirmation.
 3. **Standalone fallback** — neither (1) nor (2) match. Run the full grill as today (unchanged behavior).
 
@@ -37,7 +37,11 @@ Triggered by case (1) or a confirmed case (2) above. Behavior:
 - **Run the HOW topics only** — exploration, architecture, modules, files, rollout. These are not in the issue body and must be resolved before writing the plan.
 - **Read the issue body first.** Before starting the HOW grill, fetch the issue via `gh issue view <ref> --json title,body,labels` (or equivalent) and read it in full so the HOW questions are grounded in the issue's WHAT.
 - **Run the Exploration step and Rules-in-play block** (below) on this path too. Skipping them would make the `## Acceptance criteria` / `## Rules in play` sections ungrounded.
-- **Capture the issue title, number, and ID tag** for use in Phase 2 — the plan filename and title must mirror the issue exactly so the link between issue and plan is obvious at a glance. The ID tag is the leading `(N)` or `(N.M)` token in the issue title (set by `new-issue`). If the issue title has no ID tag (e.g. an older issue created before this convention), tell the user and ask whether to (a) edit the issue title to add an ID, or (b) fall back to the standalone-path naming for this one plan.
+- **Capture the issue title and number, and derive the plan slot** for use in Phase 2 — the plan filename and title must mirror the issue so the link between issue and plan is obvious at a glance. Two title conventions are both valid, and the slot follows whichever the issue uses:
+  - **Tagged** — the title leads with an `(N)` or `(N.M)` token (`sprint-planning` tickets). Slot = that token verbatim: `(1.3) [feature] …` → slot `1.3`.
+  - **Untagged** — no leading token (`new-issue` issues). Slot = the GitHub issue number: `#42` → slot `42`.
+
+  Never ask the user to retitle an issue to fit a convention.
 
 The existing standalone grill behavior (below) runs in full when the Detection order lands on case (3). The Exploration step and Rules-in-play block run on **both** paths.
 
@@ -45,7 +49,7 @@ The existing standalone grill behavior (below) runs in full when the Detection o
 
 Before asking any questions, ground the grill in what already exists. This is a hybrid checklist:
 
-1. **Fixed project-level reads** (always, if present): `CONTEXT.md`, `docs/adr/`, top-level `README.md`, directory listing of the project root, and `implementation_plans/` for prior plans.
+1. **Fixed project-level reads** (always, if present): `CONTEXT.md`, top-level `README.md`, directory listing of the project root, and `implementation_plans/` for prior plans. Plus `docs/adr/`: list it and read every file's title, `**Rule:**`, `**Scope:**`, and `**Status:**` lines. A file carrying a `**Rule:**` line is a **rule-ADR** — binding and citable; one without it is a classic decision-ADR — context only, never listed in `## Rules in play`. If `docs/adr/` doesn't exist, the project has no rule set: say so and recommend running `codebase-rules` before planning.
 2. **Targeted change-specific reads**: grep/read files relevant to the change being planned — modules likely to be touched, related interfaces, neighboring code.
 
 After exploration, emit a short **"What I found"** summary to the user covering: the relevant modules, the conventions/patterns visible in the affected area, any ADRs that constrain the change, and prior plans that touch the same code. **Wait for the user to correct misreads** before moving on — corrections at this step are cheap, downstream they propagate.
@@ -61,7 +65,7 @@ After Exploration, work through every remaining decision (see `grilling` invocat
 
 This block does **not** decide architecture — the project's rule-ADRs already do. It only identifies which of them this change operates under, so the implementer knows the boundaries and the reviewer knows where to look. The implementer keeps freedom on *how* the code is written within those rules.
 
-- From the `docs/adr/` rule-ADRs read during Exploration, pick the ones the change actually touches (by layer, module, or pattern it modifies) and list them — this becomes `## Rules in play`. If none apply, say so; the general rule set still governs at review.
+- From the rule-ADRs read during Exploration, pick the ones this change operates under — match the layers, modules, and patterns it touches against each rule's `**Scope:**` line, or against the rule text itself when unscoped. **Account for every rule-ADR**: each is either listed or consciously excluded as untouched. Skip any marked `Status: deprecated`; a superseded rule resolves to the ADR that replaced it. This becomes `## Rules in play`. If none apply, say so; the general rule set still governs at review.
 - If the change puts pressure on a structural choice **no rule covers**, decide with the user whether it is *project-wide* (would recur beyond this plan) or *plan-local throwaway*. Project-wide → don't bake a decision into the plan; recommend running `codebase-rules` to add a rule-ADR first, then reference it. Plan-local → leave it to the implementer; the reviewer catches problems against the rules.
 
 Draft from Exploration first — don't grill choices the rule-ADRs already settle.
@@ -72,7 +76,7 @@ These steps run **regardless of which Detection-order branch you took** — they
 
 1. **Draft the whole plan content in one continuous pass, without a separate stop-and-confirm after each piece.** Cover, in this order, using your own recommendation to keep momentum (still a `grilling` session underneath — recommendation first, explore before asking — but aimed at one shared understanding, not a checkpoint per section):
    - `## Acceptance criteria`: numbered `AC-N` list, terse — outcome + verify clause, sacrifice grammar for brevity. The verify clause should name the concrete automated test that will prove it (e.g. `AC-1: login redirects to dashboard. Verify: tests/test_login.py::test_admin_redirect.`) — that exact test gets written in `Phase 1 — Red` and re-run in Verification. Tag `(manual)` only when no automated test is possible; those get a plain-English check instead of a test path. From-issue plans render the issue's lifted criteria; standalone plans render what the WHAT-grill produced.
-   - `## Rules in play`: the relevant `ADR-NNNN` rule-ADRs from the Rules-in-play block — filename + one-line rule each, so the implementer and reviewer load only what applies. No plan-local structural decisions, no mock snippet; if none apply, a single line saying the general rule set governs.
+   - `## Rules in play`: the `ADR-NNNN` rule-ADRs from the Rules-in-play block — link + that ADR's `**Rule:**` line **verbatim**, never paraphrased (the ADR is the single source of truth), so the implementer and reviewer load only what applies. No plan-local structural decisions; if none apply, a single line saying the general rule set governs.
    - **Plan structure**, test-driven and fixed at three anchor positions:
      - `## Phase 0 — Preflight` (no Groups): only genuine blockers that must clear before execution can start — an external credential, a created resource, a decision that can't be made until execution time. Not an assumption-confirmation checklist. If there are none, render a single row reading `None` so execution goes straight to Red.
      - `## Phase 1 — Red` (mandatory, always second): one or more Groups that write the actual failing (red) automated tests named in each non-`(manual)` `AC-N`'s verify clause, using the project's existing test framework/conventions (from Exploration). No implementation code is written here — the tests should fail because the behavior doesn't exist yet, not because of a broken test. Skip this phase's content (leave it a stub noting "no automatable criteria") only if every `AC-N` is `(manual)`.
@@ -96,15 +100,15 @@ Then proceed immediately to Phase 2 — do not wait for the user to prompt you.
 1. **Read the template** at `~/.claude/skills/implementation-planning/template_implementation_plan.md` before writing anything.
 
 2. **Determine plan number** based on the Detection-order branch:
-   - **From-issue path (cases 1 and 2):** use the issue's ID tag verbatim. `(N)` → plan slot `N`; `(N.M)` → plan slot `N.M`. Do **not** pick the next free slot in `implementation_plans/` — the issue ID is authoritative. If a plan file with that slot already exists, stop and ask the user how to resolve (overwrite, rename existing, etc.) rather than silently picking a different slot.
+   - **From-issue path (cases 1 and 2):** use the slot derived on the from-issue path — the ID tag verbatim if the issue is tagged, otherwise the GitHub issue number. Do **not** pick the next free slot in `implementation_plans/` — the issue is authoritative. If a plan file with that slot already exists, stop and ask the user how to resolve (overwrite, rename existing, etc.) rather than silently picking a different slot.
    - **Standalone path (case 3):** list files in `implementation_plans/` at the project root to find the next available `N.N` slot. If the directory doesn't exist, create it and start at `1.1`.
 
 3. **Write the plan file** to `implementation_plans/<slot>_short_name.md`. Derive `short_name` based on the Detection-order branch:
-   - **From-issue path (cases 1 and 2):** `short_name` is **1–3 words, snake_case, no articles** — just enough to skim a directory listing. The ID tag already identifies which issue the plan tackles, so the slug does not need to mirror the full issue title. Pick the most load-bearing nouns/verbs from the issue title; drop the ID tag, the `[feature]` / `[bug]` prefix, and any filler. Example: issue `(1.3) [feature] Add OAuth login for admin dashboard` → `1.3_oauth_login.md`. Example: issue `(2.1) [feature] skill: generate test structure from codebase + docs` → `2.1_test_structure.md`.
+   - **From-issue path (cases 1 and 2):** `short_name` is **1–3 words, snake_case, no articles** — just enough to skim a directory listing. The slot already identifies which issue the plan tackles, so the slug does not need to mirror the full issue title. Pick the most load-bearing nouns/verbs from the issue title; drop the ID tag (if any), the `[feature]` / `[bug]` prefix, and any filler. Example: tagged issue `(1.3) [feature] Add OAuth login for admin dashboard` → `1.3_oauth_login.md`. Example: untagged issue `#42 [feature] skill: generate test structure from codebase + docs` → `42_test_structure.md`.
    - **Standalone path (case 3):** `short_name` is 2–4 words, snake_case, no articles.
 
 4. **Follow the template exactly** for section shape, order, and content — it was already read in step 1. Populate `## Acceptance criteria` and `## Rules in play` from the confirmed combined draft; populate `**Branch:**` from the confirmed branch decision; don't invent content beyond what Phase 1 confirmed. Keep `AC-N` and rule references terse — sacrifice grammar for brevity, one line each, no restating the same point twice. The one thing the template can't tell you — the title line derivation:
-   - Title line: `# <slot> — Plan Name`. From-issue path: `Plan Name` is the **verbatim issue title with the ID tag stripped** (keep the `[feature]` / `[bug]` prefix and original casing/punctuation) followed by ` (#<issue-number>)`. Example: `# 1.3 — [feature] Add OAuth login for admin dashboard (#42)`. Standalone path: a short human-readable title derived from the grill.
+   - Title line: `# <slot> — Plan Name`. From-issue path: `Plan Name` **mirrors the issue title verbatim, with the ID tag stripped if there was one** (keep the `[feature]` / `[bug]` prefix and original casing/punctuation), followed by ` (#<issue-number>)`. Example (tagged): `# 1.3 — [feature] Add OAuth login for admin dashboard (#42)`. Example (untagged): `# 42 — [feature] Add OAuth login for admin dashboard (#42)`. Standalone path: a short human-readable title derived from the grill.
 
 5. **Rules**:
    - Name a specific file in every task row where possible; use `—` only when genuinely unknown

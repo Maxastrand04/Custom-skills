@@ -26,10 +26,12 @@ On from-issue plans, these are lifted from the issue body and assigned `AC-N` ID
 
 The project's architecture and coding rules live as one-rule-per-ADR files in `docs/adr/` (authored by `codebase-rules`), **not** in this plan. This section only points at the rule-ADRs this change operates under, so the implementer loads the right boundaries and the reviewer knows where to look. The implementer keeps freedom on *how* the code is written within these rules; the code-review session enforces them against the committed diff.
 
-- [ADR-0007 — Handlers depend inward](../docs/adr/0007-handlers-depend-inward.md) — handlers MUST NOT import from `infra/`.
-- [ADR-0012 — No ORM in domain](../docs/adr/0012-no-orm-in-domain.md) — domain models MUST be persistence-agnostic.
+One line per rule-ADR: link, then that ADR's `**Rule:**` line **verbatim** — the ADR is the single source of truth, so never paraphrase or trim it. Only files carrying a `**Rule:**` line belong here; classic decision-ADRs and any rule marked `Status: deprecated` do not.
 
-If no rule-ADR applies directly, replace the list with a single line: _"No specific rule-ADR applies; the general rule set in `docs/adr/` governs at review."_ If planning surfaced a project-wide structural choice no rule covers, that was turned into a new rule-ADR via `codebase-rules` before this plan was written — reference it here, don't decide it inline.
+- [ADR-0007 — Handlers depend inward](../docs/adr/0007-handlers-depend-inward.md) — Code in `handlers/` MUST NOT import from `infra/`; depend on `core/` interfaces instead.
+- [ADR-0012 — No ORM in domain](../docs/adr/0012-no-orm-in-domain.md) — Domain models MUST NOT import the ORM; persistence lives in `repos/`.
+
+If no rule-ADR applies directly, replace the list with a single line: _"No specific rule-ADR applies; the general rule set in `docs/adr/` governs at review."_ If the project has no `docs/adr/` at all, say so instead and note that `codebase-rules` hasn't been run. If planning surfaced a project-wide structural choice no rule covers, that was turned into a new rule-ADR via `codebase-rules` before this plan was written — reference it here, don't decide it inline.
 
 ---
 

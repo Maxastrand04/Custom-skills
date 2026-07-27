@@ -7,11 +7,11 @@ description: Grill the user into a single-issue spec covering WHAT (behavior, sc
 
 Grill the user into a single, well-scoped GitHub Issue covering **WHAT** changes (behavior, scope, acceptance criteria) — never **HOW** (architecture, files, code). Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/implementation-planning` for the HOW.
 
-This skill is markdown-only orchestration. Read the four bundled files at runtime — do not assume their contents from this document:
+The published body is deliberately thin — **Goal / Acceptance criteria / Out of scope**, the same ticket shape `sprint-planning` publishes. The grill is not thin. Everything the grill surfaces must land as a **checkable acceptance criterion** or be consciously dropped: the criteria are this skill's real output, and they are what `implementation-planning` lifts.
 
-- `template_feature_issue.md` — feature-path issue body template + grill topic list
-- `template_bug_issue.md` — bug-path issue body template + grill topic list
-- `template_subissue.md` — sub-issue body schema
+This skill is markdown-only orchestration. Read the two bundled files at runtime — do not assume their contents from this document:
+
+- `template_issue.md` — the one body template, used for every issue: standalone, parent, and sub
 - `subissue-splitting.md` — vertical-slice rule, dependency-order publishing, two-tier coverage check
 
 ---
@@ -51,18 +51,36 @@ Do not start grilling until preflight passes (or the `--repo` fallback is captur
 
 The first question is always: **"Is this a feature or a bug?"** Ask the user once. Do not infer.
 
-Based on the answer:
-
-- **Feature** → read `template_feature_issue.md`. Use its section headings as the grill agenda.
-- **Bug** → read `template_bug_issue.md`. Use its section headings as the grill agenda.
-
-Read the template file at runtime. Do not paste its contents into chat; do not work from a remembered copy.
+The answer picks the **grill agenda** below and the type prefix / label on the published issue. It does **not** change the body shape — feature and bug issues both publish as `template_issue.md`.
 
 ---
 
 ## Grill behavior — WHAT only
 
-You are a developer grilling a product owner about product requirements. Invoke the `grilling` skill for the interview mechanics; use the chosen template's section headings as the agenda, one topic at a time.
+You are a developer grilling a product owner about product requirements. Invoke the `grilling` skill for the interview mechanics; work the agenda one topic at a time.
+
+**Feature agenda:**
+
+1. Problem & motivation — the user-visible problem, and why now.
+2. Target user / actor — who triggers or benefits.
+3. Trigger / entry point — how the user reaches the behavior.
+4. Expected behavior — the happy path end-to-end, from the user's side.
+5. Edge cases & failure modes — missing, invalid, or conflicting inputs; operations that can't complete.
+6. Dependencies on existing functionality — behaviors this relies on or disturbs.
+7. Out of scope — what might look related but isn't.
+
+**Bug agenda:**
+
+1. Symptom — what the user sees go wrong.
+2. Reproduction steps — the minimal sequence that triggers it.
+3. Expected vs actual — at the point of failure.
+4. Scope of impact — who hits it, how often, blocking or annoyance.
+5. Conditions — user state, surface, and inputs under which it reproduces.
+6. First seen / regression — always broken, or a regression from a known-good state.
+7. Workarounds known — what users can do today, or "none known".
+8. Out of scope — related bugs or refactors this fix won't touch.
+
+**Drive every topic to a criterion.** For each answer, ask *"how would we know this is done?"* and write the observable condition. A topic that produces no criterion and no Out-of-scope line has left nothing in the issue — say so and resolve it before moving on. Bug issues always carry two standing criteria: the reproduction steps no longer produce the symptom, and a regression test exists that would catch its return.
 
 **Forbidden during grill (HOW topics — defer to `implementation-planning`):**
 
@@ -78,7 +96,7 @@ You are a developer grilling a product owner about product requirements. Invoke 
 
 ## Propose-and-confirm split
 
-When the full WHAT-grill is complete, **Claude evaluates** whether this is one issue or several, using the criteria below (from decisions §8). Do **not** ask the user upfront which it will be.
+When the full WHAT-grill is complete, **Claude evaluates** whether this is one issue or several, using the criteria below. Do **not** ask the user upfront which it will be.
 
 **Propose a multi-plan split when:**
 
@@ -112,51 +130,65 @@ If either tier fails, restructure the split (expand a sub-issue, add a sub-issue
 
 Every issue — parent and sub — goes through the same loop: **preview, edit, approve, publish.**
 
-1. **Preview rendered title + body** as the chat message. Show the full title (with the `(<id>)` tag and the `[feature]` / `[bug]` prefix) and the full body markdown. The user sees the rendered issue body before any `gh` call. A fenced code block is acceptable if it helps readability.
-2. **Support natural-language inline edits** — e.g. "rename criterion 3 to X", "drop the Out of scope bullet about Y", "add a dependency on #42", "tighten the symptom sentence". Apply the edit, re-render the full title + body, and offer the next edit cycle.
-3. **Run `gh issue create` only after explicit user approval.** "Looks good, publish it" or equivalent. Never assume approval; never publish silently. Do **not** apply any GitHub label — label vocabulary belongs to a future triage skill, not `new-issue`.
+1. **Preview rendered title + body** as the chat message. Show the full title (with the `[feature]` / `[bug]` prefix) and the full body markdown rendered from `template_issue.md`. The user sees the rendered issue body before any `gh` call. A fenced code block is acceptable if it helps readability.
+2. **Support natural-language inline edits** — e.g. "rename criterion 3 to X", "drop the Out of scope bullet about Y", "tighten the goal sentence". Apply the edit, re-render the full title + body, and offer the next edit cycle.
+3. **Publish only after explicit user approval.** "Looks good, publish it" or equivalent. Never assume approval; never publish silently.
 
-After publish, capture the issue URL and ID from the `gh` output.
+```
+gh issue create --title "[feature] <short title>" --body "$(cat ...rendered...)" --label "issue:feature"
+```
+
+(or `[bug]` / `issue:bug`.) The label must exist before use — create both idempotently once per session:
+
+```
+gh label create issue:feature --color 1D76DB || true
+gh label create issue:bug --color D73A4A || true
+```
+
+After publish, capture the issue number and URL from the `gh` output, plus its **numeric database id** — every wiring call below needs the id, not the number:
+
+```
+gh api repos/{owner}/{repo}/issues/<issue-number> --jq .id
+```
 
 ---
 
 ## Multi-plan publish order
 
-When the user approved a multi-plan split, publish in this strict order so that `Blocked by` references resolve to real IDs:
+When the user approved a multi-plan split, publish in this strict order so that blocking edges reference issues that already exist:
 
-1. **Parent first.** Preview parent title + body → user approves → `gh issue create` for the parent → capture the parent issue ID and URL.
-2. **Propose the sub-issue list.** Show every sub-issue as title + one-line scope. Iterate with the user — add, remove, rename, re-scope — until they approve the list.
-3. **Publish each sub-issue in dependency order.** For each sub-issue: render the body using `template_subissue.md` (with the parent link filled in and `Blocked by` referencing already-published sub-issue IDs), preview, accept inline edits, get explicit approval, then `gh issue create`. Start with sub-issues whose `Blocked by` is "None — can start immediately"; only publish a sub-issue after every sub-issue it lists as a blocker has been published.
+1. **Parent first.** Preview parent title + body → user approves → `gh issue create` → capture the parent's issue number, URL, and numeric id.
+2. **Propose the sub-issue list.** Show every sub-issue as title + one-line scope, plus the proposed blocking edges (`X blocked by Y`). Iterate with the user — add, remove, rename, re-scope, re-wire — until they approve the list.
+3. **Publish each sub-issue in dependency order.** For each: render `template_issue.md`, preview, accept inline edits, get explicit approval, then `gh issue create` with the parent's type prefix and label. Start with sub-issues that have no blockers; only publish a sub-issue after every sub-issue it is blocked by has been published.
 
 Re-run the two-tier coverage check on the final approved list before the first sub-issue gets published.
+
+### Native wiring
+
+Parentage and blocking are **GitHub-native, never body text**. After each sub-issue is published, attach it to the parent:
+
+```
+gh api repos/{owner}/{repo}/issues/<parent-issue-number>/sub_issues -X POST -F sub_issue_id=<sub-numeric-id>
+```
+
+For each confirmed blocking edge (`X blocked by Y`):
+
+```
+gh api repos/{owner}/{repo}/issues/<X-issue-number>/dependencies/blocked_by -X POST -F issue_id=<Y-numeric-id>
+```
+
+After the `gh` calls, surface the parent issue URL and every sub-issue URL to the user.
 
 ---
 
 ## Issue title format
 
-- `(<id>) [feature] short title` or `(<id>) [bug] short title`
-- **ID tag is mandatory and comes first.** Format: `(N)` for a standalone or parent issue; `(N.M)` for a sub-issue. The ID makes the issue ↔ implementation-plan link unambiguous — `implementation-planning` will name the plan file `N_<slug>.md` or `N.M_<slug>.md` to mirror the issue ID exactly.
-- Bracketed type prefix (`[feature]` / `[bug]`) is **lowercase** and sits after the ID tag.
-- Title cap is **70 characters total** (ID tag + type prefix + title).
-- **Sub-issues inherit the parent's type prefix.** A feature parent's sub-issues are all `(N.M) [feature] ...`; a bug parent's sub-issues are all `(N.M) [bug] ...`.
-- **No `[parent]` marker.** Parent status lives in the body, not the title.
-
-### ID assignment
-
-Determine the ID immediately before the **first preview** of each issue (parent or sub). Do not assign earlier — IDs must reflect the latest issue list.
-
-1. **Scan existing issues**, both open and closed, to avoid collisions:
-   ```
-   gh issue list --state all --limit 500 --json number,title
-   ```
-   (Add `--repo owner/name` if the preflight fallback captured one.)
-2. **Parse the leading `(N)` / `(N.M)` token** from each title.
-3. **Pick the new ID:**
-   - **Standalone issue or parent issue** → `(max(N) + 1)` across all existing top-level IDs. If no IDs exist yet, start at `(1)`.
-   - **Sub-issue under parent `(N)`** → `(N.max(M) + 1)`, where `M` ranges over existing sub-issues of that parent. If the parent has no sub-issues yet, start at `(N.1)`.
-4. **Assign sub-issue IDs in publish order** (see *Multi-plan publish order*). The parent's `(N)` is known before any sub-issue ID is picked, so each sub gets `(N.1)`, `(N.2)`, … as it's prepared for preview.
-
-Treat the ID as part of the title from the moment it's assigned: previews, inline-edit re-renders, and the final `gh issue create --title` call all show the full `(<id>) [type] short title` string.
+- `[feature] short title` or `[bug] short title`
+- **No `(N)` id tag.** The GitHub issue number is the sole identifier — `implementation-planning` names its plan file after it (`42_<slug>.md`).
+- Bracketed type prefix is **lowercase** and comes first.
+- Title cap is **70 characters total** (type prefix + title).
+- **Sub-issues inherit the parent's type prefix and label.**
+- **No `[parent]` marker.** Parent status is visible through GitHub's native sub-issue list.
 
 ---
 
@@ -168,6 +200,6 @@ Every published issue body — parent and sub — starts with the disclaimer blo
 > *This was generated by AI during a new-issue grill session.*
 ```
 
-This is enforced by the three body templates themselves (`template_feature_issue.md`, `template_bug_issue.md`, `template_subissue.md`), so as long as you start from the templates the disclaimer is already there. Do not strip it during inline edits.
+This is enforced by `template_issue.md`, so as long as you start from the template the disclaimer is already there. Do not strip it during inline edits.
 
-The same templates also carry a standing **Branch naming** footer (implement on a branch whose name includes the issue's GitHub number, so `review-edits` links the work back to this issue). Like the disclaimer, it is template-enforced — do not strip it during inline edits.
+The template also carries a standing **Branch naming** footer (implement on a branch whose name includes the issue's GitHub number, so `review-edits` links the work back to this issue). Like the disclaimer, it is template-enforced — do not strip it during inline edits.

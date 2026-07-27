@@ -15,21 +15,22 @@ If a proposed sub-issue cannot be demoed end-to-end without one of the others sh
 
 ## Sub-issue body template
 
-Every sub-issue body uses the schema in `template_subissue.md` — `## Parent`, `## What to build`, `## Acceptance criteria`, `## Blocked by`, in that order, with the AI-disclaimer block as the first line.
+Every sub-issue body uses `template_issue.md` — the same shape as the parent: `## Goal`, `## Acceptance criteria`, `## Out of scope`, with the AI-disclaimer block as the first line.
 
 Fill the template per sub-issue:
-- **Parent** is the link to the just-published parent issue.
-- **What to build** describes the slice end-to-end at behavior level — no file paths, no code.
+- **Goal** describes the slice end-to-end at behavior level — no file paths, no code.
 - **Acceptance criteria** are observable conditions specific to this slice.
-- **Blocked by** lists other sub-issues that must ship first, or "None — can start immediately".
+- **Out of scope** names the neighbouring slices this one does not deliver.
+
+Parentage and blocking are **not** body sections — they are wired natively via the GitHub API (see *Native wiring* in `SKILL.md`).
 
 ## Dependency-order publishing
 
-Publish sub-issues in **dependency order**, so that when a later sub-issue references an earlier one in its `## Blocked by` section, the referenced issue already exists and the link resolves to a real ID.
+Publish sub-issues in **dependency order**, so that when a blocking edge is wired, the issue it points at already exists.
 
-- Start with sub-issues whose `Blocked by` is "None — can start immediately".
-- Publish each next sub-issue only after every sub-issue it lists as a blocker has been published.
-- If a cycle appears in the proposed `Blocked by` graph, the split is wrong — go back and re-slice until the graph is acyclic.
+- Start with sub-issues that have no blockers.
+- Publish each next sub-issue only after every sub-issue it is blocked by has been published, then POST its blocking edges.
+- If a cycle appears in the proposed blocking graph, the split is wrong — go back and re-slice until the graph is acyclic.
 
 ## Two-tier coverage check
 
