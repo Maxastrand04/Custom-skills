@@ -90,9 +90,7 @@ You are a developer grilling a product owner about product requirements. Invoke 
 - Rollout order, migration strategy, feature flags
 - Library, dependency, or tooling choices
 
-**Codebase exploration during grill — read whatever you need.** Read `CONTEXT.md`, `README.md`, ADRs under `docs/adr/`, and **source files** freely, as much as the issue calls for. You decide what is worth reading; a feature that touches existing behavior, or a bug whose symptom is unclear, is usually better spec'd after looking at the code. Exploration serves the grill: it makes questions sharper, grounds the issue in the project's real language and existing behavior, and stops you asking the user things the repo already answers.
-
-The **WHAT/HOW line is about what lands in the issue, not about what you're allowed to read.** Reading source to understand current behavior is fine; recording the implementation you inferred from it is not. If exploration turns up a HOW decision the issue seems to need, that's a signal for `implementation-planning`, not a section to add here.
+**Codebase exploration during grill — read whatever you need.** `grilling`'s explore-before-asking rule applies in full here, **source files included**: the **WHAT/HOW line is about what lands in the issue, not about what you're allowed to read.** Reading source to understand current behavior is fine; recording the implementation you inferred from it is not. If exploration turns up a HOW decision the issue seems to need, that's a signal for `implementation-planning`, not a section to add here.
 
 ---
 

@@ -51,14 +51,11 @@ If `gh` is unavailable or unauthenticated, skip this step silently and proceed w
 
 ## Adaptive grill
 
-**Read first.** Before asking anything, check for existing artifacts:
+Invoke the `grilling` skill for the interview mechanics; this section supplies only the agenda and its termination condition.
 
-1. Read `CONTEXT.md` at the project root if it exists.
-2. Read `project_plan.md` at the project root if it exists (post-sync, if the sync above ran).
+**Read first.** Before asking anything, read `CONTEXT.md` and `project_plan.md` at the project root if they exist (post-sync, if the sync above ran). Summarize your current understanding back to the user in two to four sentences: what the project is, who it's for, what's already planned, and what's already done (completed sprints). Be explicit about what you do and do not yet know.
 
-Summarize your current understanding back to the user in two to four sentences: what the project is, who it's for, what's already planned, and what's already done (completed sprints). Be explicit about what you do and do not yet know.
-
-**Ask only on gaps.** Do not run a fixed N-question script. For each area where understanding is genuinely absent or unclear — problem statement, audience, success criteria, scope boundaries, domain language — ask one question at a time. Stop asking when you can articulate all five areas with confidence. If the existing artifacts already answer an area, do not re-ask it.
+**Ask only on gaps.** Do not run a fixed N-question script. Ask only where understanding is genuinely absent or unclear; if the existing artifacts already answer an area, do not re-ask it.
 
 Areas to cover (ask only where gaps remain):
 

@@ -2,6 +2,10 @@
 
 The Case Grill runs as Stage 4 of the `generate-test` orchestration loop. It populates the `cases` field of each agent block across all approved test files.
 
+Run it under the `grilling` skill's interview mechanics — invoke it. This document supplies the agenda: the rounds, their order, and what each asks.
+
+**Override `grilling` on one point:** never propose a case yourself, and never substitute codebase exploration for asking. Cases are user-sourced (see below) — recommending an answer is exactly what this grill must not do. Every other `grilling` mechanic holds.
+
 **Sequencing pin:** The grill does NOT begin until the user has explicitly approved the Structure preview with "approve" or "looks good, continue". Silence is not approval.
 
 ---

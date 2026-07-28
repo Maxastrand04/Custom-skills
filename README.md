@@ -11,6 +11,7 @@ A collection of personal Claude Code skills. Each skill is a directory with a `S
 | `directory-tree` | Render the current project's directory structure as a fenced markdown tree, excluding `.gitignore`'d paths |
 | `generate-framework-tests` | Generate real, framework-executable tests (pytest / vitest / jest / go test / cargo test / JUnit) with a single approval gate and manifest-based drift detection; re-runs skip unchanged files via `.generate-framework-tests/sidecar-manifest.json` |
 | `generate-test` | Explore the codebase, grill the user for domain cases, and write a `/tests/` directory of markdown test specs — without executing tests |
+| `grilling` | Grill the user relentlessly about a plan or design, one question at a time down each branch of the decision tree, until shared understanding |
 | `implement-tdd` | Drive a small change test-first as Supervisor — preflight runner, write red tests, dispatch implementer, review on green |
 | `implementation-planning` | Grill-me interview to stress-test a plan, then produce a structured implementation plan file |
 | `new-issue` | Grill WHAT (behavior, scope, acceptance criteria) and publish a GitHub Issue; supports plan-driven invocation (`N.M`) to seed from `project_plan.md`, file as a sub-issue under the sprint parent, and write the issue number back to the plan |

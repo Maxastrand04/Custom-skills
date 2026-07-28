@@ -46,14 +46,12 @@ Whichever the user picks, record the decision in `CONTEXT.md` at the project roo
 
 ## Test grill
 
-Grill the user one question at a time. Each question must include your recommended answer and the reasoning behind it, so the user can defer with a single word. Elicit, in order:
+Invoke the `grilling` skill for the interview mechanics; this section supplies only the agenda. Elicit, in order:
 
 1. The **signature** — function or symbol name, arguments, return type.
 2. The **happy-path assertion** — one concrete input → expected output.
 3. **Every edge case worth testing** — no upper limit. Keep grilling ("any other edge case?") until the user explicitly says there are none. Cover null/empty, boundary values, error paths, idempotency, concurrency where relevant.
 4. The **test file path** — auto-detect from existing project layout (e.g., `tests/`, `__tests__/`, sibling `*_test.go`), propose one path, and require confirmation.
-
-One question per turn. Do not batch.
 
 ---
 
@@ -91,13 +89,13 @@ After the third failure, drop into the **Test-failure grill**. Do not silently c
 
 ## Test-failure grill
 
-When 3 attempts have failed, stop and grill the user. For each failing test:
+When 3 attempts have failed, stop and grill the user (via the `grilling` skill) — one failing test per turn. For each failing test:
 
 - Explain in plain English what the test asserts.
 - Explain why the implementation might legitimately need it (or might not).
 - Recommend one of: **revise the test**, **remove the test**, or **change the implementation approach**.
 
-One failing test per turn. When the user decides, you edit the test file accordingly (test edits are Supervisor work, same as the initial Write tests step), then **restart the Implementation loop with the attempt counter reset to 0**.
+When the user decides, you edit the test file accordingly (test edits are Supervisor work, same as the initial Write tests step), then **restart the Implementation loop with the attempt counter reset to 0**.
 
 ---
 

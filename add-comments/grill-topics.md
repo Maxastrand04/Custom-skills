@@ -2,6 +2,10 @@
 
 The convention grill runs before any source files are read or written. It is a pure interview. No files are touched until the user explicitly approves the finalized convention.
 
+Run it under the `grilling` skill's interview mechanics — invoke it. This document supplies the agenda: the topics, their order, and the question text for each.
+
+**Override `grilling` on one point:** do not explore source files to answer a topic. A convention is the user's preference, not an inference from the comments the codebase happens to carry today. Vocabulary-only reading of `CONTEXT.md`, `README.md`, and `docs/adr/` is the one exception. Every other `grilling` mechanic holds — including recommending an answer, which `language-idioms.md` exists to supply.
+
 **Sequencing pin:** The grill does NOT begin until the user has confirmed which languages are in scope. After each topic, the skill records the answer and moves to the next topic without re-asking confirmed answers.
 
 ---
@@ -52,18 +56,14 @@ Record:
 
 ## Topic 4 — Parameters, returns, exceptions, and local variables
 
-Ask:
+Four separate axes, **one per turn** — each asked with its threshold, not as a blanket question:
 
-> Should function parameters be documented in comments? Return values? Raised or thrown exceptions? Local variables? And at what threshold — all functions, public API only, or only complex/non-obvious ones?
+1. **Params** — documented at what threshold: all / public-API only / complex only / never?
+2. **Returns** — always / non-obvious only / never?
+3. **Exceptions** (raised or thrown) — always / public-API only / never?
+4. **Local variables** — only non-obvious ones / never?
 
-Cover each axis separately if the user gives a blanket answer, then confirm:
-
-- **Params**: all / public-API only / complex only / never
-- **Returns**: always / non-obvious only / never
-- **Exceptions**: always / public-API only / never
-- **Local variables**: only non-obvious ones / never
-
-Record per-language if the user's answers differ across languages.
+If a user's answer to one axis pre-empts a later one, confirm it rather than re-asking. Record per-language if the answers differ across languages.
 
 ---
 

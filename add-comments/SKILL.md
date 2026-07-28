@@ -35,7 +35,7 @@ Run this sub-flow before any `preview-walk`.
 
 1. Walk up the directory tree from the target path, looking for `comment-convention.md`.
 2. **Found** — use it as the active convention. Read it; do not modify it yet. Proceed to `preview-walk`.
-3. **Not found** — run the full multi-language grill (topics in `grill-topics.md`) and write a new `comment-convention.md`. Ask the user where to place it before writing. Follow the schema in `template_comment_convention.md`. Do NOT read source files during the grill; vocabulary-only reading of `CONTEXT.md`, `README.md`, and `docs/adr/` is permitted.
+3. **Not found** — run the full multi-language grill (topics in `grill-topics.md`) and write a new `comment-convention.md`. Ask the user where to place it before writing. Follow the schema in `template_comment_convention.md`.
 
 ---
 
@@ -113,7 +113,6 @@ Anything else that looks generated (e.g., a directory named `generated`, `autoge
 
 ## Do not
 
-- Do **not** read source files during the grill phase of `ensure-convention` or `--new-convention`.
 - Do **not** auto-import from an existing convention file unless the user explicitly requests it when running `--new-convention`.
 - Do **not** flush file changes to disk mid-file — batch writes are owned by `preview-loop.md`.
 - Do **not** validate or alter existing comments on symbols the skill has no intent to touch.
