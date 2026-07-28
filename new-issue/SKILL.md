@@ -82,7 +82,7 @@ You are a developer grilling a product owner about product requirements. Invoke 
 
 **Drive every topic to a criterion.** For each answer, ask *"how would we know this is done?"* and write the observable condition. A topic that produces no criterion and no Out-of-scope line has left nothing in the issue — say so and resolve it before moving on. Bug issues always carry two standing criteria: the reproduction steps no longer produce the symptom, and a regression test exists that would catch its return.
 
-**Forbidden during grill (HOW topics — defer to `implementation-planning`):**
+**Never settled in this issue (HOW topics — defer to `implementation-planning`):**
 
 - File paths, module names, function or class names, function signatures
 - Schema design, database tables, API contract shapes
@@ -90,7 +90,9 @@ You are a developer grilling a product owner about product requirements. Invoke 
 - Rollout order, migration strategy, feature flags
 - Library, dependency, or tooling choices
 
-**Codebase exploration during grill — vocabulary only.** You may read `CONTEXT.md`, `README.md`, and ADRs under `docs/adr/` (or the equivalent) for **domain glossary terms** so the issue body uses the project's language. Do **not** read source files during the grill. If a question would require reading source to answer, it is a HOW question — defer it.
+**Codebase exploration during grill — read whatever you need.** Read `CONTEXT.md`, `README.md`, ADRs under `docs/adr/`, and **source files** freely, as much as the issue calls for. You decide what is worth reading; a feature that touches existing behavior, or a bug whose symptom is unclear, is usually better spec'd after looking at the code. Exploration serves the grill: it makes questions sharper, grounds the issue in the project's real language and existing behavior, and stops you asking the user things the repo already answers.
+
+The **WHAT/HOW line is about what lands in the issue, not about what you're allowed to read.** Reading source to understand current behavior is fine; recording the implementation you inferred from it is not. If exploration turns up a HOW decision the issue seems to need, that's a signal for `implementation-planning`, not a section to add here.
 
 ---
 
@@ -202,4 +204,14 @@ Every published issue body — parent and sub — starts with the disclaimer blo
 
 This is enforced by `template_issue.md`, so as long as you start from the template the disclaimer is already there. Do not strip it during inline edits.
 
-The template also carries a standing **Branch naming** footer (implement on a branch whose name includes the issue's GitHub number, so `review-edits` links the work back to this issue). Like the disclaimer, it is template-enforced — do not strip it during inline edits.
+The template also carries a standing **Branch naming** footer. Like the disclaimer, it is template-enforced — do not strip it during inline edits.
+
+---
+
+## Branch slug
+
+**The issue names its own branch.** Fill `## Branch` on every issue — parent and sub — before the first preview; never leave it to `implementation-planning`.
+
+- **2–4 words, kebab-case, no articles** — a slug describing what the issue delivers, derived from the title. `[feature] Add OAuth login for admin dashboard` → `oauth-admin-login`.
+- **Slug only.** No issue number (it doesn't exist yet — `implementation-planning` prepends it), no `feature/` prefix, no type prefix.
+- Show it in the preview and accept inline edits on it like any other section.

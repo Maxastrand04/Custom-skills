@@ -13,6 +13,10 @@
 
 {OUT_OF_SCOPE}
 
+## Branch
+
+`{BRANCH_SLUG}`
+
 ---
 
-> **Branch naming:** implement this issue on a branch whose name includes its GitHub issue number (e.g. `57-short-slug`), so the code review (`review-edits`) links the work back to this issue and its acceptance criteria.
+> **Branch naming:** implement this issue on `<this issue's number>-{BRANCH_SLUG}` — `implementation-planning` prepends the number, since the slug is chosen before the issue number exists. The number in the branch name is what lets `review-edits` link the work back to this issue and its acceptance criteria.

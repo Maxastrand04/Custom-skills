@@ -42,7 +42,7 @@ If any is missing, fail loud and halt:
 
 ## Branch checkout
 
-Read `**Branch:**` from the plan and check it out before any code is written — create it if absent (`git checkout -b <branch>`), or switch to it if it exists. All Red and Green work, and the Finalization commit, happen on this branch. If the working tree carries unrelated uncommitted changes, surface that to the user before switching rather than writing over it.
+Read `**Branch:**` from the plan and confirm you are on it before any code is written. `implementation-planning` already created it and wrote the plan file there, so the normal case is that it exists and is already checked out — switch to it if not (`git checkout <branch>`), and create it (`git checkout -b <branch>`) only if it is genuinely absent (a hand-written plan). All Red and Green work, and the Finalization commit, happen on this branch. If the working tree carries unrelated uncommitted changes, surface that to the user before switching rather than writing over it.
 
 ---
 

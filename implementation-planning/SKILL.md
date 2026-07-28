@@ -43,6 +43,8 @@ Triggered by case (1) or a confirmed case (2) above. Behavior:
 
   Never ask the user to retitle an issue to fit a convention.
 
+- **Capture the branch slug** from the issue body's `## Branch` section. The implementing branch is `<issue-number>-<slug>` — the issue chose the slug, this skill supplies the number.
+
 The existing standalone grill behavior (below) runs in full when the Detection order lands on case (3). The Exploration step and Rules-in-play block run on **both** paths.
 
 ### Exploration step (runs first, both paths)
@@ -83,7 +85,9 @@ These steps run **regardless of which Detection-order branch you took** — they
      - `Phase 2 — Green: <name>` through the second-to-last phase: the Green phases — implementation Groups that make the Red tests pass. Name each `Phase K — Green: <short phase name>`.
      - `## Phase N — Verification` (mandatory, always last, see template): a single acceptance-criteria check that re-runs each Phase-1 test and confirms it now passes green, plus confirms any `(manual)` criteria with the user. It sweeps **no** architecture — a separate code-review session judges that against the committed diff. Writes **no new code**.
      - **Every Group within any phase (including Phase 1) must be a fully independent vertical slice** — verifiable on its own, with no read-dependency on any sibling Group in the same phase, and no shared-file writes with any sibling Group. A cross-Group read-dependency or shared-file write is a plan defect: it means the Groups aren't really separate work, and `implementation-plan-execute` can't implement and verify one Group without pulling in another's half-finished change. Self-check each phase: *"Could I implement and verify this Group on its own, without anything from a sibling Group in the same phase?"* If not, merge those Groups, split the file first, or move one Group to a later phase.
-   - **Branch**: which git branch the implementer should work from — a new branch (default: named after the plan slot/slug) or an existing one the user names.
+   - **Branch**: which git branch the implementer should work from.
+     - **From-issue path:** the issue already named it. Take the slug from the issue body's `## Branch` section and prepend the GitHub issue number: slug `oauth-admin-login` on issue #42 → `42-oauth-admin-login`. This is not a grill topic — state the assembled name in the draft and move on. Only if the issue has no `## Branch` section (older issue) fall back to `<issue-number>-<plan slug>`.
+     - **Standalone path:** a new branch named after the plan slot/slug, or an existing one the user names.
    If drafting any of these surfaces a gap in an earlier piece (a missing rule reference, a missing AC), fix it inline rather than treating the pieces as locked in sequence — this is one draft, not four.
 2. **Present the complete combined draft once** — Acceptance criteria, Rules in play, plan structure with Groups, and Branch — together, with 1-2 sentences of reasoning per Group. **Wait for the user to confirm or correct the whole thing.** Iterate on the combined draft together until the user agrees it's the full contract for "done" — don't re-split this back into separate per-section stops.
 
@@ -103,21 +107,23 @@ Then proceed immediately to Phase 2 — do not wait for the user to prompt you.
    - **From-issue path (cases 1 and 2):** use the slot derived on the from-issue path — the ID tag verbatim if the issue is tagged, otherwise the GitHub issue number. Do **not** pick the next free slot in `implementation_plans/` — the issue is authoritative. If a plan file with that slot already exists, stop and ask the user how to resolve (overwrite, rename existing, etc.) rather than silently picking a different slot.
    - **Standalone path (case 3):** list files in `implementation_plans/` at the project root to find the next available `N.N` slot. If the directory doesn't exist, create it and start at `1.1`.
 
-3. **Write the plan file** to `implementation_plans/<slot>_short_name.md`. Derive `short_name` based on the Detection-order branch:
+3. **Create and switch to the branch** — before writing the plan file, so the plan itself lands on the branch it describes. Use the confirmed `**Branch:**` name: `git checkout -b <branch>`, or `git checkout <branch>` if it already exists. If the working tree carries unrelated uncommitted changes, surface that to the user before switching rather than dragging them across. Do not commit the plan file — leave it staged-or-untracked for `implementation-plan-execute` to commit with the work.
+
+4. **Write the plan file** to `implementation_plans/<slot>_short_name.md`. Derive `short_name` based on the Detection-order branch:
    - **From-issue path (cases 1 and 2):** `short_name` is **1–3 words, snake_case, no articles** — just enough to skim a directory listing. The slot already identifies which issue the plan tackles, so the slug does not need to mirror the full issue title. Pick the most load-bearing nouns/verbs from the issue title; drop the ID tag (if any), the `[feature]` / `[bug]` prefix, and any filler. Example: tagged issue `(1.3) [feature] Add OAuth login for admin dashboard` → `1.3_oauth_login.md`. Example: untagged issue `#42 [feature] skill: generate test structure from codebase + docs` → `42_test_structure.md`.
    - **Standalone path (case 3):** `short_name` is 2–4 words, snake_case, no articles.
 
-4. **Follow the template exactly** for section shape, order, and content — it was already read in step 1. Populate `## Acceptance criteria` and `## Rules in play` from the confirmed combined draft; populate `**Branch:**` from the confirmed branch decision; don't invent content beyond what Phase 1 confirmed. Keep `AC-N` and rule references terse — sacrifice grammar for brevity, one line each, no restating the same point twice. The one thing the template can't tell you — the title line derivation:
+5. **Follow the template exactly** for section shape, order, and content — it was already read in step 1. Populate `## Acceptance criteria` and `## Rules in play` from the confirmed combined draft; populate `**Branch:**` from the confirmed branch decision; don't invent content beyond what Phase 1 confirmed. Keep `AC-N` and rule references terse — sacrifice grammar for brevity, one line each, no restating the same point twice. The one thing the template can't tell you — the title line derivation:
    - Title line: `# <slot> — Plan Name`. From-issue path: `Plan Name` **mirrors the issue title verbatim, with the ID tag stripped if there was one** (keep the `[feature]` / `[bug]` prefix and original casing/punctuation), followed by ` (#<issue-number>)`. Example (tagged): `# 1.3 — [feature] Add OAuth login for admin dashboard (#42)`. Example (untagged): `# 42 — [feature] Add OAuth login for admin dashboard (#42)`. Standalone path: a short human-readable title derived from the grill.
 
-5. **Rules**:
+6. **Rules**:
    - Name a specific file in every task row where possible; use `—` only when genuinely unknown
    - Don't invent decisions not established in the grill session
    - The Claude Instructions section must capture all constraints and "do not" rules surfaced during grilling
    - The Claude Instructions section must include a `**Rules binding:**` rule: *"Stay within the rule-ADRs in `docs/adr/` (those named in `## Rules in play` apply directly). You have freedom on how to implement within them; you do not need per-Group architecture approval. If the change forces a structural choice no rule covers and it's project-wide, stop and flag it for a `codebase-rules` ADR rather than improvising a one-off. The code-review session enforces the rule-ADRs on the commit."*
    - No Group or Phase (other than the final `Phase N — Verification`) carries a test/check block — testing is not interleaved. Note this in Claude Instructions under **Testing**: nothing is verified until the final Verification phase, and that phase re-runs the tests written in `Phase 1 — Red` rather than inventing new checks.
 
-6. **Phase shape**: `Phase 1` onward renders as `### Group N — short name` sub-sections (description, then the task table — no architecture block) — see the template for the exact rendering. No functionality/architecture test blocks per Group or per phase-integration. Phase 0 (Preflight) stays a single task table with no groups; each row is a genuine blocker to be cleared before execution starts, or a lone `None` row when there are none. `Phase 1 — Red` is always second and always present, even if trivial. `Phase N — Verification` is a single acceptance-criteria check (no architecture sweep) exactly as in the template — that's the one place tests actually run.
+7. **Phase shape**: `Phase 1` onward renders as `### Group N — short name` sub-sections (description, then the task table — no architecture block) — see the template for the exact rendering. No functionality/architecture test blocks per Group or per phase-integration. Phase 0 (Preflight) stays a single task table with no groups; each row is a genuine blocker to be cleared before execution starts, or a lone `None` row when there are none. `Phase 1 — Red` is always second and always present, even if trivial. `Phase N — Verification` is a single acceptance-criteria check (no architecture sweep) exactly as in the template — that's the one place tests actually run.
 
-7. Output a clickable markdown link to the new plan file as the last line of your response.
+8. Output a clickable markdown link to the new plan file as the last line of your response.
 </content>

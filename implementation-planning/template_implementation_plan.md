@@ -4,7 +4,7 @@ One sentence describing what this plan accomplishes.
 
 **Goal:** What the completed plan should achieve — the concrete outcome or capability that will exist when all phases are done.
 
-**Branch:** Branch the implementer works from (new branch name, or an existing branch the user named).
+**Branch:** Branch the implementer works from. From-issue plans: `<issue-number>-<slug from the issue's `## Branch` section>`. Standalone plans: a new branch name, or an existing branch the user named.
 
 **Status legend:**  ⬜ Not started · 🟡 In progress · ✅ Done
 

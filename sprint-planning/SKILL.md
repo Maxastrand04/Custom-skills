@@ -132,7 +132,7 @@ gh issue create --title "[research] <short title>" --body "$(cat ...rendered...)
 
 **Task tickets** — process **one at a time**, sequentially. For each:
 
-1. Draft the Goal and a short rationale for the proposed Acceptance criteria (and Out of scope) from what the breadth-first grill already surfaced.
+1. Draft the Goal and a short rationale for the proposed Acceptance criteria (and Out of scope) from what the breadth-first grill already surfaced. Fill `## Branch` too: a **2–4 word, kebab-case, no-article** slug derived from the title (`Add OAuth login for admin dashboard` → `oauth-admin-login`). Slug only — no issue number (it doesn't exist yet; `implementation-planning` prepends it), no `feature/` prefix.
 2. Present the draft to the user; discuss and refine. The acceptance criteria carry the most weight here — spend the discussion on those, not on prose.
 3. Assign the `(N.M)` id: read `project_plan.md`'s existing rows under `### Sprint N`, take `max(M) + 1` (start at 1 if none exist). Append-only — never renumber existing rows.
 4. Publish:
@@ -202,4 +202,4 @@ If nothing has closed since the last run, tell the user there's nothing to gradu
 - **Append-only `(N.M)` numbering** for task tickets. Never renumber or delete existing rows on re-run.
 - **`project_plan.md`'s task table is regenerated from GitHub, never hand-authored.** If GitHub and the plan ever disagree, GitHub wins.
 - **Opus-direct.** No subagent dispatch.
-- **Keep the Branch-naming footer.** `template_task_ticket.md` carries a standing footer (branch name includes the ticket's GitHub issue number) so `review-edits` can link the work back — do not strip it when refining task drafts in Step 8.
+- **The ticket names its own branch.** `template_task_ticket.md` carries a `## Branch` slug plus a standing footer; `implementation-planning` prepends the GitHub issue number so `review-edits` can link the work back. Fill the slug, and do not strip the footer, when refining task drafts in Step 8.
