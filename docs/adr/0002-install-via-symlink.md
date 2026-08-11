@@ -1,0 +1,3 @@
+# Install via symlink, not by cloning into `~/.claude/skills/`
+
+The repo lives at an arbitrary path (e.g. `~/GitHub/Custom-skills`) and `install.sh` creates symlinks from `~/.claude/skills/<name>` to each Skill directory in the repo. We rejected cloning the repo directly into `~/.claude/skills/` because it would couple the repo to a fixed filesystem location, force `.git/`, `README.md`, and tooling files to sit alongside live Skills, and prevent the repo from being moved or backed up independently. Symlinks also keep edits live — no install or sync step while iterating on a Skill — and match the pattern already used by `~/.agents/skills/`.

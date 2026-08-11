@@ -109,9 +109,9 @@ Read `./template_project_plan.md` (skill-relative path) and use it as the struct
 
 **Re-run immutability:** if `project_plan.md` already exists, read it first. Any sprint marked `✅` must be reproduced verbatim — goal, scope, and tasks unchanged. Only append new sprints or revise goals and out-of-scope content for non-completed sprints.
 
-After writing, invoke the `directory-tree` skill to regenerate the Directory tree section of `project_plan.md`. If the `directory-tree` skill is unavailable, leave the Directory tree section with this placeholder:
+Leave the Directory tree section with this placeholder — the `directory-tree` skill that used to fill it is archived:
 
-> `[Directory tree — run /directory-tree to populate this section]`
+> `[Directory tree — not populated]`
 
 Output both file paths as clickable markdown links after writing.
 

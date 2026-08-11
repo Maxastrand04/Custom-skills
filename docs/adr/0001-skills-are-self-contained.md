@@ -1,0 +1,3 @@
+# Skills are self-contained
+
+Every file a Skill references must live inside the Skill's own directory and be referenced by a relative path. We rejected sharing templates or other resources across Skills via a top-level `templates/` directory because it would couple Skills to filesystem layout outside themselves and break the rule that "a Skill is the unit of install" — symlinking one directory should bring everything the Skill needs. The downside is mild duplication when two Skills want the same template; we accept that, and will extract a shared resource only if/when real duplication appears.

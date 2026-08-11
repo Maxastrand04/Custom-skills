@@ -1,4 +1,9 @@
-#Claude files for developing skills
-implementation_plans/*
-docs/*
-CONTEXT.md
+# macOS
+.DS_Store
+
+# Local Claude Code state — machine-specific, not part of the skills
+.claude/
+
+# Scratch produced while developing the skills on this repo itself
+implementation_plans/
+.exploration-summary*

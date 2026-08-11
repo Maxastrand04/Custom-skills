@@ -50,4 +50,4 @@
 
 ## Directory tree
 
-[Directory tree — run /directory-tree to populate this section]
+[Directory tree — not populated]

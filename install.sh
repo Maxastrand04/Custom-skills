@@ -67,6 +67,12 @@ install_skill() {
         if [[ "$current" == "$skill_dir" ]]; then
             echo "✓ $name already installed"
             return
+        elif [[ "$current" == "$REPO_DIR"/* ]]; then
+            # Points somewhere else inside this repo — the Skill moved between
+            # category directories. Re-point rather than fail.
+            ln -sfn "$skill_dir" "$target"
+            echo "↻ $name re-pointed → $skill_dir"
+            return
         else
             echo "⚠ $name: symlink exists but points to '$current' (expected '$skill_dir') — skipping"
             failure=1
@@ -84,20 +90,45 @@ install_skill() {
     echo "✓ $name installed → $target"
 }
 
+# Live categories. `archive/` is deliberately absent — archived Skills are kept
+# for reference and are never installed.
+declare -a CATEGORIES=(kanban developer-tools schoolwork)
+
+# Echo the path of a Skill directory by bare name, searching each category.
+resolve_skill() {
+    local arg="$1"
+    # Allow either a bare name (`implement-tdd`) or a category-qualified path
+    # (`developer-tools/implement-tdd`).
+    if [[ "$arg" == */* ]]; then
+        [[ -d "$REPO_DIR/$arg" ]] && echo "$REPO_DIR/$arg"
+        return
+    fi
+    local category
+    for category in "${CATEGORIES[@]}"; do
+        if [[ -d "$REPO_DIR/$category/$arg" ]]; then
+            echo "$REPO_DIR/$category/$arg"
+            return
+        fi
+    done
+}
+
 declare -a skills_to_install=()
 
 if [[ $# -eq 0 ]]; then
-    for entry in "$REPO_DIR"/*/; do
-        entry="${entry%/}"
-        if [[ -f "$entry/SKILL.md" ]]; then
-            skills_to_install+=("$entry")
-        fi
+    for category in "${CATEGORIES[@]}"; do
+        [[ -d "$REPO_DIR/$category" ]] || continue
+        for entry in "$REPO_DIR/$category"/*/; do
+            entry="${entry%/}"
+            if [[ -f "$entry/SKILL.md" ]]; then
+                skills_to_install+=("$entry")
+            fi
+        done
     done
 else
     for arg in "$@"; do
-        skill_path="$REPO_DIR/$arg"
-        if [[ ! -d "$skill_path" ]]; then
-            echo "✗ $arg: no such directory in repo"
+        skill_path="$(resolve_skill "$arg")"
+        if [[ -z "$skill_path" ]]; then
+            echo "✗ $arg: no such Skill in ${CATEGORIES[*]}"
             failure=1
             continue
         fi
@@ -105,9 +136,13 @@ else
     done
 fi
 
-for skill_dir in "${skills_to_install[@]}"; do
-    install_skill "$skill_dir"
-done
+# Guard the expansion: bash 3.2 (macOS default) treats "${arr[@]}" on an empty
+# array as unbound under `set -u`.
+if [[ ${#skills_to_install[@]} -gt 0 ]]; then
+    for skill_dir in "${skills_to_install[@]}"; do
+        install_skill "$skill_dir"
+    done
+fi
 
 if [[ $failure -ne 0 ]]; then
     exit 1
