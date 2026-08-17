@@ -1,13 +1,13 @@
 ---
 name: new-issue
-description: Grill the user into a single-issue spec covering WHAT (behavior, scope, acceptance criteria) — not HOW (architecture, files). Publishes the spec as a GitHub Issue. If scope is too large, chains into a local sub-issue split. Output feeds `implementation-planning`. For sprint-linked work use `sprint-planning` instead — this skill is for standalone issues with no sprint. Use when user wants to create a new issue, file a feature request, capture a new functionality, says "new issue", "create an issue", or "spec this out".
+description: Grill the user into a single-issue spec covering WHAT (behavior, scope, acceptance criteria) — not HOW (architecture, files). Publishes the spec as a GitHub Issue. If scope is too large, chains into a local sub-issue split. Output feeds `implementation-planning`. For epic-linked work use `epic-planning` instead — this skill is for standalone issues with no epic. Use when user wants to create a new issue, file a feature request, capture a new functionality, says "new issue", "create an issue", or "spec this out".
 ---
 
 # new-issue
 
 Grill the user into a single, well-scoped GitHub Issue covering **WHAT** changes (behavior, scope, acceptance criteria) — never **HOW** (architecture, files, code). Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/implementation-planning` for the HOW.
 
-The published body is deliberately thin — **Goal / Acceptance criteria / Out of scope**, the same ticket shape `sprint-planning` publishes. The grill is not thin. Everything the grill surfaces must land as a **checkable acceptance criterion** or be consciously dropped: the criteria are this skill's real output, and they are what `implementation-planning` lifts.
+The published body is deliberately thin — **Goal / Acceptance criteria / Out of scope**, the same ticket shape `epic-planning` publishes. The grill is not thin. Everything the grill surfaces must land as a **checkable acceptance criterion** or be consciously dropped: the criteria are this skill's real output, and they are what `implementation-planning` lifts.
 
 This skill is markdown-only orchestration. Read the two bundled files at runtime — do not assume their contents from this document:
 
@@ -23,7 +23,7 @@ Accept two modes:
 1. **Cold start** — user invokes the skill with no extra text. Open with the first grill turn (feature vs bug).
 2. **One-liner seed** — user invokes with a short phrase (e.g. "users can sign up with email"). Treat that phrase as **the seed of the grill, not a finished issue body.** It hints at the topic; every grill topic still runs.
 
-If the user's phrase looks sprint-linked (references a sprint task, a `(N.M)` id, or `project_plan.md`), point them at `/sprint-planning` instead — this skill does not resolve plan refs.
+If the user's phrase looks epic-linked (references an epic task, a `(N.M)` id, or `project_plan.md`), point them at `/epic-planning` instead — this skill does not resolve plan refs.
 
 Do **not** synthesise an issue from prior conversation context. Unlike `to-prd`, this skill starts fresh: the only inputs are the cold start or one-liner seed.
 

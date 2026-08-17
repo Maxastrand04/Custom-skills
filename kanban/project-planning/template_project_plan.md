@@ -6,11 +6,11 @@
 
 ---
 
-## Sprints
+## Epics
 
-### Sprint 1 — [Sprint goal] ⬜
+### Epic 1 — [Epic goal] ⬜
 
-**Goal:** [One-sentence observable outcome at the end of this sprint.]
+**Goal:** [One-sentence observable outcome at the end of this epic.]
 
 | # | Task | Issue | Plan | Status |
 |---|------|-------|------|:------:|
@@ -19,9 +19,9 @@
 
 ---
 
-### Sprint 2 — [Sprint goal] ⬜
+### Epic 2 — [Epic goal] ⬜
 
-**Goal:** [One-sentence observable outcome at the end of this sprint.]
+**Goal:** [One-sentence observable outcome at the end of this epic.]
 
 | # | Task | Issue | Plan | Status |
 |---|------|-------|------|:------:|
@@ -30,9 +30,9 @@
 
 ---
 
-### Sprint N — [Sprint goal] ⬜
+### Epic N — [Epic goal] ⬜
 
-**Goal:** [One-sentence observable outcome at the end of this sprint.]
+**Goal:** [One-sentence observable outcome at the end of this epic.]
 
 | # | Task | Issue | Plan | Status |
 |---|------|-------|------|:------:|

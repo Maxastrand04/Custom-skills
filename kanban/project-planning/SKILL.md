@@ -1,6 +1,6 @@
 ---
 name: project-planning
-description: Run a sprint-roadmap planning session inside an existing git repo — adaptively grill to mutual understanding, propose vertical-slice sprints each with a sprint goal, then write/update CONTEXT.md and project_plan.md. Use when user says "project-planning", "plan this project", "roadmap", or "set up a project plan". For breaking one sprint into tasks, use `sprint-planning` instead.
+description: Run an epic-roadmap planning session inside an existing git repo — adaptively grill to mutual understanding, propose vertical-slice epics each with an epic goal, then write/update CONTEXT.md and project_plan.md. Use when user says "project-planning", "plan this project", "roadmap", or "set up a project plan". For breaking one epic into tasks, use `epic-planning` instead.
 ---
 
 # project-planning
@@ -33,17 +33,17 @@ Then **stop immediately. Write nothing.**
 
 ---
 
-## Sync sprint status from GitHub
+## Sync epic status from GitHub
 
-Before the grill, if `project_plan.md` exists, refresh each sprint's status marker from GitHub:
+Before the grill, if `project_plan.md` exists, refresh each epic's status marker from GitHub:
 
 ```
 gh issue list --state all --limit 500 --json number,title,state
 ```
 
-Parse the leading `(N)` token from each title. For every sprint whose `(N)` issue is found: `state == CLOSED` → `✅`, `state == OPEN` → keep `🟡` if the sprint already has any published sub-issue tasks, otherwise `⬜`. Write the refreshed markers back into `project_plan.md`'s `### Sprint N — ... <marker>` heading lines before continuing. Sprints with no matching `(N)` issue yet are left as `⬜` (not yet charted).
+Parse the leading `(N)` token from each title. For every epic whose `(N)` issue is found: `state == CLOSED` → `✅`, `state == OPEN` → keep `🟡` if the epic already has any published sub-issue tasks, otherwise `⬜`. Write the refreshed markers back into `project_plan.md`'s `### Epic N — ... <marker>` heading lines before continuing. Epics with no matching `(N)` issue yet are left as `⬜` (not yet charted).
 
-This sync only touches the sprint-level status marker in each heading — it never touches sprint goals, scope, or the per-sprint task tables (those are `sprint-planning`'s responsibility, regenerated when it runs).
+This sync only touches the epic-level status marker in each heading — it never touches epic goals, scope, or the per-epic task tables (those are `epic-planning`'s responsibility, regenerated when it runs).
 
 If `gh` is unavailable or unauthenticated, skip this step silently and proceed with whatever `project_plan.md` already has — this sync is a freshness nicety, not a hard requirement for `project-planning` to run.
 
@@ -53,7 +53,7 @@ If `gh` is unavailable or unauthenticated, skip this step silently and proceed w
 
 Invoke the `grilling` skill for the interview mechanics; this section supplies only the agenda and its termination condition.
 
-**Read first.** Before asking anything, read `CONTEXT.md` and `project_plan.md` at the project root if they exist (post-sync, if the sync above ran). Summarize your current understanding back to the user in two to four sentences: what the project is, who it's for, what's already planned, and what's already done (completed sprints). Be explicit about what you do and do not yet know.
+**Read first.** Before asking anything, read `CONTEXT.md` and `project_plan.md` at the project root if they exist (post-sync, if the sync above ran). Summarize your current understanding back to the user in two to four sentences: what the project is, who it's for, what's already planned, and what's already done (completed epics). Be explicit about what you do and do not yet know.
 
 **Ask only on gaps.** Do not run a fixed N-question script. Ask only where understanding is genuinely absent or unclear; if the existing artifacts already answer an area, do not re-ask it.
 
@@ -67,27 +67,27 @@ Areas to cover (ask only where gaps remain):
 
 **Termination.** Stop the grill once you can fill in all five areas. Announce:
 
-> `Understanding captured. Proposing sprint breakdown.`
+> `Understanding captured. Proposing epic breakdown.`
 
-Proceed directly to Sprint breakdown.
+Proceed directly to Epic breakdown.
 
 ---
 
-## Sprint breakdown
+## Epic breakdown
 
-Propose a sprint breakdown as a numbered list. Each sprint must have:
+Propose an epic breakdown as a numbered list. Each epic must have:
 
-- A sprint number `(N)` — e.g. `Sprint 1`
-- A one-sentence **sprint goal** — the observable outcome at the end of the sprint
-- A status marker: `⬜ Not started` for all new sprints
+- A epic number `(N)` — e.g. `Epic 1`
+- A one-sentence **epic goal** — the observable outcome at the end of the epic
+- A status marker: `⬜ Not started` for all new epics
 
-Sprints are **vertical slices** — each delivers working, demonstrable functionality end-to-end, not a horizontal layer (don't make "Sprint 1 = backend" + "Sprint 2 = frontend").
+Epics are **vertical slices** — each delivers working, demonstrable functionality end-to-end, not a horizontal layer (don't make "Epic 1 = backend" + "Epic 2 = frontend").
 
-**Completed sprints (✅) from an existing plan are listed at the top and are immutable.** Do not re-propose or modify them. Only propose new sprints after the last completed one.
+**Completed epics (✅) from an existing plan are listed at the top and are immutable.** Do not re-propose or modify them. Only propose new epics after the last completed one.
 
 After proposing the breakdown, ask:
 
-> `Does this sprint breakdown look right? Confirm to write, or tell me what to change.`
+> `Does this epic breakdown look right? Confirm to write, or tell me what to change.`
 
 **Wait for explicit user confirmation before writing any file.** This is the confirm gate — no writes happen before it.
 
@@ -107,7 +107,7 @@ If `CONTEXT.md` already exists, update it in place: add or revise Language entri
 
 Read `./template_project_plan.md` (skill-relative path) and use it as the structural contract. Write or update `project_plan.md` at the **consuming project's repo root** (the working directory, not this skill's directory).
 
-**Re-run immutability:** if `project_plan.md` already exists, read it first. Any sprint marked `✅` must be reproduced verbatim — goal, scope, and tasks unchanged. Only append new sprints or revise goals and out-of-scope content for non-completed sprints.
+**Re-run immutability:** if `project_plan.md` already exists, read it first. Any epic marked `✅` must be reproduced verbatim — goal, scope, and tasks unchanged. Only append new epics or revise goals and out-of-scope content for non-completed epics.
 
 Leave the Directory tree section with this placeholder — the `directory-tree` skill that used to fill it is archived:
 
@@ -121,7 +121,7 @@ Output both file paths as clickable markdown links after writing.
 
 - No git init, no `gh repo create`, no safety-rail preflight. This skill assumes an existing git repo (enforced by the guard above).
 - No artifact scaffolding (no README, no `.gitignore`, no CLAUDE.md, no license file). Those belong to a scaffolding skill.
-- No per-task slicing. Sprints contain a tasks placeholder owned by `sprint-planning`. Do not break sprints into individual issues here — defer that entirely to `sprint-planning`.
+- No per-task slicing. Epics contain a tasks placeholder owned by `epic-planning`. Do not break epics into individual issues here — defer that entirely to `epic-planning`.
 - No subagent dispatch. Every action is Opus-direct.
 - Do not read, write, or access files inside `claude_ignore/`.
 

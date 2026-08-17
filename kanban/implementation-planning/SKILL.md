@@ -38,7 +38,7 @@ Triggered by case (1) or a confirmed case (2) above. Behavior:
 - **Read the issue body first.** Before starting the HOW grill, fetch the issue via `gh issue view <ref> --json title,body,labels` (or equivalent) and read it in full so the HOW questions are grounded in the issue's WHAT.
 - **Run the Exploration step and Rules-in-play block** (below) on this path too. Skipping them would make the `## Acceptance criteria` / `## Rules in play` sections ungrounded.
 - **Capture the issue title and number, and derive the plan slot** for use in Phase 2 — the plan filename and title must mirror the issue so the link between issue and plan is obvious at a glance. Two title conventions are both valid, and the slot follows whichever the issue uses:
-  - **Tagged** — the title leads with an `(N)` or `(N.M)` token (`sprint-planning` tickets). Slot = that token verbatim: `(1.3) [feature] …` → slot `1.3`.
+  - **Tagged** — the title leads with an `(N)` or `(N.M)` token (`epic-planning` tickets). Slot = that token verbatim: `(1.3) [feature] …` → slot `1.3`.
   - **Untagged** — no leading token (`new-issue` issues). Slot = the GitHub issue number: `#42` → slot `42`.
 
   Never ask the user to retitle an issue to fit a convention.

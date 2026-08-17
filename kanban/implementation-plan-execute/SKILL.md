@@ -143,7 +143,7 @@ Run these in order, only after the Verification check is ✅:
    - Any new rule-ADR raised during execution (a flagged project-wide rule gap), listed under "New rules".
 
    Then close the issue: run `gh issue close <N>`.
-2. **Mark the matching task in `project_plan.md` (from-issue plans only).** After the issue closes, locate the row in `project_plan.md` at the repo root whose leading `#` cell equals the plan slot `N.M` (e.g., `5.6`). Flip that row's last (Status) cell from its current value to ✅. Every other byte of the file is preserved — do not rewrite the table, touch sprint goals, or alter any other row.
+2. **Mark the matching task in `project_plan.md` (from-issue plans only).** After the issue closes, locate the row in `project_plan.md` at the repo root whose leading `#` cell equals the plan slot `N.M` (e.g., `5.6`). Flip that row's last (Status) cell from its current value to ✅. Every other byte of the file is preserved — do not rewrite the table, touch epic goals, or alter any other row.
 
    **Guard:** If `project_plan.md` does not exist, or no row with a leading `#` cell matching `N.M` is found, skip the flip silently and record it in the artifacts-touched line (e.g., `project_plan.md: no row for 5.6, skipped`). The issue still closes regardless.
 3. **Update `CONTEXT.md`** at the project root if it exists. Skip if it does not — do not create one.
