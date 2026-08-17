@@ -54,20 +54,20 @@ _Avoid_: test setup, harness setup, runner detection
 The gap-filling interview in `project-planning` that runs after reading any existing `CONTEXT.md` and `project_plan.md`. Summarizes current understanding first, then asks only where gaps remain across five areas (problem statement, primary user, success criteria, scope boundaries, domain language) — one question per turn. Stops when all five areas can be stated with confidence; does not run a fixed N-question script.
 _Avoid_: alignment grill, kickoff, scoping session, intake
 
-**Sprint**:
-A numbered vertical slice of a project plan, each with a one-sentence sprint goal and a status marker (⬜ / 🟡 / ✅). Sprints are proposed by `project-planning` and broken into **Task** rows by `sprint-planning`. Completed (✅) sprints are immutable across re-runs.
-_Avoid_: phase, iteration, milestone
+**Epic**:
+A numbered vertical slice of a project plan, each with a one-sentence epic goal and a status marker (⬜ / 🟡 / ✅). Epics are proposed by `project-planning` and broken into **Task** rows by `epic-planning`. Completed (✅) epics are immutable across re-runs.
+_Avoid_: sprint, phase, iteration, milestone
 
-**Sprint goal**:
-The one-sentence observable outcome that defines a sprint as done. Written by `project-planning` during sprint breakdown, confirmed by the user at the confirm gate, and never edited once the sprint is ✅.
-_Avoid_: sprint description, deliverable, objective
+**Epic goal**:
+The one-sentence observable outcome that defines an epic as done. Written by `project-planning` during epic breakdown, confirmed by the user at the confirm gate, and never edited once the epic is ✅.
+_Avoid_: sprint goal, epic description, deliverable, objective
 
 **Project plan**:
-The `project_plan.md` file written by `project-planning` at the consuming project's repo root. Contains a project goal, sprint list (each with status marker + sprint goal + tasks placeholder), out-of-scope section, and a directory-tree section left at its placeholder. Shared contract consumed by `sprint-planning` and `implementation-planning`.
+The `project_plan.md` file written by `project-planning` at the consuming project's repo root. Contains a project goal, epic list (each with status marker + epic goal + tasks placeholder), out-of-scope section, and a directory-tree section left at its placeholder. Shared contract consumed by `epic-planning` and `implementation-planning`.
 _Avoid_: roadmap file, plan doc
 
 **Task**:
-A `(N.M)` row written by `sprint-planning` under a sprint in `project_plan.md`. Represents one thin vertical slice of the sprint goal, sized to become a single GitHub issue. The Plan column starts blank and is filled by `implementation-planning`. The Issue column is optional — only used when a **Task** happens to have been filed via the standalone `new-issue`.
+A `(N.M)` row written by `epic-planning` under an epic in `project_plan.md`. Represents one thin vertical slice of the epic goal, sized to become a single GitHub issue. The Plan column starts blank and is filled by `implementation-planning`. The Issue column is optional — only used when a **Task** happens to have been filed via the standalone `new-issue`.
 _Avoid_: ticket, story, to-do, backlog item
 
 
@@ -165,9 +165,9 @@ _Avoid_: tradeoff skill, decision matrix, options analysis
 - `implementation-plan-execute` is a single-mode driver Skill: the **Group loop** implements each Group inline, in the main thread, gated on the user's real-time architecture approval. It uses the **Bootstrap exploration sweep**'s **Exploration summary file**. Every dispatch follows **Point, don't paste** and every Supervisor judgment follows **Terse verdicts**. The `## Verification phase loop` and `## Finalization step` sections of SKILL.md are the only place a **Verification tester** runs, per the **Verification failure rule**. On a from-issue plan's Verification pass, Finalization closes the GitHub issue (`gh issue close`) and marks the matching `(N.M)` **Task** ✅ in the **Project plan** (`project_plan.md`); both steps are best-effort and gated on the issue reference being present.
 - A **Supervisor** implements each **Group** inline and flips it ✅ directly on completion — no per-Group or per-Phase tester runs. The plan's mandatory final Verification phase is the only place a **Verification tester** runs, per the **Verification failure rule**.
 - A **Supervisor** running `implement-tdd` performs a **Runner preflight**, dispatches one `claude` implementer per attempt against a **Reviewer**-confirmed test suite, then dispatches one **Reviewer** once tests pass.
-- `project-planning` runs a **Git-repo guard** first (hard-stops outside a git repo), then the **Adaptive grill** (reads existing `CONTEXT.md` + **Project plan**, asks only on gaps), then a sprint-breakdown confirm gate, then writes `CONTEXT.md` + **Project plan**; all steps are Opus-direct — no Group / Verification tester dispatch. The plan's Directory tree section is left at its placeholder — the `directory-tree` skill that used to fill it is archived.
-- `sprint-planning` sits between `project-planning` and `implementation-planning` in the chain: it reads the **Project plan**, slices a chosen **Sprint**'s goal into **Task** rows `(N.M)` appended to the plan, and creates or updates the sprint's parent `(N)` GitHub issue. It does not call `new-issue` — a charted **Task** goes straight to `implementation-planning`.
-- `new-issue` is **off the chain** — a standalone Skill for filing an issue that no **Sprint** covers. It grills WHAT (behavior, scope, acceptance criteria, no architecture or file paths) and publishes a GitHub Issue; its multi-plan path publishes a parent Issue plus one **Sub-issue** per vertical slice, in dependency order, gated on the **two-tier coverage check**. An issue it produces can still be picked up by `implementation-planning`'s **From-issue path**, which is what the **WHAT / HOW split** exists for — but the normal route into a plan is a **Task** row, not an Issue.
+- `project-planning` runs a **Git-repo guard** first (hard-stops outside a git repo), then the **Adaptive grill** (reads existing `CONTEXT.md` + **Project plan**, asks only on gaps), then an epic-breakdown confirm gate, then writes `CONTEXT.md` + **Project plan**; all steps are Opus-direct — no Group / Verification tester dispatch. The plan's Directory tree section is left at its placeholder — the `directory-tree` skill that used to fill it is archived.
+- `epic-planning` sits between `project-planning` and `implementation-planning` in the chain: it reads the **Project plan**, slices a chosen **Epic**'s goal into **Task** rows `(N.M)` appended to the plan, and creates or updates the epic's parent `(N)` GitHub issue. It does not call `new-issue` — a charted **Task** goes straight to `implementation-planning`.
+- `new-issue` is **off the chain** — a standalone Skill for filing an issue that no **Epic** covers. It grills WHAT (behavior, scope, acceptance criteria, no architecture or file paths) and publishes a GitHub Issue; its multi-plan path publishes a parent Issue plus one **Sub-issue** per vertical slice, in dependency order, gated on the **two-tier coverage check**. An issue it produces can still be picked up by `implementation-planning`'s **From-issue path**, which is what the **WHAT / HOW split** exists for — but the normal route into a plan is a **Task** row, not an Issue.
 - `add-comments` runs **ensure-convention** first (locates or grills for a **Comment convention**), then **preview-walk** (per-symbol approve loop). A missing language mid-walk triggers a **Scoped single-language grill** rather than the full grill.
 - `generate-framework-tests` is the repo's only live testing Skill — it produces **Framework tests** (real runnable code) that the project's own runner executes. It uses a **Sidecar manifest** to enable **Fast-exit** on re-invocation and **Drift-diff** on changed sources. **User-added-case immunity** is enforced via the manifest's `cases[]` list. The markdown-spec approach it replaced (`generate-test` / `run-tests`) is archived.
 

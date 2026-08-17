@@ -20,14 +20,14 @@ archive/           retired, never installed
 The core of the repo is one chain that runs from "I have an idea" to "the diff is reviewed and pushed". Each step writes an artifact the next step reads, so nothing is re-derived from memory.
 
 ```
-project-planning  →  sprint-planning  →  implementation-planning  →  implementation-plan-execute  →  review-edits
-   CONTEXT.md          (N.M) tasks         implementation_plans/        code + green ACs               verdict
-   project_plan.md     + sprint issue      N.N_name.md
+project-planning  →  epic-planning  →  implementation-planning  →  implementation-plan-execute  →  review-edits
+   CONTEXT.md         (N.M) tasks        implementation_plans/        code + green ACs               verdict
+   project_plan.md    + epic issue       N.N_name.md
 ```
 
-**1. `project-planning`** — once per project. Grills me on problem, user, success criteria, scope, and domain language, then proposes vertical-slice sprints. Writes `CONTEXT.md` (the project's language) and `project_plan.md` (the sprint roadmap). Re-runs only ask about gaps; ✅ sprints are immutable.
+**1. `project-planning`** — once per project. Grills me on problem, user, success criteria, scope, and domain language, then proposes vertical-slice epics. Writes `CONTEXT.md` (the project's language) and `project_plan.md` (the epic roadmap). Re-runs only ask about gaps; ✅ epics are immutable.
 
-**2. `sprint-planning`** — once per sprint. Slices one sprint goal into `(N.M)` task rows in `project_plan.md` and files the sprint's parent GitHub issue with native sub-issue blocking. Research and prototype tickets are first-class here — unknowns get charted, not guessed at.
+**2. `epic-planning`** — once per epic. Slices one epic goal into `(N.M)` task rows in `project_plan.md` and files the epic's parent GitHub issue with native sub-issue blocking. Research and prototype tickets are first-class here — unknowns get charted, not guessed at.
 
 **3. `implementation-planning`** — once per task. Grills the whole thing: behaviour and acceptance criteria, then architecture, modules, files, tests, rollout. Writes `implementation_plans/N.N_short_name.md` — phases, Groups, acceptance criteria, and a mandatory Phase 1 that writes the failing acceptance tests before any production code.
 
@@ -47,8 +47,9 @@ Coding skills that aren't stations on the board — no ordering, no artifacts pa
 | `codebase-rules` | Surveys the codebase and grills me into one-rule-per-file ADRs in `docs/adr/`, shaped `Rule / Why / How-to-check`. These are what `review-edits` cites. |
 | `add-comments` | Establishes a persisted `comment-convention.md`, then walks the code symbol by symbol with an approve/edit/skip preview. Missing language mid-walk triggers a scoped grill. |
 | `generate-framework-tests` | Real runnable tests (pytest / vitest / jest / go test / cargo test / JUnit). Sidecar manifest gives fast-exit when nothing changed and drift-diff when it did; user-added cases are never touched. |
-| `new-issue` | WHAT grill → GitHub Issue, for work no sprint covers. Deliberately **not** in the chain — the board goes straight from a sprint task to a plan. Splits oversized scope into linked sub-issues. |
+| `new-issue` | WHAT grill → GitHub Issue, for work no epic covers. Deliberately **not** in the chain — the board goes straight from an epic task to a plan. Splits oversized scope into linked sub-issues. |
 | `grilling` | The bare interview loop — one question at a time, recommended answer first, down every branch until shared understanding. The primitive most of `kanban/` is built on. |
+| `brainstorming` | The front door to everything else. Grills an idea trying to **kill** it, then gives a binary verdict — dead, or a paragraph of concrete functionality — and routes the survivor to whichever skill is the smallest fit. |
 | `pro-con` | Weigh a decision and commit to a recommendation. Fixed output shape. Manual invocation only. |
 
 ---
