@@ -11,7 +11,7 @@ A directory containing a `SKILL.md` plus any files that `SKILL.md` references. L
 _Avoid_: plugin, extension, command
 
 **Category**:
-A top-level directory grouping Skills by purpose: `kanban/` (the workflow chain), `developer-tools/` (coding Skills off the chain), `schoolwork/` (study Skills, empty for now), `archive/` (retired, never installed). Repo-level metadata only — it never appears in a Skill's name or invocation. Adding one means adding it to the `CATEGORIES` array in `install.sh`.
+A top-level directory grouping Skills by purpose: `kanban/` (the workflow chain), `developer-tools/` (coding Skills off the chain), `schoolwork/` (study and comprehension Skills, for when I'm the learner), `archive/` (retired, never installed). Repo-level metadata only — it never appears in a Skill's name or invocation. Adding one means adding it to the `CATEGORIES` array in `install.sh`.
 _Avoid_: group, namespace, section, folder
 
 **SKILL.md**:
@@ -155,6 +155,14 @@ _Avoid_: mini-grill, partial grill, language grill
 The standalone decision skill. Weighs an option set and commits to a single recommendation, filling `template_output.md` exactly so every run has the same shape. Manual-invocation only (`disable-model-invocation: true`) — it never fires on its own mid-task.
 _Avoid_: tradeoff skill, decision matrix, options analysis
 
+**Naked term**:
+A domain word used in output before it has been glossed — defined in plain words in the same sentence it first appears. The unit `eli5` bans. A term escapes being naked only if it is already defined in a `CONTEXT.md`, an ADR, or another doc read earlier in the conversation.
+_Avoid_: jargon, unexplained term, technical term
+
+**eli5**:
+The comprehension Skill in `schoolwork/`. A persistent output mode: assume zero knowledge of the subject, ship no **Naked term**, and sacrifice grammar so a middle schooler can understand. Manual-invocation only (`disable-model-invocation: true`) and stays on every turn until the user says "stop eli5" or "normal mode".
+_Avoid_: simplify mode, plain English skill, dumb it down
+
 ## Relationships
 
 - A **Skill** contains exactly one **SKILL.md** and zero or more **Bundled files**
@@ -168,6 +176,7 @@ _Avoid_: tradeoff skill, decision matrix, options analysis
 - `project-planning` runs a **Git-repo guard** first (hard-stops outside a git repo), then the **Adaptive grill** (reads existing `CONTEXT.md` + **Project plan**, asks only on gaps), then an epic-breakdown confirm gate, then writes `CONTEXT.md` + **Project plan**; all steps are Opus-direct — no Group / Verification tester dispatch. The plan's Directory tree section is left at its placeholder — the `directory-tree` skill that used to fill it is archived.
 - `epic-planning` sits between `project-planning` and `implementation-planning` in the chain: it reads the **Project plan**, slices a chosen **Epic**'s goal into **Task** rows `(N.M)` appended to the plan, and creates or updates the epic's parent `(N)` GitHub issue. It does not call `new-issue` — a charted **Task** goes straight to `implementation-planning`.
 - `new-issue` is **off the chain** — a standalone Skill for filing an issue that no **Epic** covers. It grills WHAT (behavior, scope, acceptance criteria, no architecture or file paths) and publishes a GitHub Issue; its multi-plan path publishes a parent Issue plus one **Sub-issue** per vertical slice, in dependency order, gated on the **two-tier coverage check**. An issue it produces can still be picked up by `implementation-planning`'s **From-issue path**, which is what the **WHAT / HOW split** exists for — but the normal route into a plan is a **Task** row, not an Issue.
+- `eli5` is off the chain and reads no repo artifact — it only rewrites how output is worded. It treats a **Skill**'s or project's `CONTEXT.md` as the sole evidence that a term is already known to the user; anything absent from it is a **Naked term**.
 - `add-comments` runs **ensure-convention** first (locates or grills for a **Comment convention**), then **preview-walk** (per-symbol approve loop). A missing language mid-walk triggers a **Scoped single-language grill** rather than the full grill.
 - `generate-framework-tests` is the repo's only live testing Skill — it produces **Framework tests** (real runnable code) that the project's own runner executes. It uses a **Sidecar manifest** to enable **Fast-exit** on re-invocation and **Drift-diff** on changed sources. **User-added-case immunity** is enforced via the manifest's `cases[]` list. The markdown-spec approach it replaced (`generate-test` / `run-tests`) is archived.
 

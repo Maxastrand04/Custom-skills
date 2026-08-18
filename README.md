@@ -7,7 +7,7 @@ Each skill is a directory with a `SKILL.md` entrypoint plus whatever bundled fil
 ```
 kanban/            the workflow chain — one artifact handed to the next
 developer-tools/   everything else for coding, reached for as needed
-schoolwork/        study skills (empty for now)
+schoolwork/        study skills — for when I'm the learner
 archive/           retired, never installed
 ```
 
@@ -56,7 +56,13 @@ Coding skills that aren't stations on the board — no ordering, no artifacts pa
 
 ## schoolwork
 
-Empty. Planned home for study skills — note-taking, rehearsal, spaced repetition, exam prep. The installer already walks the directory, so dropping a valid skill in is enough.
+Skills for when I'm the learner rather than the builder. See [schoolwork/README.md](schoolwork/README.md).
+
+| Skill | What it does |
+|-------|--------------|
+| `eli5` | Persistent plain-language mode. Assumes zero knowledge and bans naked terms — no domain word used before it's glossed. Manual invocation only. |
+
+Still planned: note-taking, rehearsal, spaced repetition, exam prep.
 
 ---
 
