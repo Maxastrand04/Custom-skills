@@ -19,4 +19,4 @@
 
 ---
 
-> **Branch naming:** implement this issue on `<this issue's number>-{BRANCH_SLUG}` — `implementation-planning` prepends the number, since the slug is chosen before the issue number exists. The number in the branch name is what lets `review-edits` link the work back to this issue and its acceptance criteria.
+> **Branch naming:** implement this issue on `<this issue's number>-{BRANCH_SLUG}` — `implementation-planning` prepends the number, since the slug is chosen before the issue number exists. The number in the branch name is what lets `review-diff` link the work back to this issue and its acceptance criteria.

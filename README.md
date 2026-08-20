@@ -20,8 +20,8 @@ archive/           retired, never installed
 The core of the repo is one chain that runs from "I have an idea" to "the diff is reviewed and pushed". Each step writes an artifact the next step reads, so nothing is re-derived from memory.
 
 ```
-project-planning  →  epic-planning  →  implementation-planning  →  implementation-plan-execute  →  review-edits
-   CONTEXT.md         (N.M) tasks        implementation_plans/        code + green ACs               verdict
+project-planning  →  epic-planning  →  implementation-planning  →  implementation-plan-execute  →  review-diff
+   CONTEXT.md         (N.M) tasks        implementation_plans/        code + green ACs           cleaned + committed
    project_plan.md    + epic issue       N.N_name.md
 ```
 
@@ -33,7 +33,7 @@ project-planning  →  epic-planning  →  implementation-planning  →  impleme
 
 **4. `implementation-plan-execute`** — drives the plan. Implements each Group inline in the main thread after I approve a one-paragraph architecture statement for it. No per-Group testing; the plan's final Verification phase runs the acceptance tests once as the single source of truth for "does it work", then commits. A structural surprise mid-Group halts for a real decision instead of being improvised.
 
-**5. `review-edits`** — judges the committed diff on two axes: **Standards** (does it obey the rule-ADRs in `docs/adr/`, plus code smells) and **Spec** (does it actually meet the acceptance criteria, with no scope creep). Handles both a plan-backed run and a small change done inline.
+**5. `review-diff`** — cleans up the committed diff. First gates it **true-to-spec** (do the acceptance tests genuinely test the acceptance criteria, and does the code meet them) — a finding halts the session rather than papering over it. Then edits the code into line with the rule-ADRs in `docs/adr/` and the code-smell baseline, re-runs the ACs, commits the cleanup separately, and reports each change as *what it found → how it fixed it*. Handles both a plan-backed run and a small change done inline.
 
 ---
 
@@ -44,7 +44,7 @@ Coding skills that aren't stations on the board — no ordering, no artifacts pa
 | Skill | What it does |
 |-------|--------------|
 | `implement-tdd` | The small-change bypass around the board. Not everything deserves the full chain: runner preflight, grill the test suite, write the red tests, dispatch an implementer per attempt, review once green. |
-| `codebase-rules` | Surveys the codebase and grills me into one-rule-per-file ADRs in `docs/adr/`, shaped `Rule / Why / How-to-check`. These are what `review-edits` cites. |
+| `codebase-rules` | Surveys the codebase and grills me into one-rule-per-file ADRs in `docs/adr/`, shaped `Rule / Why / How-to-check`. These are what `review-diff` cites. |
 | `add-comments` | Establishes a persisted `comment-convention.md`, then walks the code symbol by symbol with an approve/edit/skip preview. Missing language mid-walk triggers a scoped grill. |
 | `generate-framework-tests` | Real runnable tests (pytest / vitest / jest / go test / cargo test / JUnit). Sidecar manifest gives fast-exit when nothing changed and drift-diff when it did; user-added cases are never touched. |
 | `new-issue` | WHAT grill → GitHub Issue, for work no epic covers. Deliberately **not** in the chain — the board goes straight from an epic task to a plan. Splits oversized scope into linked sub-issues. |

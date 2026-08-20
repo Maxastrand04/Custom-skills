@@ -2,9 +2,9 @@
 
 One sentence describing what this plan accomplishes.
 
-**Goal:** What the completed plan should achieve — the concrete outcome or capability that will exist when all phases are done.
+**Goal:** The concrete outcome or capability that exists when all phases are done.
 
-**Branch:** Branch the implementer works from. From-issue plans: `<issue-number>-<slug from the issue's `## Branch` section>`. Standalone plans: a new branch name, or an existing branch the user named.
+**Branch:** Branch the implementer works from.
 
 **Status legend:**  ⬜ Not started · 🟡 In progress · ✅ Done
 
@@ -12,32 +12,40 @@ One sentence describing what this plan accomplishes.
 
 ## Acceptance criteria
 
-What "done" means, terse — sacrifice grammar for brevity. **This is the contract the final Verification phase tests against**, and the only place testing is verified end-to-end in this plan. If a criterion can't be verified mechanically, mark it `(manual)` — the Supervisor will ask the user to confirm.
+What "done" means, terse — sacrifice grammar for brevity. **The contract the final Verification phase tests against**, and what `Phase 1 — Red` reads to work out what each named test asserts. A criterion that can't be verified mechanically is marked `(manual)` and confirmed with the user instead.
 
-- AC-1: outcome. Verify: `tests/path/test_file.py::test_name` (written in Phase 1, re-run in Verification).
+- AC-1: outcome. Verify: `tests/path/test_file.py::test_name`.
 - AC-2: outcome. Verify: `tests/path/test_file.py::test_name`.
-- AC-3 (manual): outcome. Verify: what the user looks at to confirm — no automated test, skipped in Phase 1.
-
-On from-issue plans, these are lifted from the issue body and assigned `AC-N` IDs. On standalone plans, they come out of the grill.
+- AC-3 (manual): outcome. Verify: what the user looks at to confirm.
 
 ---
 
-## Rules in play
+## Public interface
 
-The project's architecture and coding rules live as one-rule-per-ADR files in `docs/adr/` (authored by `codebase-rules`), **not** in this plan. This section only points at the rule-ADRs this change operates under, so the implementer loads the right boundaries and the reviewer knows where to look. The implementer keeps freedom on *how* the code is written within these rules; the code-review session enforces them against the committed diff.
+**The contract, settled with the user and binding on the implementer.** Implement exactly these names, parameters, and return values — never rename, re-order, add, or drop one while implementing. If the contract itself proves wrong, stop and take it back to the user rather than changing it in code.
 
-One line per rule-ADR: link, then that ADR's `**Rule:**` line **verbatim** — the ADR is the single source of truth, so never paraphrase or trim it. Only files carrying a `**Rule:**` line belong here; classic decision-ADRs and any rule marked `Status: deprecated` do not.
+Everything *behind* it is the implementer's call — helpers, control flow, data structures, extra private modules. No implementation choice needs approval; the code-review session cleans up what's inside the boundary.
 
-- [ADR-0007 — Handlers depend inward](../docs/adr/0007-handlers-depend-inward.md) — Code in `handlers/` MUST NOT import from `infra/`; depend on `core/` interfaces instead.
-- [ADR-0012 — No ORM in domain](../docs/adr/0012-no-orm-in-domain.md) — Domain models MUST NOT import the ORM; persistence lives in `repos/`.
+One block per file. `Phase 2 — Green` copies each stub in verbatim and fills the body.
 
-If no rule-ADR applies directly, replace the list with a single line: _"No specific rule-ADR applies; the general rule set in `docs/adr/` governs at review."_ If the project has no `docs/adr/` at all, say so instead and note that `codebase-rules` hasn't been run. If planning surfaced a project-wide structural choice no rule covers, that was turned into a new rule-ADR via `codebase-rules` before this plan was written — reference it here, don't decide it inline.
+**`src/auth/oauth.py`**
+
+```python
+def exchange_code(code: str, redirect_uri: str) -> Session:
+    """Exchange an OAuth authorization code for a logged-in session.
+
+    `redirect_uri` must match the one the code was issued against.
+    Returns a Session whose `.user` is the admin identified by the code's subject.
+    Raises AuthError if the code is expired, already redeemed, or the URI mismatches.
+    """
+    raise NotImplementedError
+```
 
 ---
 
 ## Phase 0 — Preflight
 
-Preflight holds only genuine **blockers** that must clear before execution can start — an external credential, a created resource, a decision that can't be made until execution time. It is **not** an assumption-confirmation checklist. Rows needing a code fact may be handed to a `claude` subagent; a row flips ✅ when the blocker actually clears. If there are no blockers, keep the single `None` row so execution goes straight to Red.
+Only genuine **blockers** that must clear before execution starts — an external credential, a created resource, a decision that can't be made until execution time. Not an assumption-confirmation checklist. A lone `None` row means execution goes straight to Red.
 
 | Task | File | Status |
 |------|------|--------|
@@ -47,61 +55,31 @@ Preflight holds only genuine **blockers** that must clear before execution can s
 
 ## Phase 1 — Red
 
-**This phase is mandatory and always second.** Write the actual failing (red) automated tests named in every non-`(manual)` `AC-N`'s verify clause, using the project's existing test framework and conventions. No implementation code — a test in this phase must fail because the behavior doesn't exist yet, never because of a broken test. Implementation phases below make these tests pass; Verification re-runs them as proof.
+**Mandatory, always second.** Write these tests failing, in the project's existing framework. No implementation code — a test here must fail because the behavior doesn't exist yet, never because the test is broken.
 
-### Group 1 — [short name]
+The rows name *what to write and where*, not what to assert: for each, find the `AC-N` whose `Verify:` clause names that test and derive the assertions from that criterion. Call the code through `## Public interface` exactly as written.
 
-One line describing which `AC-N` tests this group writes and why they bundle together (shared test file or single atomic change).
-
-| Task | File | Status |
-|------|------|--------|
-| Write test for AC-1 | [test_file.py](../tests/path/test_file.py) | ⬜ |
-| Write test for AC-2 | [test_file.py](../tests/path/test_file.py) | ⬜ |
+| Test function | File | Status |
+|---------------|------|--------|
+| `test_admin_redirect` | [test_login.py](../tests/path/test_login.py) | ⬜ |
+| `test_expired_code_rejected` | [test_login.py](../tests/path/test_login.py) | ⬜ |
 
 ---
 
 ## Phase 2 — Green: [Phase Name]
 
-Brief description of what this phase delivers. A Green phase makes the Red tests pass.
-
-### Group 1 — [short name]
-
-One line describing what this group changes and why these tasks bundle together (shared file or single atomic change).
+What this phase delivers. Green phases make the Red tests pass — add as many as the work needs.
 
 | Task | File | Status |
 |------|------|--------|
-| Description of task | [filename](../path/to/file.py) | ⬜ |
-| Description of task | [filename](../path/to/file.py) | ⬜ |
-
-### Group 2 — [short name]
-
-One line describing this group.
-
-| Task | File | Status |
-|------|------|--------|
-| Description of task | [filename](../path/to/file.py) | ⬜ |
-
----
-
-## Phase 3 — Green: [Phase Name]
-
-Brief description of what this phase delivers.
-
-### Group 1 — [short name]
-
-One line describing this group.
-
-| Task | File | Status |
-|------|------|--------|
+| Implement `exchange_code` — copy its stub from `## Public interface`, fill the body | [oauth.py](../src/auth/oauth.py) | ⬜ |
 | Description of task | [filename](../path/to/file.py) | ⬜ |
 
 ---
 
 ## Phase N — Verification
 
-**This phase is mandatory and always last. No new code is written here — it checks one thing: that the code works, every `AC-N` test green.** It does **not** sweep architecture; a separate code-review session judges the committed diff against the rule-ADRs in `docs/adr/` (see `## Rules in play`). No other phase or Group carries a test block. On any failure, the Supervisor stops immediately and escalates to the user — no automatic retry, no fixed attempt cap; the user decides what happens next each time.
-
-### Group 1 — Acceptance criteria
+**Mandatory, always last. No new code.** One row per `AC-N`: re-run the exact test named in its `Verify:` line and confirm it now passes green; `(manual)` rows are confirmed with the user. The only place tests run — code quality is judged separately, against the committed diff.
 
 | Task | File | Status |
 |------|------|--------|
@@ -109,17 +87,11 @@ One line describing this group.
 | Verify AC-2 | — | ⬜ |
 | Verify AC-3 (manual) | — | ⬜ |
 
-**Checks:** one row per `AC-N` from `## Acceptance criteria` — re-run the exact test named in its `Verify:` line (written in Phase 1) and confirm it now passes green; `(manual)` rows are confirmed with the user instead. Auto-rendered from the AC section by the planner — do not edit independently.
-
 ---
 
 ## Claude Instructions
 
-Context and constraints that help Claude implement this plan correctly:
-
-- **Rules binding:** Stay within the rule-ADRs in `docs/adr/` (those in `## Rules in play` apply directly). You have freedom on *how* to implement within them — no per-Group architecture approval is required. If the change forces a structural choice no rule covers and it's project-wide, stop and flag it for a `codebase-rules` ADR rather than improvising a one-off. The code-review session enforces the rule-ADRs on the commit.
-- **Conventions:** Naming, file structure, patterns to follow from the existing codebase (beyond what's already pinned in the rule-ADRs).
+- **Conventions:** Naming, file structure, patterns to follow from the existing codebase.
 - **Constraints:** What NOT to do — things to avoid or stay in scope of.
 - **Order dependency:** Any phases or tasks that must complete before others can start.
-- **Testing:** `## Phase 1 — Red` writes the tests red; nothing is *verified* (i.e., no test is run and judged) until `## Phase N — Verification`, which re-runs those same tests and expects green. No Group or Phase before Verification carries a test/check block. Any Verification failure stops the plan immediately and goes to the user — there is no automatic retry.
-</content>
+- **Testing:** Nothing is run and judged until `## Phase N — Verification`, which re-runs the Phase-1 tests rather than inventing new checks. Any failure stops the plan and goes to the user.

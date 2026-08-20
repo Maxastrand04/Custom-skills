@@ -3,8 +3,8 @@
 The workflow skills. These run in order and each one writes an artifact the next one reads, so nothing is re-derived from memory:
 
 ```
-project-planning  →  epic-planning  →  implementation-planning  →  implementation-plan-execute  →  review-edits
-   CONTEXT.md         (N.M) tasks        implementation_plans/        code + green ACs               verdict
+project-planning  →  epic-planning  →  implementation-planning  →  implementation-plan-execute  →  review-diff
+   CONTEXT.md         (N.M) tasks        implementation_plans/        code + green ACs           cleaned + committed
    project_plan.md    + epic issue       N.N_name.md
 ```
 
