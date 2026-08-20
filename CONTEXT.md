@@ -156,11 +156,15 @@ The standalone decision skill. Weighs an option set and commits to a single reco
 _Avoid_: tradeoff skill, decision matrix, options analysis
 
 **Naked term**:
-A domain word used in output before it has been glossed — defined in plain words in the same sentence it first appears. The unit `eli5` bans. A term escapes being naked only if it is already defined in a `CONTEXT.md`, an ADR, or another doc read earlier in the conversation.
+A domain word used in output before it has been glossed — defined in plain words in the same sentence it first appears. Neither **Talk-to Skill** ships one; they differ only in where the floor sits. A term escapes being naked if it is defined in a `CONTEXT.md`, an ADR, or another doc read earlier in the conversation, or (for `talk-to-highschooler`) if it sits on that Skill's assumed floor of algebra and basic programming.
 _Avoid_: jargon, unexplained term, technical term
 
-**eli5**:
-The comprehension Skill in `schoolwork/`. A persistent output mode: assume zero knowledge of the subject, ship no **Naked term**, and sacrifice grammar so a middle schooler can understand. Manual-invocation only (`disable-model-invocation: true`) and stays on every turn until the user says "stop eli5" or "normal mode".
+**Talk-to Skill**:
+Either of the two model-invoked wording primitives in `schoolwork/` — `talk-to-middleschooler` and `talk-to-highschooler`. Each owns the language rules for one level and nothing else: no persistence, no change to what work gets done. Model-invoked so any other Skill can borrow the voice, the way `grilling` is borrowed for interview mechanics.
+_Avoid_: voice skill, tone skill, style guide
+
+**eli Skill**:
+Either of the two manual-invocation modes in `schoolwork/` — `eli5` (pairs with `talk-to-middleschooler`) and `eli10` (pairs with `talk-to-highschooler`). Each owns only persistence: stay on every turn, including inside Skills invoked later, until the user says "stop eli5" / "stop eli10" / "normal mode". The rules live in the paired **Talk-to Skill**, never restated here.
 _Avoid_: simplify mode, plain English skill, dumb it down
 
 ## Relationships
@@ -176,7 +180,7 @@ _Avoid_: simplify mode, plain English skill, dumb it down
 - `project-planning` runs a **Git-repo guard** first (hard-stops outside a git repo), then the **Adaptive grill** (reads existing `CONTEXT.md` + **Project plan**, asks only on gaps), then an epic-breakdown confirm gate, then writes `CONTEXT.md` + **Project plan**; all steps are Opus-direct — no Group / Verification tester dispatch. The plan's Directory tree section is left at its placeholder — the `directory-tree` skill that used to fill it is archived.
 - `epic-planning` sits between `project-planning` and `implementation-planning` in the chain: it reads the **Project plan**, slices a chosen **Epic**'s goal into **Task** rows `(N.M)` appended to the plan, and creates or updates the epic's parent `(N)` GitHub issue. It does not call `new-issue` — a charted **Task** goes straight to `implementation-planning`.
 - `new-issue` is **off the chain** — a standalone Skill for filing an issue that no **Epic** covers. It grills WHAT (behavior, scope, acceptance criteria, no architecture or file paths) and publishes a GitHub Issue; its multi-plan path publishes a parent Issue plus one **Sub-issue** per vertical slice, in dependency order, gated on the **two-tier coverage check**. An issue it produces can still be picked up by `implementation-planning`'s **From-issue path**, which is what the **WHAT / HOW split** exists for — but the normal route into a plan is a **Task** row, not an Issue.
-- `eli5` is off the chain and reads no repo artifact — it only rewrites how output is worded. It treats a **Skill**'s or project's `CONTEXT.md` as the sole evidence that a term is already known to the user; anything absent from it is a **Naked term**.
+- The `schoolwork/` family is off the chain and reads no repo artifact — it only rewrites how output is worded. Each **eli Skill** invokes exactly one **Talk-to Skill** for its rules; the pairing is the only place a level is defined twice, and it is defined once. A **Talk-to Skill** treats a project's `CONTEXT.md` as the sole evidence that a term is already known to the user; anything absent from it, and off the level's floor, is a **Naked term**.
 - `add-comments` runs **ensure-convention** first (locates or grills for a **Comment convention**), then **preview-walk** (per-symbol approve loop). A missing language mid-walk triggers a **Scoped single-language grill** rather than the full grill.
 - `generate-framework-tests` is the repo's only live testing Skill — it produces **Framework tests** (real runnable code) that the project's own runner executes. It uses a **Sidecar manifest** to enable **Fast-exit** on re-invocation and **Drift-diff** on changed sources. **User-added-case immunity** is enforced via the manifest's `cases[]` list. The markdown-spec approach it replaced (`generate-test` / `run-tests`) is archived.
 

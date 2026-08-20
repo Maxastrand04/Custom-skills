@@ -60,7 +60,12 @@ Skills for when I'm the learner rather than the builder. See [schoolwork/README.
 
 | Skill | What it does |
 |-------|--------------|
-| `eli5` | Persistent plain-language mode. Assumes zero knowledge and bans naked terms — no domain word used before it's glossed. Manual invocation only. |
+| `eli5` | Turns on middle-school mode for the session — assumes zero knowledge of the subject. Manual invocation only. |
+| `eli10` | Turns on high-school mode for the session — algebra and basic programming assumed. Manual invocation only. |
+| `talk-to-middleschooler` | The wording primitive behind `eli5`. Model-invoked, so any skill can borrow the voice. |
+| `talk-to-highschooler` | The wording primitive behind `eli10`. Model-invoked, so any skill can borrow the voice. |
+
+The `eli*` pair own only persistence; the `talk-to-*` pair own the rules — one source of truth per level, reachable from any other skill the way `grilling` is.
 
 Still planned: note-taking, rehearsal, spaced repetition, exam prep.
 
