@@ -92,7 +92,7 @@ install_skill() {
 
 # Live categories. `archive/` is deliberately absent — archived Skills are kept
 # for reference and are never installed.
-declare -a CATEGORIES=(kanban developer-tools schoolwork)
+declare -a CATEGORIES=(kanban developer-tools behaviour schoolwork)
 
 # Echo the path of a Skill directory by bare name, searching each category.
 resolve_skill() {

@@ -7,6 +7,7 @@ Each skill is a directory with a `SKILL.md` entrypoint plus whatever bundled fil
 ```
 kanban/            the workflow chain — one artifact handed to the next
 developer-tools/   everything else for coding, reached for as needed
+behaviour/         how Claude talks, not what it builds — borrowed by the rest
 schoolwork/        study skills — for when I'm the learner
 archive/           retired, never installed
 ```
@@ -48,9 +49,21 @@ Coding skills that aren't stations on the board — no ordering, no artifacts pa
 | `add-comments` | Establishes a persisted `comment-convention.md`, then walks the code symbol by symbol with an approve/edit/skip preview. Missing language mid-walk triggers a scoped grill. |
 | `generate-framework-tests` | Real runnable tests (pytest / vitest / jest / go test / cargo test / JUnit). Sidecar manifest gives fast-exit when nothing changed and drift-diff when it did; user-added cases are never touched. |
 | `new-issue` | WHAT grill → GitHub Issue, for work no epic covers. Deliberately **not** in the chain — the board goes straight from an epic task to a plan. Splits oversized scope into linked sub-issues. |
-| `grilling` | The bare interview loop — one question at a time, recommended answer first, down every branch until shared understanding. The primitive most of `kanban/` is built on. |
 | `brainstorming` | The front door to everything else. Grills an idea trying to **kill** it, then gives a binary verdict — dead, or a paragraph of concrete functionality — and routes the survivor to whichever skill is the smallest fit. |
 | `pro-con` | Weigh a decision and commit to a recommendation. Fixed output shape. Manual invocation only. |
+
+---
+
+## behaviour
+
+Skills that change how Claude talks rather than what it builds. No ordering, no artifacts. Each is a wording or interaction rule any other skill can borrow, which is why they sit at the root. See [behaviour/README.md](behaviour/README.md).
+
+| Skill | What it does |
+|-------|--------------|
+| `grilling` | The bare interview loop — one question at a time, recommended answer first, down every branch until shared understanding. The primitive most of `kanban/` is built on. |
+| `unslop` | Cuts AI tells from any writing: puffery, em dashes, inline-header lists, filler, passive voice. Always applies. |
+| `talk-to-middleschooler` | Wording rules for a reader who knows nothing about the subject. No naked terms, no equations. |
+| `talk-to-highschooler` | Wording rules for a reader with algebra and basic programming. Naked terms allowed once glossed. |
 
 ---
 
@@ -62,10 +75,8 @@ Skills for when I'm the learner rather than the builder. See [schoolwork/README.
 |-------|--------------|
 | `eli5` | Turns on middle-school mode for the session — assumes zero knowledge of the subject. Manual invocation only. |
 | `eli10` | Turns on high-school mode for the session — algebra and basic programming assumed. Manual invocation only. |
-| `talk-to-middleschooler` | The wording primitive behind `eli5`. Model-invoked, so any skill can borrow the voice. |
-| `talk-to-highschooler` | The wording primitive behind `eli10`. Model-invoked, so any skill can borrow the voice. |
 
-The `eli*` pair own only persistence; the `talk-to-*` pair own the rules — one source of truth per level, reachable from any other skill the way `grilling` is.
+The `eli*` pair own only persistence. The rules live in [`behaviour/`](behaviour/README.md), one source of truth per level, reachable from any other skill the way `grilling` is.
 
 Still planned: note-taking, rehearsal, spaced repetition, exam prep.
 

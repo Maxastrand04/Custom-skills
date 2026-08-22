@@ -9,6 +9,7 @@ Coding skills that aren't stations on the kanban board. Reach for these whenever
 | `generate-framework-tests` | Real runnable tests (pytest / vitest / jest / go test / cargo test / JUnit), with fast-exit and drift-diff via a sidecar manifest. |
 | `implement-tdd` | The small-change bypass around the board: red tests, one implementer per attempt, reviewer on green. |
 | `new-issue` | WHAT grill → GitHub Issue, for work no epic covers. Splits oversized scope into linked sub-issues. |
-| `grilling` | The bare interview loop. The primitive most of `../kanban/` is built on. |
 | `brainstorming` | The front door. Grills an idea trying to kill it; what survives gets a verdict and a route onto the board. |
 | `pro-con` | Weigh a decision and commit to a recommendation. Manual invocation only. |
+
+The interview loop these lean on lives in `../behaviour/grilling`.
