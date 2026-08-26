@@ -167,6 +167,34 @@ _Avoid_: voice skill, tone skill, style guide
 Either of the two manual-invocation modes in `schoolwork/` — `eli5` (pairs with `talk-to-middleschooler`) and `eli10` (pairs with `talk-to-highschooler`). Each owns only persistence: stay on every turn, including inside Skills invoked later, until the user says "stop eli5" / "stop eli10" / "normal mode". The rules live in the paired **Talk-to Skill**, never restated here.
 _Avoid_: simplify mode, plain English skill, dumb it down
 
+**Course folder**:
+The directory a `schoolwork/` study Skill operates in. Holds `Lectures/` (slide decks), optionally `Exercises/` and `Exams/`, the `Lecture-notes/` output directory, and `course-index.md`. Both `lecture-notes` and `course-index` resolve the course root and read nothing above or outside it; a missing `Exercises/` or `Exams/` is normal and never triggers a wider search.
+_Avoid_: course root dir, subject folder, class directory
+
+**Deck**:
+One lecture's slide PDF in `Lectures/`, the single input to a `lecture-notes` run. Read in 20-page batches to its last page, because the Read tool caps a PDF at 20 pages per call.
+_Avoid_: slides, presentation, PDF, lecture file
+
+**Provenance tag**:
+The marker `lecture-notes` attaches to every sentence in a notes file that did not come from the **Deck**. Three sources, three tags: deck content is untagged, `[🎙 mm:ss]` marks what was said in the lecture video, `[fill]` marks what Claude supplied. Tagged per sentence, never per section. Upholds the notes file's one guarantee — `grep '\[fill\]'` lists everything a model invented — which untagged filled text silently breaks.
+_Avoid_: citation, source marker, annotation, attribution
+
+**Fill**:
+Content `lecture-notes` writes into a notes file that appears in neither the **Deck** nor the transcript, tagged `[fill]` and unverified. Distinct from an unresolved gap, which goes to the notes file's Open questions section instead — a fill is confident and checkable, an open question is neither. A transcript reduces fills but never retires them.
+_Avoid_: inference, gap-fill, hallucination, addition
+
+**High-yield**:
+A topic in a **Deck** that recurs across a course's past exams, flagged `**[high-yield]**` in the notes with its count. Sourced only from the **Course index**'s topic frequency table, never by reading exam PDFs during a `lecture-notes` run. The flag names the topic and the count; exam questions themselves are never copied into notes.
+_Avoid_: important, exam-relevant, priority, key topic
+
+**Course index**:
+The `course-index.md` file at a **Course folder**'s root, written by the `course-index` Skill from every PDF in `Exams/` and `Exercises/`. Contains per-file coverage entries plus the topic frequency table sorted by total, descending. That table is the fixed contract `lecture-notes` reads to flag **High-yield** topics; its shape is not changed independently. Never a solutions document.
+_Avoid_: table of contents, exam summary, syllabus, catalogue
+
+**Canonical topic**:
+A topic name on the **Course index** manifest's `topics` list, reused across every file that tests the same thing however that file words it. Minted only when no existing name covers the topic. Pitched at the level one lecture covers — narrower than a course, broader than a single question. Without this normalization one recurring topic reads as several one-off topics and nothing is ever flagged **High-yield**.
+_Avoid_: tag, label, keyword, subject
+
 ## Relationships
 
 - A **Skill** contains exactly one **SKILL.md** and zero or more **Bundled files**
@@ -180,7 +208,8 @@ _Avoid_: simplify mode, plain English skill, dumb it down
 - `project-planning` runs a **Git-repo guard** first (hard-stops outside a git repo), then the **Adaptive grill** (reads existing `CONTEXT.md` + **Project plan**, asks only on gaps), then an epic-breakdown confirm gate, then writes `CONTEXT.md` + **Project plan**; all steps are Opus-direct — no Group / Verification tester dispatch. The plan's Directory tree section is left at its placeholder — the `directory-tree` skill that used to fill it is archived.
 - `epic-planning` sits between `project-planning` and `implementation-planning` in the chain: it reads the **Project plan**, slices a chosen **Epic**'s goal into **Task** rows `(N.M)` appended to the plan, and creates or updates the epic's parent `(N)` GitHub issue. It does not call `new-issue` — a charted **Task** goes straight to `implementation-planning`.
 - `new-issue` is **off the chain** — a standalone Skill for filing an issue that no **Epic** covers. It grills WHAT (behavior, scope, acceptance criteria, no architecture or file paths) and publishes a GitHub Issue; its multi-plan path publishes a parent Issue plus one **Sub-issue** per vertical slice, in dependency order, gated on the **two-tier coverage check**. An issue it produces can still be picked up by `implementation-planning`'s **From-issue path**, which is what the **WHAT / HOW split** exists for — but the normal route into a plan is a **Task** row, not an Issue.
-- The `schoolwork/` family is off the chain and reads no repo artifact — it only rewrites how output is worded. Each **eli Skill** invokes exactly one **Talk-to Skill** for its rules; the pairing is the only place a level is defined twice, and it is defined once. A **Talk-to Skill** treats a project's `CONTEXT.md` as the sole evidence that a term is already known to the user; anything absent from it, and off the level's floor, is a **Naked term**.
+- `course-index` and `lecture-notes` connect through the **Course index** file, not by invocation — the same artifact handoff the `kanban/` chain uses. Both are manual-invocation only, so neither pays context load, and both are bounded by the **Course folder**. `course-index` fast-exits on a SHA manifest at `.course-index/manifest.json` the way `generate-framework-tests` does, so re-runs read only added or changed PDFs. `lecture-notes` discloses its video branch to `transcript.md`, reached only when a lecture link is in play; that file owns the two-tier transcript route (yt-dlp captions, then `whisper.cpp` locally) and the rule that Swedish audio uses KB-Whisper while English uses stock `large-v3-turbo`.
+- The `schoolwork/` wording family is off the chain and reads no repo artifact — it only rewrites how output is worded. Each **eli Skill** invokes exactly one **Talk-to Skill** for its rules; the pairing is the only place a level is defined twice, and it is defined once. A **Talk-to Skill** treats a project's `CONTEXT.md` as the sole evidence that a term is already known to the user; anything absent from it, and off the level's floor, is a **Naked term**.
 - `add-comments` runs **ensure-convention** first (locates or grills for a **Comment convention**), then **preview-walk** (per-symbol approve loop). A missing language mid-walk triggers a **Scoped single-language grill** rather than the full grill.
 - `generate-framework-tests` is the repo's only live testing Skill — it produces **Framework tests** (real runnable code) that the project's own runner executes. It uses a **Sidecar manifest** to enable **Fast-exit** on re-invocation and **Drift-diff** on changed sources. **User-added-case immunity** is enforced via the manifest's `cases[]` list. The markdown-spec approach it replaced (`generate-test` / `run-tests`) is archived.
 

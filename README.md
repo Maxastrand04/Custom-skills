@@ -75,10 +75,14 @@ Skills for when I'm the learner rather than the builder. See [schoolwork/README.
 |-------|--------------|
 | `eli5` | Turns on middle-school mode for the session — assumes zero knowledge of the subject. Manual invocation only. |
 | `eli10` | Turns on high-school mode for the session — algebra and basic programming assumed. Manual invocation only. |
+| `lecture-notes` | Slide PDF in, markdown revision file out. Pulls a YouTube lecture transcript when there is one, fills the rest, and tags every line by source so `grep '\[fill\]'` lists everything a model invented. |
+| `course-index` | Reads a course's `Exams/` and `Exercises/` once into `course-index.md`. Incremental via a SHA manifest; produces the topic frequency table that `lecture-notes` flags high-yield material from. |
 
 The `eli*` pair own only persistence. The rules live in [`behaviour/`](behaviour/README.md), one source of truth per level, reachable from any other skill the way `grilling` is.
 
-Still planned: note-taking, rehearsal, spaced repetition, exam prep.
+`lecture-notes` and `course-index` hand off through `course-index.md` the way the board hands off through `project_plan.md`. Both stay inside one course folder.
+
+Still planned: rehearsal, spaced repetition, exam prep.
 
 ---
 
