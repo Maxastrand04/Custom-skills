@@ -1,6 +1,6 @@
 ---
 name: eli10
-description: Turn on learner mode for the rest of the session — everything explained to a sharp high schooler, algebra and basic programming assumed, domain terms glossed on first use.
+description: Turn on learner mode for the rest of the session, so everything is explained to a sharp high schooler, with algebra and basic programming assumed and domain terms glossed on first use.
 disable-model-invocation: true
 ---
 

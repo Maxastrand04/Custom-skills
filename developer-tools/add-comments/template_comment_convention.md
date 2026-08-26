@@ -10,7 +10,7 @@
 
 ## <Language>
 
-- **Style**: above-symbol / inline / both — (guidance on when inline is appropriate)
+- **Style**: above-symbol, inline, or both, with guidance on when inline is appropriate
 - **Format**: (doc-comment format, e.g. JSDoc / Javadoc / PEP 257 triple-quoted / godoc `//`)
 - **Params**: all / public-API only / complex only / never
 - **Returns**: always / non-obvious only / never

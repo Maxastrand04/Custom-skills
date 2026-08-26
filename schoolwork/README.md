@@ -1,6 +1,6 @@
 # schoolwork
 
-Study and comprehension skills — the ones for when I'm the learner, not the builder.
+Study and comprehension skills, the ones for when I'm the learner, not the builder.
 
 Two kinds of skill live here. `eli5` and `eli10` are levels I turn on for a session; the wording rules themselves live in `../behaviour/talk-to-middleschooler` and `../behaviour/talk-to-highschooler`, model-invoked so any other skill can reach for them. `lecture-notes` and `course-index` produce study material from a course folder.
 
@@ -26,7 +26,7 @@ CourseRoot/
 └── course-index.md     written by `course-index`, read by `lecture-notes`
 ```
 
-They connect by that file, not by invocation — same as the `kanban/` chain, where each step writes an artifact the next one reads. A course with no `Exams/` or `Exercises/` just skips the high-yield flagging.
+They connect by that file, not by invocation, the same way the `kanban/` chain does, where each step writes an artifact the next one reads. A course with no `Exams/` or `Exercises/` just skips the high-yield flagging.
 
 Still planned: rehearsal, spaced repetition, exam prep.
 

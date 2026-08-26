@@ -1,6 +1,6 @@
 ---
 name: course-index
-description: Read every PDF in a course's Exams/ and Exercises/ folders once and write course-index.md — what each file covers, plus the topic frequency table that lecture-notes reads to flag high-yield material.
+description: Read every PDF in a course's Exams/ and Exercises/ folders once and write course-index.md, covering what each file holds, plus the topic frequency table that lecture-notes reads to flag high-yield material.
 disable-model-invocation: true
 ---
 
@@ -18,7 +18,7 @@ Invoke `unslop` for the prose of the index file.
 
 The index records what each file covers and how often each topic recurs. It never becomes a solutions document, because the point is knowing what to study, not having the answers to last year's questions.
 
-## Step 1 — Locate and scope
+## Step 1: Locate and scope
 
 The course root holds `Lectures/`, and may hold `Exercises/` and `Exams/`. Run from the course root, or resolve it from wherever the user pointed.
 
@@ -28,7 +28,7 @@ Stop and say so when neither folder exists. There is nothing to index.
 
 **Done when:** the course root is resolved and the full list of PDFs to consider is enumerated, each labelled exam or exercise.
 
-## Step 2 — Fast-exit
+## Step 2: Fast-exit
 
 The manifest at `<CourseRoot>/.course-index/manifest.json` records every file already indexed:
 
@@ -43,11 +43,11 @@ The manifest at `<CourseRoot>/.course-index/manifest.json` records every file al
 
 Hash each PDF with `shasum -a 256`. A file whose hash matches its manifest entry is done; skip it.
 
-When every PDF matches and no new ones appeared, print `course-index is up to date — nothing to do` and exit. No reads, no writes, no plan.
+When every PDF matches and no new ones appeared, print `course-index is up to date, nothing to do` and exit. No reads, no writes, no plan.
 
 **Done when:** every enumerated PDF is sorted into unchanged (skip) or new-or-changed (index).
 
-## Step 3 — Read the new files
+## Step 3: Read the new files
 
 For each file to index, read it in 20-page batches to the last page, the same cap `lecture-notes` works under.
 
@@ -61,7 +61,7 @@ Do not transcribe questions and do not solve them.
 
 **Done when:** every new-or-changed file has been read to its last page and has a topic list.
 
-## Step 4 — Normalize the topics
+## Step 4: Normalize the topics
 
 This step is what makes the frequency table worth anything. One lecturer writes "gradient descent", the next year's paper says "GD", a third says "steepest descent". Left alone, one topic appearing in three exams looks like three topics appearing once, and nothing is ever flagged high-yield.
 
@@ -71,7 +71,7 @@ Pitch the names at the level a lecture covers. "Eigenvalues" is a topic. "Linear
 
 **Done when:** every topic on every file's list is either an existing canonical name or a deliberately added new one, and no two canonical names mean the same thing.
 
-## Step 5 — Write the index
+## Step 5: Write the index
 
 Write `<CourseRoot>/course-index.md`, rebuilt whole from the manifest so unchanged files keep their entries:
 
@@ -106,6 +106,6 @@ Then write the manifest, with every indexed file's hash and the canonical topic 
 
 **Done when:** `course-index.md` and the manifest are both written, the table's counts agree with the per-file entries, and every file in the manifest appears in the index.
 
-## Step 6 — Report
+## Step 6: Report
 
 State how many files were newly indexed, how many were skipped as unchanged, and the top three topics by total count. Nothing else.

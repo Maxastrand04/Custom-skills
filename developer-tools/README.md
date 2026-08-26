@@ -1,6 +1,6 @@
 # developer-tools
 
-Coding skills that aren't stations on the kanban board. Reach for these whenever they're useful — no ordering, no artifacts passed between them.
+Coding skills that aren't stations on the kanban board. Reach for these whenever they're useful. There is no ordering, and no artifacts passed between them.
 
 | Skill | What it does |
 |-------|--------------|

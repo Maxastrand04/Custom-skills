@@ -1,6 +1,6 @@
 ---
 name: eli5
-description: Turn on plain-language mode for the rest of the session — everything explained to a curious middle schooler who knows nothing about the subject.
+description: Turn on plain-language mode for the rest of the session, so everything is explained to a curious middle schooler who knows nothing about the subject.
 disable-model-invocation: true
 ---
 

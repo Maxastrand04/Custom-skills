@@ -1,6 +1,6 @@
 # Language Detection
 
-Determines the target language and test framework for a project before any test generation begins. All rules in this file apply globally — they are evaluated before per-file decisions are made.
+Determines the target language and test framework for a project before any test generation begins. All rules in this file apply globally, and are evaluated before per-file decisions are made.
 
 ---
 
@@ -40,7 +40,7 @@ Before applying any default placement or naming rule, scan the project for exist
 pytest tests/foo/test_bar.py
 ```
 
-**Import style:** standard pytest — use plain `def test_*` functions; use `pytest.fixture` for shared setup; import `pytest` only when parametrize, fixtures, or raises are needed.
+**Import style:** standard pytest. Use plain `def test_*` functions, use `pytest.fixture` for shared setup, and import `pytest` only when parametrize, fixtures, or raises are needed.
 
 ---
 
@@ -89,7 +89,7 @@ npx vitest run src/utils.test.ts
 - `go.mod` present
 - `.go` source files
 
-**Framework:** built-in `testing` package — no external framework required.
+**Framework:** the built-in `testing` package, with no external framework required.
 
 **Default test-file placement:** co-located in the same package directory as the source file.
 
@@ -114,7 +114,7 @@ go test ./internal/auth/...
 - `Cargo.toml` present
 - `.rs` source files
 
-**Framework:** built-in `#[test]` and `#[cfg(test)]` — no external crate needed by default.
+**Framework:** the built-in `#[test]` and `#[cfg(test)]`, with no external crate needed by default.
 
 **Default test-file placement:**
 
@@ -147,7 +147,7 @@ Example: `cargo test parser::tests::` to run only the parser unit tests.
 
 **Default framework:** JUnit Jupiter (JUnit 5)
 
-**Framework version note:** before generating any test, read `pom.xml` or `build.gradle` to check which JUnit version is already declared as a dependency. Match that version — do not assume JUnit 5 if the project declares JUnit 4.
+**Framework version note:** before generating any test, read `pom.xml` or `build.gradle` to check which JUnit version is already declared as a dependency. Match that version. Do not assume JUnit 5 if the project declares JUnit 4.
 
 **Default test-file placement:** mirrors the source tree under `src/test/java/`.
 
@@ -167,7 +167,7 @@ Scope the command to the specific test class written in this session. Do not run
 
 ---
 
-## Unknown language — escape hatch
+## Unknown language, escape hatch
 
 When the language cannot be detected from the signals above, or when the detected language is not in the supported list:
 

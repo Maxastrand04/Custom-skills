@@ -6,19 +6,19 @@ Per-language reference for canonical comment style. Use this during the grill to
 
 ## Python
 
-Triple-quoted docstrings (`"""..."""`) placed immediately after the `def` or `class` line — not before it. PEP 257 defines two forms: a one-liner (`"""Do X."""`) for trivial functions, and a multi-line form with a summary line, blank line, and body for everything else. The three common section styles are Google (indented `Args:` / `Returns:` / `Raises:` headers), NumPy (underlined headers), and Sphinx (`:param name:` / `:returns:` / `:raises ExcType:`). Pick one and apply it consistently.
+Triple-quoted docstrings (`"""..."""`) placed immediately after the `def` or `class` line, not before it. PEP 257 defines two forms: a one-liner (`"""Do X."""`) for trivial functions, and a multi-line form with a summary line, blank line, and body for everything else. The three common section styles are Google (indented `Args:` / `Returns:` / `Raises:` headers), NumPy (underlined headers), and Sphinx (`:param name:` / `:returns:` / `:raises ExcType:`). Pick one and apply it consistently.
 
 ---
 
 ## TypeScript / JavaScript
 
-JSDoc (`/** ... */`) for symbols intended for documentation or tooling (IDEs, TypeDoc, JSDoc). Use `@param {type} name — description`, `@returns {type}`, and `@throws {ErrorType}` tags. Inline `//` for implementation notes inside function bodies. Plain `//` comments are not indexed by doc generators and should not duplicate what JSDoc already covers on the signature.
+JSDoc (`/** ... */`) for symbols intended for documentation or tooling (IDEs, TypeDoc, JSDoc). Use `@param {type} name - description`, `@returns {type}`, and `@throws {ErrorType}` tags. Inline `//` for implementation notes inside function bodies. Plain `//` comments are not indexed by doc generators and should not duplicate what JSDoc already covers on the signature.
 
 ---
 
 ## CSS / HTML
 
-CSS uses `/* */` block comments only — there is no doc-comment standard. Convention: place a `/* WHY */` comment above any non-obvious rule or block (e.g., a magic z-index, a workaround for a browser bug, a deliberate override). Avoid restating what the CSS already says.
+CSS uses `/* */` block comments only, and there is no doc-comment standard. By convention, place a `/* WHY */` comment above any non-obvious rule or block, such as a magic z-index, a workaround for a browser bug, or a deliberate override. Avoid restating what the CSS already says.
 
 HTML uses `<!-- -->` comments. There is no doc-comment idiom. Convention: add a comment above complex or non-obvious markup sections to explain intent or structural role, not to label things that are self-evident from tag names and class names.
 
@@ -32,7 +32,7 @@ Exported symbols (functions, types, constants, variables) must have a doc commen
 
 ## Rust
 
-`///` (three slashes) for outer doc comments on items (functions, structs, enums, traits, modules). `//!` for inner doc comments describing the enclosing item — typically used at the top of a module file or crate root. Both support Markdown and are rendered by `rustdoc`. Regular `//` comments are not rendered as documentation. By convention, public items in a library crate should have `///` doc comments.
+`///` (three slashes) for outer doc comments on items (functions, structs, enums, traits, modules). `//!` for inner doc comments describing the enclosing item, typically used at the top of a module file or crate root. Both support Markdown and are rendered by `rustdoc`. Regular `//` comments are not rendered as documentation. By convention, public items in a library crate should have `///` doc comments.
 
 ---
 
@@ -58,4 +58,4 @@ XML doc comments (`/// <summary>...</summary>`) placed above the declaration. St
 
 ## SQL
 
-SQL uses `--` for single-line comments and `/* */` for multi-line block comments. There is no doc-comment standard. Convention: annotate queries when the logic is non-obvious — complex joins, subquery rationale, performance-driven choices (e.g., a forced index hint), or business rules embedded in a WHERE clause. Skip comments that merely restate what the SQL already reads clearly.
+SQL uses `--` for single-line comments and `/* */` for multi-line block comments. There is no doc-comment standard. By convention, annotate queries when the logic is non-obvious, covering complex joins, subquery rationale, performance-driven choices such as a forced index hint, or business rules embedded in a WHERE clause. Skip comments that merely restate what the SQL already reads clearly.

@@ -7,12 +7,12 @@ description: Grill the user into a persisted comment convention and then drive a
 
 Grill the user into a persisted `comment-convention.md`, then walk source files in scope and run a per-symbol preview-and-approve loop to add or update comments in line with the convention.
 
-This skill is markdown-only orchestration. Read bundled files at runtime — do not assume their contents from this document:
+This skill is markdown-only orchestration. Read bundled files at runtime. Do not assume their contents from this document:
 
-- `grill-topics.md` — topics covered in the full multi-language grill and the scoped single-language grill
-- `language-idioms.md` — per-language idiomatic comment style applied during the preview walk
-- `preview-loop.md` — per-symbol preview/approve UI and batch-write semantics
-- `template_comment_convention.md` — schema and section layout for `comment-convention.md`
+- `grill-topics.md` holds the topics covered in the full multi-language grill and the scoped single-language grill.
+- `language-idioms.md` holds the per-language idiomatic comment style applied during the preview walk.
+- `preview-loop.md` holds the per-symbol preview and approve UI, plus batch-write semantics.
+- `template_comment_convention.md` holds the schema and section layout for `comment-convention.md`.
 
 ---
 
@@ -20,12 +20,12 @@ This skill is markdown-only orchestration. Read bundled files at runtime — do 
 
 Handle exactly six entry forms:
 
-1. **No args** — prompt the user: "What would you like to comment? Provide a file, a folder, or a flag (`--edit-convention`, `--new-convention`)."
-2. **`<file>`** — run `ensure-convention`, then run `preview-walk` scoped to that file.
-3. **`<file> <symbol>`** — run `ensure-convention`, then run `preview-walk` scoped to that single symbol only.
-4. **`<folder>`** — run `ensure-convention`, then run `preview-walk` over all source files under the folder.
-5. **`--edit-convention`** — locate the nearest-ancestor `comment-convention.md` from the current working directory. If found, open it for editing and stop. If none found, error: "No `comment-convention.md` found in any ancestor directory. Run `--new-convention` to create one."
-6. **`--new-convention`** — run the full multi-language grill (see `grill-topics.md`) and write a new `comment-convention.md` at a user-chosen location. Do NOT auto-import from any existing convention file unless the user explicitly asks.
+1. **No args.** Prompt the user: "What would you like to comment? Provide a file, a folder, or a flag (`--edit-convention`, `--new-convention`)."
+2. **`<file>`.** Run `ensure-convention`, then run `preview-walk` scoped to that file.
+3. **`<file> <symbol>`.** Run `ensure-convention`, then run `preview-walk` scoped to that single symbol only.
+4. **`<folder>`.** Run `ensure-convention`, then run `preview-walk` over all source files under the folder.
+5. **`--edit-convention`.** Locate the nearest-ancestor `comment-convention.md` from the current working directory. If found, open it for editing and stop. If none found, error: "No `comment-convention.md` found in any ancestor directory. Run `--new-convention` to create one."
+6. **`--new-convention`.** Run the full multi-language grill, per `grill-topics.md`, and write a new `comment-convention.md` at a user-chosen location. Do NOT auto-import from any existing convention file unless the user explicitly asks.
 
 ---
 
@@ -34,8 +34,8 @@ Handle exactly six entry forms:
 Run this sub-flow before any `preview-walk`.
 
 1. Walk up the directory tree from the target path, looking for `comment-convention.md`.
-2. **Found** — use it as the active convention. Read it; do not modify it yet. Proceed to `preview-walk`.
-3. **Not found** — run the full multi-language grill (topics in `grill-topics.md`) and write a new `comment-convention.md`. Ask the user where to place it before writing. Follow the schema in `template_comment_convention.md`.
+2. **Found.** Use it as the active convention. Read it, and do not modify it yet. Proceed to `preview-walk`.
+3. **Not found.** Run the full multi-language grill, with topics in `grill-topics.md`, and write a new `comment-convention.md`. Ask the user where to place it before writing. Follow the schema in `template_comment_convention.md`.
 
 ---
 
@@ -67,7 +67,7 @@ Shebang/content sniffing only as fallback for extensionless files. Unknown exten
 
 ### Non-source file handling
 
-Skip the following silently — do not prompt the user:
+Skip the following silently, and do not prompt the user:
 
 - `.md`, `.txt`
 - Config files: `.json`, `.yaml`, `.yml`, `.toml`, `.ini`, `.env`, `.cfg`, `.conf`
@@ -79,13 +79,13 @@ Source files with no functions or methods (e.g., a file containing only constant
 If the active `comment-convention.md` has no section for the target file's language:
 
 1. Stop the walk.
-2. Run a **scoped single-language grill** — only the topics for this one language (see `grill-topics.md`). Do NOT run the full multi-language grill again.
+2. Run a **scoped single-language grill**, covering only the topics for this one language, per `grill-topics.md`. Do NOT run the full multi-language grill again.
 3. Append a new `## <Language>` H2 section to the existing `comment-convention.md`.
 4. Resume the walk.
 
 ---
 
-## Skip list — vendored and generated directories
+## Skip list: vendored and generated directories
 
 During folder walks, skip these directories silently:
 
@@ -114,6 +114,6 @@ Anything else that looks generated (e.g., a directory named `generated`, `autoge
 ## Do not
 
 - Do **not** auto-import from an existing convention file unless the user explicitly requests it when running `--new-convention`.
-- Do **not** flush file changes to disk mid-file — batch writes are owned by `preview-loop.md`.
+- Do **not** flush file changes to disk mid-file. Batch writes are owned by `preview-loop.md`.
 - Do **not** validate or alter existing comments on symbols the skill has no intent to touch.
 - Do **not** add features beyond the six invocation forms above.

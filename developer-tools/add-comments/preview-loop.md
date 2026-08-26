@@ -9,7 +9,7 @@ Per-symbol preview and approve loop. Called by `SKILL.md → preview-walk` for e
 Show a fenced code block containing:
 
 - The symbol being commented, with the new or changed comment in place
-- Enough surrounding context to make the target unambiguous — at minimum the enclosing class signature (if any) and a few lines above and below the symbol
+- Enough surrounding context to make the target unambiguous, at minimum the enclosing class signature, where there is one, and a few lines above and below the symbol
 
 Label the block with the language identifier. Do not show a diff; show the final proposed state.
 
@@ -26,13 +26,13 @@ After each preview, present exactly four options:
 | `skip` | Leave this symbol unchanged; move to the next symbol |
 | `accept-file` | Approve all remaining symbols in this file without further per-symbol prompts; stage them all |
 
-Wait for one of these four responses. Do not advance on silence or ambiguous input — re-present the options.
+Wait for one of these four responses. Do not advance on silence or ambiguous input. Re-present the options.
 
 ---
 
 ## Per-file batch writes
 
-Approved and edited changes are held in memory as the walk progresses through a file. They are flushed to disk as a single write only when the file is fully complete — meaning every symbol in the file has been either approved/edited or skipped.
+Approved and edited changes are held in memory as the walk progresses through a file. They are flushed to disk as a single write only when the file is fully complete, meaning every symbol in the file has been approved, edited, or skipped.
 
 This ensures that a mid-session abort while working through file N does not partially corrupt file N.
 
@@ -43,7 +43,7 @@ This ensures that a mid-session abort while working through file N does not part
 If the user aborts (closes the session, types `abort`, `cancel`, or equivalent) mid-file:
 
 - Discard all staged-but-not-yet-flushed changes for the current file.
-- All previously completed files — those that were fully walked and flushed — remain written and are not rolled back.
+- All previously completed files, meaning those that were fully walked and flushed, remain written and are not rolled back.
 
 ---
 

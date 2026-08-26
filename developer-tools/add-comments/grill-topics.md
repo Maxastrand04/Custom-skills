@@ -2,15 +2,15 @@
 
 The convention grill runs before any source files are read or written. It is a pure interview. No files are touched until the user explicitly approves the finalized convention.
 
-Run it under the `grilling` skill's interview mechanics — invoke it. This document supplies the agenda: the topics, their order, and the question text for each.
+Run it under the `grilling` skill's interview mechanics, so invoke it. This document supplies the agenda, meaning the topics, their order, and the question text for each.
 
-**Override `grilling` on one point:** do not explore source files to answer a topic. A convention is the user's preference, not an inference from the comments the codebase happens to carry today. Vocabulary-only reading of `CONTEXT.md`, `README.md`, and `docs/adr/` is the one exception. Every other `grilling` mechanic holds — including recommending an answer, which `language-idioms.md` exists to supply.
+**Override `grilling` on one point:** do not explore source files to answer a topic. A convention is the user's preference, not an inference from the comments the codebase happens to carry today. Vocabulary-only reading of `CONTEXT.md`, `README.md`, and `docs/adr/` is the one exception. Every other `grilling` mechanic holds, including recommending an answer, which `language-idioms.md` exists to supply.
 
 **Sequencing pin:** The grill does NOT begin until the user has confirmed which languages are in scope. After each topic, the skill records the answer and moves to the next topic without re-asking confirmed answers.
 
 ---
 
-## Topic 1 — Inline vs above-symbol placement
+## Topic 1: Inline vs above-symbol placement
 
 Ask the user:
 
@@ -22,7 +22,7 @@ Record:
 
 ---
 
-## Topic 2 — Per-language docstring / doc-comment format
+## Topic 2: Per-language docstring and doc-comment format
 
 For each language the user names as in scope, ask:
 
@@ -42,11 +42,11 @@ Record the chosen format per language.
 
 ---
 
-## Topic 3 — WHY not WHAT
+## Topic 3: WHY not WHAT
 
 State the principle and confirm agreement:
 
-> Comments should explain *why* a decision was made, not *what* the code does — the code already shows that. Do you agree? Are there any exceptions (e.g. regex patterns, non-obvious algorithms, required compliance annotations)?
+> Comments should explain *why* a decision was made, not *what* the code does, since the code already shows that. Do you agree? Are there any exceptions, such as regex patterns, non-obvious algorithms, or required compliance annotations?
 
 Record:
 - Whether the user agrees with WHY-not-WHAT as the default.
@@ -54,26 +54,26 @@ Record:
 
 ---
 
-## Topic 4 — Parameters, returns, exceptions, and local variables
+## Topic 4: Parameters, returns, exceptions, and local variables
 
-Four separate axes, **one per turn** — each asked with its threshold, not as a blanket question:
+Four separate axes, **one per turn**, each asked with its threshold rather than as a blanket question:
 
-1. **Params** — documented at what threshold: all / public-API only / complex only / never?
-2. **Returns** — always / non-obvious only / never?
-3. **Exceptions** (raised or thrown) — always / public-API only / never?
-4. **Local variables** — only non-obvious ones / never?
+1. **Params.** Documented at what threshold: all, public-API only, complex only, or never?
+2. **Returns.** Always, non-obvious only, or never?
+3. **Exceptions**, raised or thrown. Always, public-API only, or never?
+4. **Local variables.** Only non-obvious ones, or never?
 
 If a user's answer to one axis pre-empts a later one, confirm it rather than re-asking. Record per-language if the answers differ across languages.
 
 ---
 
-## Topic 5 — Per-language idiomatic style
+## Topic 5: Per-language idiomatic style
 
 For each language in scope, ask:
 
-> Are there idiomatic conventions for `<language>` that you want enforced — for example, Go exported-function comments starting with the function name, or Rust `///` for public items only?
+> Are there idiomatic conventions for `<language>` that you want enforced, for example Go exported-function comments starting with the function name, or Rust `///` for public items only?
 
-Consult `language-idioms.md` internally to prompt with the canonical idiom if the user is unsure, but do not paste the reference at the user — summarise it in a single sentence as a prompt option.
+Consult `language-idioms.md` internally to prompt with the canonical idiom if the user is unsure, but do not paste the reference at the user. Summarise it in a single sentence as a prompt option.
 
 Record any per-language idiom preferences that override or extend the format chosen in Topic 2.
 

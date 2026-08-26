@@ -20,7 +20,7 @@ Never install it silently. Print the command, say what each tool is for, and let
 
 Without `yt-dlp` there is no video branch at all. Say so, drop to the deck-only path, and keep going. A missing transcript costs coverage; it does not fail the run.
 
-## Tier 1 — captions
+## Tier 1: captions
 
 Cheap and instant. Most university uploads have something.
 
@@ -36,7 +36,7 @@ Manual subtitles beat auto-captions when both land. Prefer the one without `.aut
 
 Swedish auto-captions are the usual reason to drop. YouTube's Swedish model is much weaker than its English one, and KB-Whisper below exists precisely because of that gap.
 
-## Tier 2 — local transcription
+## Tier 2: local transcription
 
 Used when there are no captions, or tier 1 failed its check.
 
@@ -75,7 +75,7 @@ Always set `-l`. It does not default to auto-detect, it defaults to `en`, so a S
 
 The `.srt` carries timestamps. They become the `[🎙 mm:ss]` tags, so keep them attached as the transcript is read rather than flattening it to plain text.
 
-**The deck spells the terminology, not the transcript.** A technical term is the least predictable word in the audio, so it is the first thing any transcript gets wrong, and this survives tier 2 — a good model still returns "each envelopes" for "eigenvalues". Read every domain term in the transcript against the deck's own vocabulary and correct it there. A mangled term copied into the notes is worse than a gap, because it looks like a real word and gets revised from.
+**The deck spells the terminology, not the transcript.** A technical term is the least predictable word in the audio, so it is the first thing any transcript gets wrong, and this survives tier 2, where a good model still returns "each envelopes" for "eigenvalues". Read every domain term in the transcript against the deck's own vocabulary and correct it there. A mangled term copied into the notes is worse than a gap, because it looks like a real word and gets revised from.
 
 Match the transcript to the deck by content, not by clock time. A lecturer spends nine minutes on slide 3 and twenty seconds on slide 4, so timestamps do not divide evenly across slides.
 

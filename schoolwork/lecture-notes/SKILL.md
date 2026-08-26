@@ -26,7 +26,7 @@ Tag the sentence, not the section. A paragraph mixing deck content and filled co
 
 This holds the file's one guarantee: `grep '\[fill\]' <file>` lists everything invented. Untagged filled text breaks it.
 
-## Step 1 — Locate the course
+## Step 1: Locate the course
 
 The deck's own folder is normally `Lectures/`, and the course root is that folder's parent. Only these siblings of the course root matter:
 
@@ -43,7 +43,7 @@ Never read above the course root or outside it. A course with no `Exercises/` or
 
 **Done when:** the course root is resolved, the output path is fixed at `Lecture-notes/<deck-filename>.md`, and each of the four siblings is recorded present or absent.
 
-## Step 2 — Settle the video
+## Step 2: Settle the video
 
 A YouTube link passed with the invocation is the lecture video; use it. If no link was passed, ask once whether one exists. A "no" fixes the deck-only path for the rest of the run, so do not ask again.
 
@@ -51,13 +51,13 @@ With a link, read `transcript.md` in this skill directory and follow it.
 
 **Done when:** either a timestamped transcript exists on disk, or this run is recorded as having no video.
 
-## Step 3 — Read every page of the deck
+## Step 3: Read every page of the deck
 
 The Read tool caps a PDF at 20 pages per call and requires an explicit `pages` range past 10. Get the deck's page count first, then read consecutive batches until the last page is covered.
 
 **Done when:** the highest page read equals the deck's total page count. Not "the substance is covered" and not "the rest is summary slides". Every page.
 
-## Step 4 — Flag the high-yield topics
+## Step 4: Flag the high-yield topics
 
 Skip this step entirely when both `Exercises/` and `Exams/` are absent.
 
@@ -73,7 +73,7 @@ Flag the topic and its count. Never copy an exam question into the notes.
 
 **Done when:** every topic section in the deck has been checked against the index's frequency table, or the step was skipped for one of the two reasons above.
 
-## Step 5 — Write the file
+## Step 5: Write the file
 
 Follow the deck's own order so the notes can be read alongside the slides. Anchor each section to its slide numbers.
 
@@ -116,6 +116,6 @@ Rules for the body:
 
 **Done when:** the file is written, every section maps to a slide range, and every non-deck sentence carries its tag.
 
-## Step 6 — Report
+## Step 6: Report
 
 State four things and stop: the output path, whether the video branch ran, the number of `[fill]` tags, and the number of `[high-yield]` flags. Point at the grep line so the fills can be audited in one command.

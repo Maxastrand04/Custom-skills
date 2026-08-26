@@ -54,9 +54,9 @@ A list of existing test files where drift was detected between the source and th
 
 Drift is grouped into three buckets per file:
 
-- `+add` — cases that will be added (new behaviour in source not yet tested)
-- `-remove` — cases in the manifest that are no longer relevant (source behaviour removed)
-- `~update` — cases in the manifest that need updating (source signature or behaviour changed)
+- `+add` marks cases that will be added, covering new behaviour in source not yet tested.
+- `-remove` marks cases in the manifest that are no longer relevant, because the source behaviour was removed.
+- `~update` marks cases in the manifest that need updating, because the source signature or behaviour changed.
 
 Format each entry as:
 
@@ -73,15 +73,15 @@ Omit buckets that have no entries. If there are no files to update, omit this se
 
 ## 4. Per-file cases
 
-For every file in sections 2 and 3, list the planned test cases. Cases are described in plain English — no code, no signatures, just the case name and a one-line intent.
+For every file in sections 2 and 3, list the planned test cases. Cases are described in plain English, with no code and no signatures, just the case name and a one-line intent.
 
 Format each file block as:
 
 ```
 tests/auth/test_login.py:
-  - test_login_valid_credentials — returns user object on success
-  - test_login_wrong_password — raises AuthError
-  - test_login_missing_username — raises ValueError
+  - test_login_valid_credentials: returns user object on success
+  - test_login_wrong_password: raises AuthError
+  - test_login_missing_username: raises ValueError
 ```
 
 For files to update, list only the cases being added or changed. Cases that remain unchanged are not repeated here.
