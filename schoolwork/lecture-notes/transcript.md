@@ -75,10 +75,8 @@ Always set `-l`. It does not default to auto-detect, it defaults to `en`, so a S
 
 The `.srt` carries timestamps. They become the `[🎙 mm:ss]` tags, so keep them attached as the transcript is read rather than flattening it to plain text.
 
-**The deck spells the terminology, not the transcript.** A technical term is the least predictable word in the audio, so it is the first thing any transcript gets wrong, and this survives tier 2, where a good model still returns "each envelopes" for "eigenvalues". Read every domain term in the transcript against the deck's own vocabulary and correct it there. A mangled term copied into the notes is worse than a gap, because it looks like a real word and gets revised from.
+**The deck spells the terminology, not the transcript.** A technical term is the least predictable word in the audio, so it is the first thing any transcript gets wrong, and this survives tier 2, where a good model still returns "each envelopes" for "eigenvalues". Read every domain term in the transcript against the deck's own vocabulary and correct it there. A mangled term taught out loud is worse than a gap, because it looks like a real word and the user learns it.
 
 Match the transcript to the deck by content, not by clock time. A lecturer spends nine minutes on slide 3 and twenty seconds on slide 4, so timestamps do not divide evenly across slides.
 
-The transcript adds what the slides left out. It does not overrule them: where the two disagree, the deck is what the lecturer chose to publish. Note the disagreement in Open questions.
-
-A transcript does not retire `[fill]`. Lecturers skip things too, and the gaps that remain are still filled and still tagged.
+The transcript adds what the slides left out. It does not overrule them. Where the two disagree, the deck is what the lecturer chose to publish, so say the disagreement out loud while teaching rather than picking a side quietly.
