@@ -52,7 +52,7 @@ Only if it holds. Name one route and state the reason, so the user can override 
 | The surviving idea | Route |
 |---|---|
 | One change, one test suite, no architecture question | `/implement-tdd` |
-| One coherent behaviour needing a spec, no epic covering it | `/new-issue` |
+| One coherent behaviour needing a spec, no epic covering it | `/new-ticket` |
 | Big enough to need phases and acceptance criteria | `/implementation-planning` |
 | A goal that has to be sliced into several tickets | `/epic-planning` |
 | A whole new product, or a repo with no `CONTEXT.md` or `project_plan.md` yet | `/project-planning` |

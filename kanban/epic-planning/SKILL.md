@@ -9,11 +9,12 @@ You are Opus in the main thread. All work in this skill is Opus-direct, with no 
 
 Read `project_plan.md` at the consuming project's repo root, let the user pick an epic, and turn its goal into a GitHub-native **map**. The epic's `(N)` issue holds the destination and a running decision log, and its **tickets**, which are native GitHub sub-issues typed `task`, `research`, or `prototype`, are the actual work items, wired together with native blocking. Everything reachable now gets grilled and published in this session; anything not yet specifiable is written down as fog and revisited on a later run.
 
-This skill owns every epic-linked ticket end to end. `new-issue` is only for cold-start or standalone issues with no epic. Invoke the `grilling` skill for interview mechanics throughout; this document only defines the agenda and ticket typing. It reads three bundled templates at runtime. Do not assume their contents from this document:
+This skill owns every epic-linked ticket end to end. `new-ticket` is only for standalone tickets with no epic. Invoke the `grilling` skill for interview mechanics throughout; this document defines the agenda, the ticket typing, and the map, and nothing else.
 
-- `template_epic_issue.md` holds the map body, with Destination, Notes, Decisions so far, and Not yet specified.
-- `template_task_ticket.md` holds the deliverable ticket body, with Goal, Acceptance criteria, and Out of scope.
-- `template_question_ticket.md` holds the research and prototype ticket body, which is a Question only.
+Read these at runtime. Do not assume their contents from this document:
+
+- **`../new-ticket/ticket-shapes.md` is the single source of truth** for ticket body shape, title format, labels, branch slug, the AI disclaimer, gh preflight, the publish loop, and native wiring. Read it before Step 1. Everything this skill publishes below the map issue follows it.
+- `template_epic_issue.md` holds the map body, with Destination, Notes, Decisions so far, and Not yet specified. The map is not a ticket, so this template lives here.
 
 ---
 
@@ -25,19 +26,7 @@ Accept an optional epic number `N` as an argument, as in `/epic-planning 2`. If 
 
 ## Step 1: gh preflight
 
-Before reading the plan, confirm `gh` is installed, authenticated, and pointed at a real repo. Run, in order:
-
-1. `gh --version`
-2. `gh auth status`
-3. `gh repo view`
-
-Remediation:
-
-- **`gh --version` fails.** `gh` is not installed. On macOS, run `brew install gh`. On other platforms, see https://cli.github.com/. Stop and wait.
-- **`gh auth status` fails.** Run `gh auth login` and wait for confirmation before proceeding.
-- **`gh repo view` fails.** Ask the user which repo to file the issue against, capture `owner/name`, and pass `--repo owner/name` to every subsequent `gh` call in this session.
-
-Do not proceed until preflight passes or the `--repo` fallback is captured.
+Run the **gh preflight** from `ticket-shapes.md`, including its remediation steps. Do not proceed until it passes or the `--repo` fallback is captured.
 
 ---
 
@@ -114,47 +103,23 @@ Render `template_epic_issue.md`:
 gh issue create --title "(N) [epic] <epic name>" --body "$(cat ...rendered...)"
 ```
 
-Note the issue number. Every wiring call below needs the **numeric database id** of an issue, not its number. Get it with:
-
-```
-gh api repos/{owner}/{repo}/issues/<issue-number> --jq .id
-```
+Capture its issue number and its numeric database id, per `ticket-shapes.md`. Every wiring call below needs the id.
 
 ### Step 8: Publish tickets
 
-**Research and prototype tickets.** For each, render `template_question_ticket.md` with the question filled in, then:
+Every ticket here uses `ticket-shapes.md`'s shapes, titles, labels, and publish loop. Epic tickets take the `epic:` label scope, so `epic:task`, `epic:research`, and `epic:prototype`.
 
-```
-gh issue create --title "[research] <short title>" --body "$(cat ...rendered...)" --label "epic:research"
-```
+**Research and prototype tickets** use the question ticket shape. Publish the whole batch directly, with no further per-item discussion, since the question was already agreed at the Step 6 gate.
 
-Use `[prototype]` and `epic:prototype` for prototypes. These carry no `(N.M)` id tag, since they aren't implementation-plan targets. Publish the whole batch of these directly, with no further per-item discussion.
+**Task tickets** use the task ticket shape and are processed **one at a time**, sequentially. For each:
 
-**Task tickets.** Process these **one at a time**, sequentially. For each:
-
-1. Draft the Goal and a short rationale for the proposed Acceptance criteria and Out of scope, from what the breadth-first grill already surfaced. Fill `## Branch` too, with a **2-4 word, kebab-case, no-article** slug derived from the title: `Add OAuth login for admin dashboard` gives `oauth-admin-login`. Slug only, with no issue number, since it doesn't exist yet and `implementation-planning` prepends it, and no `feature/` prefix.
-2. Present the draft to the user, then discuss and refine. The acceptance criteria carry the most weight here, so spend the discussion on those, not on prose.
+1. Draft the Goal, the Acceptance criteria, the Out of scope, and the Branch slug from what the breadth-first grill already surfaced.
+2. Run the publish loop's preview and edit cycle. The acceptance criteria carry the most weight, so spend the discussion on those, not on prose.
 3. Assign the `(N.M)` id by reading `project_plan.md`'s existing rows under `### Epic N` and taking `max(M) + 1`, starting at 1 if none exist. This is append-only. Never renumber existing rows.
-4. Publish:
-   ```
-   gh issue create --title "(N.M) [feature] <short title>" --body "$(cat ...rendered template_task_ticket.md...)" --label "epic:task"
-   ```
-   Every task defaults to feature-shaped. Do not ask feature vs bug here.
+4. Publish with the title `(N.M) [feature] <short title>`. Every task defaults to feature-shaped, so do not ask feature vs bug here.
 5. Move to the next task ticket.
 
-**Wire sub-issue and blocking for every ticket published**, task, research, and prototype alike. Fetch each ticket's numeric id the same way as Step 7, then:
-
-```
-gh api repos/{owner}/{repo}/issues/<map-issue-number>/sub_issues -X POST -F sub_issue_id=<ticket-numeric-id>
-```
-
-For each confirmed blocking edge, `X blocked by Y`:
-
-```
-gh api repos/{owner}/{repo}/issues/<X-issue-number>/dependencies/blocked_by -X POST -F issue_id=<Y-numeric-id>
-```
-
-After the `gh` calls, surface the map issue URL and every ticket's URL to the user.
+**Wire every published ticket** as a sub-issue of the map, and wire each confirmed blocking edge, per `ticket-shapes.md`'s native wiring. This covers task, research, and prototype alike.
 
 ### Step 9: Regenerate the plan's task-row table
 
@@ -202,4 +167,3 @@ If nothing has closed since the last run, tell the user there's nothing to gradu
 - **Append-only `(N.M)` numbering** for task tickets. Never renumber or delete existing rows on re-run.
 - **`project_plan.md`'s task table is regenerated from GitHub, never hand-authored.** If GitHub and the plan ever disagree, GitHub wins.
 - **Opus-direct.** No subagent dispatch.
-- **The ticket names its own branch.** `template_task_ticket.md` carries a `## Branch` slug plus a standing footer, and `implementation-planning` prepends the GitHub issue number so `review-diff` can link the work back. Fill the slug, and do not strip the footer, when refining task drafts in Step 8.

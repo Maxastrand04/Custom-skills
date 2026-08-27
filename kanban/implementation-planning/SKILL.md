@@ -24,7 +24,7 @@ The phase runs as **one continuous session toward a single reached understanding
 Before any grill content runs, route the session by checking these three cases in order. Stop at the first match:
 
 1. **Explicit `<issue-ref>` arg.** The user invoked the skill with the **GitHub issue number** (`42` or `#42`), a full GitHub issue URL, or a natural-language description of an existing issue. The GitHub number is the canonical way in, so resolve URLs and descriptions down to it via `gh issue list` and `gh issue view`. Jump directly to the **from-issue path**.
-2. **Auto-detect, strict and confirmed.** Applies only when **both** gates hold: `new-issue` ran in the **current session** and posted an issue, leaving a fresh issue URL in conversation context, AND the user explicitly confirms when prompted. Even when the first gate holds, **always prompt before skipping the WHAT-grill**. Never auto-route silently.
+2. **Auto-detect, strict and confirmed.** Applies only when **both** gates hold: `new-ticket` ran in the **current session** and posted an issue, leaving a fresh issue URL in conversation context, AND the user explicitly confirms when prompted. Even when the first gate holds, **always prompt before skipping the WHAT-grill**. Never auto-route silently.
 3. **Standalone fallback.** Neither matched. Run the full grill below.
 
 ### From-issue path
@@ -36,7 +36,7 @@ Triggered by case 1 or a confirmed case 2:
 - **Lift acceptance criteria from the issue.** Parse the body for explicit acceptance criteria, "Done when" text, or checklist items, and assign each an `AC-N` ID. These feed the combined draft at the end. Don't stop for a separate confirmation here.
 - **Capture the issue title and number, and derive the plan slot** for Phase 2, so the plan filename and title mirror the issue and the link is obvious at a glance. Two title conventions are both valid:
   - **Tagged.** The title leads with an `(N)` or `(N.M)` token, which is what `epic-planning` tickets carry. The slot is that token verbatim: `(1.3) [feature] …` gives slot `1.3`.
-  - **Untagged.** No leading token, which is what `new-issue` issues carry. The slot is the GitHub issue number: `#42` gives slot `42`.
+  - **Untagged.** No leading token, which is what `new-ticket` tickets carry. The slot is the GitHub issue number: `#42` gives slot `42`.
 
   Never ask the user to retitle an issue to fit a convention.
 

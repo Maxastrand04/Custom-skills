@@ -1,6 +1,6 @@
 # Sub-issue splitting guide
 
-Use this guide when a parent issue is large enough that Claude proposes a multi-plan split. It defines how to slice the parent into sub-issues that can each ship on their own and that, together, cover everything the parent promised.
+Use this guide when a parent ticket is large enough that Claude proposes a split. It defines how to slice the parent into sub-issues that can each ship on their own and that, together, cover everything the parent promised.
 
 ## Vertical-slice rule
 
@@ -11,24 +11,16 @@ Each sub-issue must be a **vertical slice**, meaning an end-to-end, demoable cha
 
 If a proposed sub-issue cannot be demoed end-to-end without one of the others shipping first as a hard prerequisite of *the same behavior*, it is probably a layer, not a slice. Either merge it back into the parent or restructure the split.
 
-## Sub-issue body template
+## Filling the body
 
-Every sub-issue body uses `template_issue.md`, the same shape as the parent: `## Goal`, `## Acceptance criteria`, and `## Out of scope`, with the AI-disclaimer block as the first line.
+Every sub-issue uses the task ticket shape, the same as the parent. See `ticket-shapes.md`.
 
-Fill the template per sub-issue:
+Per sub-issue:
 - **Goal** describes the slice end-to-end at behavior level, with no file paths and no code.
 - **Acceptance criteria** are observable conditions specific to this slice.
 - **Out of scope** names the neighbouring slices this one does not deliver.
 
-Parentage and blocking are **not** body sections. They are wired natively via the GitHub API. See *Native wiring* in `SKILL.md`.
-
-## Dependency-order publishing
-
-Publish sub-issues in **dependency order**, so that when a blocking edge is wired, the issue it points at already exists.
-
-- Start with sub-issues that have no blockers.
-- Publish each next sub-issue only after every sub-issue it is blocked by has been published, then POST its blocking edges.
-- If a cycle appears in the proposed blocking graph, the split is wrong. Go back and re-slice until the graph is acyclic.
+Parentage and blocking are **not** body sections. They are wired natively via the GitHub API. See *Native wiring* in `ticket-shapes.md`.
 
 ## Two-tier coverage check
 

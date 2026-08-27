@@ -48,7 +48,6 @@ Coding skills that aren't stations on the board. No ordering, and no artifacts p
 | `codebase-rules` | Surveys the codebase and grills me into one-rule-per-file ADRs in `docs/adr/`, shaped `Rule / Why / How-to-check`. These are what `review-diff` cites. |
 | `add-comments` | Establishes a persisted `comment-convention.md`, then walks the code symbol by symbol with an approve/edit/skip preview. Missing language mid-walk triggers a scoped grill. |
 | `generate-framework-tests` | Real runnable tests for pytest, vitest, jest, go test, cargo test, or JUnit. A sidecar manifest gives fast-exit when nothing changed and drift-diff when it did. User-added cases are never touched. |
-| `new-issue` | A WHAT grill that publishes a GitHub Issue, for work no epic covers. Deliberately **not** in the chain, since the board goes straight from an epic task to a plan. Splits oversized scope into linked sub-issues. |
 | `brainstorming` | The front door to everything else. Grills an idea trying to **kill** it, then gives a binary verdict, either dead or a paragraph of concrete functionality, and routes the survivor to whichever skill is the smallest fit. |
 | `pro-con` | Weigh a decision and commit to a recommendation. Fixed output shape. Manual invocation only. |
 
