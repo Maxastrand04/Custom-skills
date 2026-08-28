@@ -81,9 +81,6 @@ Write the file as headings with empty bodies. The queue and the notes are the sa
 > `[🎙 12:34]` marks something said in the video and not on the slides. Everything untagged is how I explained it back.
 > Progress: 0 of 9 topics.
 
-## In one paragraph
-What this lecture is about and where it sits in the course. Written now, from the deck.
-
 ## 1. <Topic> (slides 4-11)
 > Indexed as: Matrix multiplication · Not covered yet.
 
@@ -92,6 +89,8 @@ What this lecture is about and where it sits in the course. Written now, from th
 ```
 
 That one metadata line per topic carries everything the later runs need. A topic run finds its next topic by scanning for the first line still ending `Not covered yet.`, and works out which exercises are unlocked by reading the `Indexed as` names off every line in `Lecture-notes/` already marked `Covered`. Both greps are exact, so keep the field names and the ` · ` separators as written.
+
+Nothing else goes in. No summary of the lecture, no orientation paragraph, since every word of the body is the user's own and none of it is written yet. Headings carry no notation either. Name things in words, the way [`teaching.md`](teaching.md) requires of every later run.
 
 **Done when:** the file exists, the headings cover the deck in order, every metadata line ends `Not covered yet.`, and the progress line says 0.
 

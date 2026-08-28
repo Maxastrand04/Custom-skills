@@ -4,6 +4,42 @@ Reached from [`SKILL.md`](SKILL.md) when the notes file already exists. One topi
 
 Invoke `talk-to-highschooler` for the opening explanation and `unslop` for anything written to the file. Both bend to whatever the user needs instead; the level that makes it click wins over the default level.
 
+## Inline math is banned
+
+Holds everywhere in this skill, in the notes file and in chat. It is the rule most likely to slip, because writing `$x$` mid-sentence is a reflex, so check it deliberately rather than trusting that you followed it.
+
+**A line containing a single `$` is a bug.** Dollar signs appear only as a `$$` fence, alone on its own line, with a blank line above and below. Every other inline form is banned too: `$...$`, `\( ... \)`, and LaTeX wrapped in backticks.
+
+There is no exception for a short expression, a single variable, or a Greek letter. Short inline math is exactly what produces the unreadable output, since a paragraph broken up by a dozen dollar signs is harder to read than one that says the same thing in words.
+
+Three cases cover every temptation:
+
+| Reflex | Write instead |
+|---|---|
+| the vector `$v$`, `$n$` grows | the vector v, n grows. A bare Latin letter is written bare, with no markup at all |
+| `$\lambda$`, `$\epsilon \to 0$` | lambda, as epsilon shrinks to zero. Greek letters are spelled out in Latin letters |
+| `$O(n^2)$`, `$\frac{1}{2}mv^2$` | anything with structure, meaning a fraction, exponent, subscript, operator, or relation, is either said in words ("quadratic in the number of items") or moved into a `$$` block of its own |
+
+Every block gets its symbols named in words directly under it. An unnamed formula teaches nothing.
+
+```markdown
+The error shrinks with the square of the step size, so halving the step cuts the error to a quarter.
+
+$$
+E = C h^2
+$$
+
+E is the error, h is the step size, and C is a constant that depends on the function but not on h.
+```
+
+**Check it, do not trust it.** After writing to the notes file, run this against it:
+
+```bash
+grep -n '\$' "<path to notes file>" | grep -v ':\$\$$'
+```
+
+Every line it prints is inline math that got through. Rewrite each one by the table above and run it again. A clean run is the only evidence that the rule held.
+
 ## Step 1: Load one topic and nothing else
 
 Scan the notes file for the first metadata line still reading `Not covered yet.` That heading is this session's topic, and its slide range is the whole reading list.
@@ -45,9 +81,20 @@ A topic carrying `**[high-yield]**` gets pushed harder, since it is on the exam.
 
 A claim of understanding is not the gate. The user explains the topic in their own words, with the explanation out of view. Not repeating the phrasing back. If it comes back as the same sentences you said, it is recall, and recall is not the gate.
 
-Where it comes back thin, name the specific part that was thin, go back to step 3, and aim the next move there.
+Ask for the picture, not the definition. How do you see it, what is actually going on, what is moving. That answer is the note itself, word for word, so capture their phrasing as they say it rather than reconstructing it later from memory.
 
-**Done when:** the teach-back stands on its own.
+**Then try to break it.** A picture in the user's own words is fluent by construction, and fluent is not the same as right. Read it back against the deck and hunt for the point where the two diverge. Separate two failures:
+
+- **Crude but true.** It leaves things out, or sits below the deck's precision, and everything it does claim holds. This passes, and the note sits at that level and says so.
+- **Wrong.** It contradicts the deck, or it is an analogy carried past the point where it stops working. This does not pass, however well it was said.
+
+Break it by prediction, not by correction. Find the case where their picture and the deck give different answers, pose it, and let them answer from their picture. Watching their own picture produce the wrong answer is what makes the fault real to them. Being told they are wrong just gets your sentence copied back. Then return to step 3 with the move that fits.
+
+Say the divergence out loud even when the session has run long and they sound finished. A wrong picture written into the file is worse than no file, because they will revise from it for the rest of the course.
+
+Where it comes back thin, name the specific part that was thin, go back to step 3, and aim the next move there. A thin teach-back writes a thin note.
+
+**Done when:** the user's picture stands on its own, it survived the prediction aimed at breaking it, and their wording of it is captured.
 
 ## Step 5: A real exercise
 
@@ -70,7 +117,13 @@ Same fallback when `Exercises/` does not exist, or when `course-index.md` does n
 
 ## Step 6: Write the topic
 
-**The teach-back is the draft.** They just said the thing that works for them; write that down, sharpened, not a fresh summary in your own voice. If the parallel that unlocked it was theirs, the parallel goes in the file. If it clicked at a cruder level than the deck pitches it, the file sits at that cruder level and says so.
+**The note is the user's picture of the topic and nothing else.** They just explained it. That explanation, in their words, is the whole body. Not a fresh summary in your voice, not the deck reworded, not the parts they never reached.
+
+Test every sentence before it goes in: did they say this, or something near enough that they would read it back as theirs? If not, cut it. The file exists to restart their own thinking six weeks from now, and only their own words do that. A textbook paragraph on the same topic is already in the deck.
+
+So keep what they built with. The crude parallel that finally worked stays, even where the deck is more precise. A level below where the deck pitches it stays, and the note says it is sitting low. A wrong first guess stays where correcting it is what made the right answer land. Sharpen their wording by cutting repetition and finishing half-sentences. Never by raising its register.
+
+Where they never got to something the deck covers, the note stays silent on it or names it under **Still shaky**. Do not fill the gap. Coverage is not what this file is for.
 
 Update the metadata line's status from `Not covered yet.` to `Covered <YYYY-MM-DD>.` and write the body under it:
 
@@ -80,12 +133,11 @@ Update the metadata line's status from `Not covered yet.` to `Covered <YYYY-MM-D
 
 **Clicked by** deriving it from the definition of a linear map, one step at a time.
 
-<The explanation, in the user's framing, as prose. Where a step was the thing that unlocked
-it, keep the step. Where a wrong first guess is what made the right answer land, keep the
-wrong guess and say why it fails. The lecturer said the noise is a feature, not a bug
-[🎙 24:10].>
+<Their picture of the topic, in their own words, as prose. Nothing in here that they did
+not say. I kept thinking of the noise as something to remove, but the lecturer treats it as
+the point [🎙 24:10].>
 
-**Formula.** Every symbol named in words, right under it.
+**Formula.** In a `$$ ... $$` block, symbols named in words right under it.
 
 **Exercises.** sheet-03 Q2, done. First pass scaled the vector instead of leaving it alone,
 which is the thing to watch for.
@@ -98,15 +150,15 @@ Rules for the body:
 - The **Clicked by** line is the refresher hook. Name the move and what it was built on, in one sentence, so re-reading it six weeks later restarts the same path.
 - **Exercises** names every question worked and what the mistake was, since the mistake is the part worth re-reading. When nothing was unlocked, it reads `None unlocked yet, sheet-04 Q3 is waiting on <topic>` instead.
 - Prose, not bullets. A bullet list mirroring the slide's bullet list has added nothing.
-- Every formula gets its symbols named. An unexplained formula is a picture.
-- A diagram the deck shows gets described in words, since the file holds no images.
-- No naked terms. Any domain word gets its plain-words gloss in the sentence it first appears in.
-- `[🎙 mm:ss]` tags anything that came from the video and is not on the slides. Nothing else is tagged, because everything else is the user's own account.
+- Math in `$$ ... $$` blocks only. Run the inline-math grep from the top of this file over the notes file once the body is written, and fix every line it prints.
+- A diagram only reaches the file when the user's picture leans on it, described the way they described it, since the file holds no images.
+- No naked terms. Any domain word gets a plain-words gloss in the sentence it first appears in. Where they used the word without ever unpacking it, ask them for the gloss at step 4 rather than supplying your own.
+- `[🎙 mm:ss]` tags a line from the video that the user took up as their own. A lecturer's phrasing they never adopted is not part of their picture and does not reach the file.
 - **Still shaky** only when something genuinely is. An empty one is noise.
 
 Then bump the progress line at the top of the file.
 
-**Done when:** the section is written, the status reads `Covered`, and the progress count matches.
+**Done when:** every sentence in the body traces back to something the user said, the inline-math grep returns nothing, the status reads `Covered`, and the progress count matches.
 
 ## Step 7: Spend what this topic unlocked
 
