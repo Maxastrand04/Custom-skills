@@ -17,6 +17,7 @@ One topic per session. Context stays small and each topic gets the whole window.
 Check for `Lecture-notes/<deck-filename>.md`.
 
 - **Missing** -> this is the map run. Steps 1 to 5 below, then stop. No teaching.
+- **Present, header reads `Video: not asked`** -> `lecture-preview` wrote the map before the lecture and never settled the video. Do step 2 only, rewrite the header field with what it returns, then carry on into `teaching.md`.
 - **Present** -> this is a topic run. Read [`teaching.md`](teaching.md) and follow it. Nothing else on this page applies.
 
 ## Step 1: Locate the course
