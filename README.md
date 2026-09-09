@@ -1,6 +1,6 @@
 # Custom-skills
 
-My personal Claude Code skills. This repo is where I keep them, version them, and reason about how they fit together. It isn't a distribution.
+My personal Claude Code skills. This repo is where I keep them, version them, and reason about how they fit together. It is built around how I work rather than packaged as a general-purpose kit, but it installs cleanly on any machine. See [setup](#setup).
 
 Each skill is a directory with a `SKILL.md` entrypoint plus whatever bundled files it references. They're grouped by purpose:
 
@@ -12,11 +12,64 @@ schoolwork/        study skills, for when I'm the learner
 archive/           retired, never installed
 ```
 
-`install.sh` walks those categories and symlinks each skill flat into `~/.claude/skills/<name>`. Claude Code discovers skills by bare name, so the category is repo-level organisation only.
+`install.sh` walks those categories and symlinks each skill flat into `~/.claude/skills/<name>`. Claude Code discovers skills by bare name, so the category is repo-level organisation only. See [setup](#setup) to install them.
 
 **Invocation follows that grouping exactly.** `behaviour/` is model-invoked. Everything else sets `disable-model-invocation: true` and only starts when I type its name.
 
 The split is about what a skill does, not what it covers. A `behaviour/` skill is borrowed by work already running, so it has to be reachable by name. Every other skill starts work, and deciding what work happens next is my job. So they carry no model-facing description, cost nothing per turn, and no skill in this repo ever invokes another outside `behaviour/`. The chain hands off through artifacts, and `brainstorming` ends by naming a route instead of taking it.
+
+---
+
+## Setup
+
+Claude Code only. Nothing here is packaged for any other tool, and the frontmatter fields the install script checks are Claude Code's.
+
+**1. Clone the repo somewhere permanent.** The install links back to the clone rather than copying files, so moving or deleting the directory later breaks every installed skill.
+
+```bash
+git clone https://github.com/Maxastrand04/Custom-skills.git ~/GitHub/Custom-skills
+cd ~/GitHub/Custom-skills
+```
+
+**2. Run the installer.**
+
+```bash
+./install.sh
+```
+
+It creates `~/.claude/skills/` if it is missing, then symlinks every skill in `kanban/`, `developer-tools/`, `behaviour/`, and `schoolwork/` to `~/.claude/skills/<name>`. `archive/` is skipped. Before linking anything it checks that each skill has a `SKILL.md` whose frontmatter carries a `name` and a `description`, and that the `name` matches the directory. A skill that fails any of those is reported and skipped, and the script exits non-zero.
+
+Installing a subset works too, by bare name or category-qualified path:
+
+```bash
+./install.sh grilling unslop
+./install.sh developer-tools/brainstorming
+```
+
+**3. Restart Claude Code** so it picks up the new directory, then check with `/skills`. Model-invoked skills from `behaviour/` are now live. Everything else is user-invoked, so type the name to start it, for example `grilling`.
+
+Re-running `install.sh` is safe. An existing link to the same target is left alone, and a link that points somewhere else inside the repo gets re-pointed, which is what happens when a skill moves between categories. A real file or directory already sitting at the target is never overwritten. That case is reported and skipped for you to resolve by hand.
+
+Because the install is symlinks, `git pull` is the whole update path for skills you already have. Only new skills need `install.sh` again.
+
+### Uninstalling
+
+There is no uninstall script. Remove the links directly:
+
+```bash
+# one skill
+rm ~/.claude/skills/grilling
+
+# every link pointing into this repo
+find ~/.claude/skills -maxdepth 1 -type l -exec sh -c \
+  'readlink "$1" | grep -q "/Custom-skills/" && rm "$1"' _ {} \;
+```
+
+That form works on both macOS and Linux. `find -lname` is shorter but GNU-only, so it is not there.
+
+### Making them yours
+
+The whole repo is opinionated. It encodes how I work, not a general-purpose kit, so treat a fork as the starting point rather than the finished thing. Adding a skill means dropping a directory with a `SKILL.md` into one of the four categories and re-running `install.sh`. A new category needs an entry in the `CATEGORIES` array in `install.sh` first. Names have to stay unique across categories, since the install is flat.
 
 ---
 
@@ -93,6 +146,8 @@ Skills for when I'm the learner rather than the builder. See [schoolwork/README.
 The `eli*` pair do one thing, which is point at their wording rules in [`behaviour/`](behaviour/README.md), one source of truth per level, reachable from any other skill the way `grilling` is. Neither holds across turns. They used to claim they did, and the claim never held, so typing the name again is how you get the level again.
 
 The three course skills hand off through `course-index.md` the way the board hands off through GitHub issues. All of them stay inside one course folder.
+
+In development, not in the repo yet: `write-formula-sheet`, which builds `formulas.md` and `formula-derivations.md` from the lectures, exercises, and exams, grouping formulas by what you use together and ranking the groups by exam frequency from `course-index.md`.
 
 Still planned: rehearsal, spaced repetition, exam prep.
 
