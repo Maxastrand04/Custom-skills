@@ -1,6 +1,7 @@
 ---
 name: implement-tdd
-description: Drive a single small change to completion test-first as Supervisor. Perform a Runner preflight, grill the user into a concrete test suite, write the red tests directly, dispatch one `claude` implementer per attempt against those tests, then dispatch one `Explore` Reviewer once tests pass. Use when user says "implement-tdd", "tdd this", "small change with test", or "test-first implementation".
+description: The small-change bypass around the kanban board. Grills a test suite, writes the red tests, dispatches one implementer per attempt, then one reviewer on green.
+disable-model-invocation: true
 ---
 
 # implement-tdd
@@ -132,6 +133,17 @@ Nothing else.
 
 ---
 
+## Recorded decisions
+
+This skill does not survey `docs/adr/`. It is the small-change bypass, and `refactor-ticket` is where a diff gets read against the whole set. But ADRs bind here as much as anywhere, so when one surfaces during the run, in the Test grill, in the Reviewer's output, or in a file you are about to touch:
+
+- **A decision the change would breach** stops the change, not the decision. Take the compliant approach instead.
+- **A decision that looks stale**, meaning the code it governs has moved on or the trade-off in its Reason no longer holds, is still binding. Note it to the user in one line, naming the ADR and why it looks stale.
+
+Either way, **you never edit a file in `docs/adr/`**. Changing one takes a full `/challenge-adr` session, and only the user can start it. Say so, and let them decide whether to break off and run it. Never assume a challenge would succeed and build as though it already had.
+
+---
+
 ## Delegation rules
 
 Writing production code and running the Reviewer pass are the only work that leaves your hands. **You handle everything else directly:**
@@ -139,6 +151,7 @@ Writing production code and running the Reviewer pass are the only work that lea
 - Running the test runner between implementation attempts.
 - All grill conversations, meaning the Test grill, the Test-failure grill, and the user-confirmation clarification.
 - Plan-amendment edits and any edits to `CONTEXT.md` from the No-framework decision.
+- Naming a breached or stale ADR to the user. Never editing one.
 - The Final report.
 
 Never use `general-purpose` for the implementer; use `claude`. Never use a writable subagent type for the Reviewer; use `Explore`.

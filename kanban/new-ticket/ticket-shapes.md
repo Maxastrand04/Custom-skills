@@ -1,12 +1,14 @@
 # Ticket shapes
 
-The single source of truth for every ticket this system publishes, whether `new-ticket` files it standalone or `epic-planning` files it under an epic. Body shape, title, label, branch slug, publish loop, and native wiring all live here. Neither skill restates them.
+The single source of truth for every ticket this system publishes, whether `new-ticket` files it standalone or `map-epic` files it under an epic. Body shape, title, label, branch slug, publish loop, and native wiring all live here. Neither skill restates them.
 
 ## The two shapes
 
 Every ticket is one of two bodies, and nothing else.
 
-- **Task ticket**, `template_task_ticket.md`. Goal, Acceptance criteria, Out of scope, Branch. Used for a deliverable: a standalone feature, a standalone bug fix, or an epic task.
+- **Task ticket**, `template_task_ticket.md`. Goal, Expected behaviour, Out of scope, Branch. Used for a deliverable: a standalone feature, a standalone bug fix, or an epic task.
+
+  **Expected behaviour is user-visible and nothing else.** It says what someone can do once this ships, in the language of the product. It is not a checklist an implementer ticks off, and it never names a function, a file, or a test. `architect-ticket` turns it into the exact tests the implementation has to pass, and that is the skill that owns the precise bar. A ticket that tries to be precise about the codebase steals a decision it isn't holding the context to make.
 - **Question ticket**, `template_question_ticket.md`. A Question and nothing more. Used for research and prototype tickets, which exist to be answered in their own session, not implemented.
 
 Read the template file at publish time. Do not reconstruct either body from this document.
@@ -16,7 +18,7 @@ Read the template file at publish time. Do not reconstruct either body from this
 `<id> <type prefix> <short title>`, where the id is present only for epic tasks.
 
 - **Type prefix** is lowercase and bracketed: `[feature]`, `[bug]`, `[research]`, `[prototype]`.
-- **Id** is `(N.M)` on epic task tickets only, assigned by `epic-planning`. Standalone tickets, research tickets, and prototype tickets carry no id, since they are not implementation-plan targets and the GitHub issue number identifies them.
+- **Id** is `(N.M)` on epic task tickets only, assigned by `map-epic`. Standalone tickets, research tickets, and prototype tickets carry no id, since nothing is implemented from them and the GitHub issue number identifies them.
 - **70 characters total**, counting id and prefix.
 - Sub-issues of a standalone parent inherit the parent's type prefix.
 - No `[parent]` marker. Parentage is visible through GitHub's native sub-issue list.
@@ -45,10 +47,10 @@ gh label create ticket:prototype --color 0E8A16 || true
 
 ## Branch slug
 
-**The ticket names its own branch.** Fill `## Branch` on every task ticket before its first preview, and never leave it to `implementation-planning`. Question tickets have no branch, since nothing is implemented from them.
+**The ticket names its own branch.** Fill `## Branch` on every task ticket before its first preview, and never leave it to `architect-ticket`. Question tickets have no branch, since nothing is implemented from them.
 
 - **2 to 4 words, kebab-case, no articles**, derived from the title. `[feature] Add OAuth login for admin dashboard` gives `oauth-admin-login`.
-- **Slug only.** No issue number, since the issue does not exist yet and `implementation-planning` prepends it. No `feature/` prefix, no type prefix.
+- **Slug only.** No issue number, since the issue does not exist yet and `architect-ticket` prepends it. No `feature/` prefix, no type prefix.
 
 ## AI disclaimer
 
@@ -81,7 +83,7 @@ Do not proceed until preflight passes or the `--repo` fallback is captured.
 Every ticket goes through the same loop: **preview, edit, approve, publish.**
 
 1. **Preview the rendered title and body** as the chat message, showing the full title including id and type prefix, and the full body markdown. The user sees it before any `gh` call. A fenced code block is fine if it reads better.
-2. **Accept natural-language inline edits**, such as "rename criterion 3 to X", "drop the Out of scope bullet about Y", or "tighten the goal". Apply, re-render title and body in full, and offer the next cycle.
+2. **Accept natural-language inline edits**, such as "reword behaviour 3 as X", "drop the Out of scope bullet about Y", or "tighten the goal". Apply, re-render title and body in full, and offer the next cycle.
 3. **Publish only on explicit approval.** Never assume it, and never publish silently.
 
 ```

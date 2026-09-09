@@ -26,69 +26,65 @@ _Avoid_: resource, asset, dependency
 Creating a symlink from `~/.claude/skills/<name>` to this repo's `<category>/<name>/` directory so Claude Code loads the Skill. The symlink is always **flat**, because Claude Code discovers Skills by bare directory name and does not read **Categories**. A Skill that has moved between Categories is silently re-pointed on the next `install.sh` run.
 _Avoid_: deploy, sync, copy
 
-**Prerequisite**:
-A row in a plan's `## Phase 0: Prerequisites`, naming something the implementation calls into but does not build: a module, a function, a feature that must already work, a file the plan modifies, a third-party library, or an external resource. Carries a `Where` and a `How to check` concrete enough to confirm in one action. Drafted by `implementation-planning`'s **Prerequisites sweep** and confirmed row by row by `implementation-plan-execute` before Red starts. A missing or broken one halts the plan, since it has to be implemented or fixed first.
-_Avoid_: blocker, preflight item, dependency, assumption
+**TDD cycle**:
+The three stations `architect-ticket`, `implement-ticket` and `refactor-ticket`, run in that order on one **Ticket** and one branch, as the red, green and refactor legs of one red-green-refactor cycle. Each Skill's name says which leg it is. Red leaves every **Acceptance test** failing, green takes them all passing, refactor changes only shape underneath them. The cycle is split across three sessions rather than three phases of one session, so the legs hand off through the **Red branch** and then the green suite instead of through accumulated context.
+_Avoid_: review stage, QA pass, cleanup pass
 
-**Prerequisites sweep**:
-The `implementation-planning` grill step that runs once the `## Public interface` is settled and works out what that interface leans on. Drafted from Exploration rather than asked cold, and closed by asking whether any of it is missing or broken today. Anything absent is work that must land before the plan can run, and the user decides whether it joins this plan, becomes its own, or blocks it.
-_Avoid_: dependency check, prereq grill, blocker sweep
+**Red branch**:
+What `architect-ticket` leaves behind and the only handoff between it and `implement-ticket`: a committed branch carrying the **Public interface** as stubs in the real source files, the **Acceptance tests** written against those stubs, and every one of those tests observed failing. It replaced the plan file, because a signature and a failing test carry the contract exactly where prose could only describe it. `implement-ticket` reads the **Ticket** plus `git diff main...HEAD` and needs nothing else.
+_Avoid_: plan, spec branch, scaffold, skeleton
 
-**Red phase**:
-The mandatory `## Phase 1: Red` that `implementation-planning` puts second in every plan, right after Phase 0. Its rows name a test function and a file and nothing else; the assertions come from the `AC-N` whose `Verify:` clause names that test. It writes the failing tests and no production code. Green phases make those tests pass, and `Phase N: Verification` runs them and expects green. This makes every generated plan test-driven at the phase level, not just at the acceptance-criteria level.
-_Avoid_: write-acceptance-tests phase, test phase, TDD phase
+**Public interface**:
+The names, parameters, return values, and documented contracts of every entry point a change adds or alters. Settled with the user in `architect-ticket`'s grill, written into the source files as stubs, and frozen from that point: `implement-ticket` may not rename, reorder, add, or drop one. Everything behind it, meaning helpers, control flow, data structures, and private modules, is the implementer's call and needs no approval.
+_Avoid_: API, contract surface, signature list
 
-**Supervisor**:
-Opus in the main thread, orchestrating one `claude` implementer per attempt and one **Reviewer** per run, in `implement-tdd`. Owns the tests, the runner, and every conversation with the user, but never writes production code. `implementation-plan-execute` has no Supervisor: it implements inline and dispatches nothing but its exploration sweep.
-_Avoid_: orchestrator, coordinator, driver
+**Acceptance test**:
+A test written by `architect-ticket` against the **Public interface** stubs, before any implementation exists. **The acceptance tests are the acceptance criteria**; there is no separate list, and each test's name and docstring is the one place its criterion is written. Derived from the **Ticket**'s user-visible expected behaviour plus the edge cases and failure modes the contract names. Frozen for `implement-ticket`, and checked against the **Ticket** by `refactor-ticket`'s true-to-spec pass.
+_Avoid_: AC, criterion, verification test, spec test
 
-**Reviewer**:
-An `Explore` subagent that reads the implementation diff and tests after the test-pass loop, explains in plain English what changed mapped to files, and surfaces concerns. Read-only; never edits.
-_Avoid_: code reviewer, auditor, checker
+**ADR**:
+A binding decision about the shape of a codebase, one per file in `docs/adr/`, written as Decision, Reason, Consequence, and Date per `codebase-rules/ADR-FORMAT.md`. There is no softer second kind: a recorded choice is a rule a reviewer cites by number. The Reason names the alternative that lost, which is what stops a later reader undoing the decision by accident, and the Consequence is what lets `refactor-ticket` tell compliance from breach without a check recipe. Any codebase-shaping Skill may write a new one. Changing or retiring an existing one takes a whole `challenge-adr` session, per **Stands**, and that Skill is user-invoked, so no Skill can start it. A blocked Skill names the ADR and stops.
+_Avoid_: rule, convention, decision record, guideline
 
-**Runner preflight**:
-The auto-detect-then-confirm step at the start of test-first skills that locks down which test runner command will gate the implementation loop.
-_Avoid_: test setup, harness setup, runner detection
+**Stands**:
+The default verdict on any **ADR** under challenge, and the whole shape of `challenge-adr`. A recorded decision stands until a challenge beats it, and the burden sits on the challenge: it has to show the codebase gets architecturally better on a named axis, meaning coupling, cohesion, encapsulation, or dependency direction. Inconvenience is the friction the **ADR** was written to create, not an argument against it. When a decision stands and the code has drifted from it, the code is what's wrong.
+_Avoid_: still valid, approved, upheld
 
 **Adaptive grill**:
-The gap-filling interview in `project-planning` that runs after reading any existing `CONTEXT.md` and `project_plan.md`. Summarizes current understanding first, then asks only where gaps remain across five areas: problem statement, primary user, success criteria, scope boundaries, and domain language. One question per turn. Stops when all five areas can be stated with confidence, and does not run a fixed N-question script.
+The gap-filling interview in `project-planning` that runs after reading any existing `CONTEXT.md` and the repo's `(N) [epic]` issues. Summarizes current understanding first, then asks only where gaps remain across five areas: problem statement, primary user, success criteria, scope boundaries, and domain language. One question per turn. Stops when all five areas can be stated with confidence, and does not run a fixed N-question script.
 _Avoid_: alignment grill, kickoff, scoping session, intake
 
 **Epic**:
-A numbered vertical slice of a project plan, each with a one-sentence epic goal and a status marker (⬜ / 🟡 / ✅). Epics are proposed by `project-planning` and broken into **Task** rows by `epic-planning`. Completed (✅) epics are immutable across re-runs.
+A numbered vertical slice of a project, existing only as a `(N) [epic]` GitHub issue. `project-planning` proposes it and files it as an **Epic skeleton**; `map-epic` charts it into **Task** sub-issues. Its state is the issue's state, and an epic already filed is immutable, open or closed.
 _Avoid_: sprint, phase, iteration, milestone
 
 **Epic goal**:
-The one-sentence observable outcome that defines an epic as done. Written by `project-planning` during epic breakdown, confirmed by the user at the confirm gate, and never edited once the epic is ✅.
+The one-sentence observable outcome that defines an epic as done. Written by `project-planning` during epic breakdown, confirmed by the user at the confirm gate, and never edited afterwards by any Skill. It is the Destination line of the epic issue.
 _Avoid_: sprint goal, epic description, deliverable, objective
 
-**Project plan**:
-The `project_plan.md` file written by `project-planning` at the consuming project's repo root. Contains a project goal, epic list (each with status marker + epic goal + tasks placeholder), out-of-scope section, and a directory-tree section left at its placeholder. Shared contract consumed by `epic-planning` and `implementation-planning`.
-_Avoid_: roadmap file, plan doc
+**Epic skeleton**:
+The `(N) [epic]` issue as `project-planning` files it: Destination filled with the **Epic goal**, and Notes, Decisions so far, and Not yet specified each left at a `_Not yet charted._` placeholder. `map-epic` detects it by the epic having no sub-issues yet, and fills the rest in with `gh issue edit`.
+_Avoid_: stub epic, empty epic, draft issue
 
 **Task**:
-A `(N.M)` row written by `epic-planning` under an epic in `project_plan.md`. Represents one thin vertical slice of the epic goal, sized to become a single **Ticket**. The Plan column starts blank and is filled by `implementation-planning`. The Issue column carries the number of the **Ticket** the row was published as.
-_Avoid_: story, to-do, backlog item
+A `(N.M)` **Ticket** published by `map-epic` as a sub-issue of an **Epic**, labelled `epic:task`. Represents one thin vertical slice of the **Epic goal**. Its `M` is `max(M) + 1` over the map's existing sub-issue titles, append-only, and its state is the issue's state, closed by `implement-ticket` when the work lands.
+_Avoid_: story, to-do, backlog item, task row
 
 **WHAT / HOW split**:
-The division of labor between `new-ticket`, which grills WHAT, meaning behavior, scope, and acceptance criteria, with no architecture or file paths, and `implementation-planning`, which grills HOW, meaning architecture, modules, files, tests, and rollout. The two skills hand off via a GitHub Issue.
+The division of labor between `new-ticket`, which grills WHAT, meaning user-visible behaviour and scope, with no architecture, file paths, or tests, and `architect-ticket`, which grills HOW, meaning the **Public interface**, the **Acceptance tests**, and the structure behind them. The two Skills hand off via a GitHub Issue. The line is drawn where the knowledge is: a **Ticket** is written before anyone reads the code, so pinning an exact bar there pins it blind.
 _Avoid_: spec/design split, intake/build split
 
 **Ticket**:
-A published GitHub Issue holding one unit of work, in one of two shapes: a task ticket, carrying Goal, Acceptance criteria, Out of scope, and Branch, or a question ticket, carrying a Question only. `epic-planning` publishes tickets under an epic map issue with the `epic:` label scope; `new-ticket` publishes standalone ones with the `ticket:` scope. Both render the same templates.
+A published GitHub Issue holding one unit of work, in one of two shapes: a task ticket, carrying Goal, Expected behaviour, Out of scope, and Branch, or a question ticket, carrying a Question only. `map-epic` publishes tickets under an epic map issue with the `epic:` label scope; `new-ticket` publishes standalone ones with the `ticket:` scope. Both render the same templates.
 _Avoid_: card, story, work item
 
 **Ticket shapes**:
-`new-ticket/ticket-shapes.md`, the single source of truth for how any **Ticket** is written and published: body templates, title format, the `<scope>:<type>` label table, branch slug rule, AI disclaimer, `gh` preflight, the preview-edit-approve publish loop, and native sub-issue and blocking wiring. Both `new-ticket` and `epic-planning` read it, and neither restates it.
+`new-ticket/ticket-shapes.md`, the single source of truth for how any **Ticket** is written and published: body templates, title format, the `<scope>:<type>` label table, branch slug rule, AI disclaimer, `gh` preflight, the preview-edit-approve publish loop, and native sub-issue and blocking wiring. Both `new-ticket` and `map-epic` read it, and neither restates it.
 _Avoid_: issue template, ticket spec
 
 **Sub-issue**:
-A child **Ticket** published by `new-ticket`'s split path when the parent's acceptance criteria span clearly separable user-visible concerns. Each sub-issue is an independently demoable vertical slice with its own acceptance criteria, attached to its parent and wired to its blockers through the GitHub API rather than through body text. The union of sub-issue acceptance criteria must cover the parent's full acceptance criteria, which is what the **two-tier coverage check** enforces, per-slice and systemic.
+A child **Ticket** published by `new-ticket`'s split path when the parent's expected behaviour spans clearly separable user-visible concerns. Each sub-issue is an independently demoable vertical slice with its own expected behaviour, attached to its parent and wired to its blockers through the GitHub API rather than through body text. The union of sub-issue behaviour must cover the parent's full behaviour, which is what the **two-tier coverage check** enforces, per-slice and systemic.
 _Avoid_: child issue, subtask
-
-**From-issue path**:
-The branch of `implementation-planning` that starts from an existing GitHub Issue, reached by an explicit `<issue-ref>` arg or by strict-and-confirm auto-detect when `new-ticket` just ran in-session. It skips the WHAT topics, since they're already in the issue body, and runs only the HOW topics. Contrasts with the **standalone path**, which runs the full WHAT and HOW grill from scratch.
-_Avoid_: issue mode, linked mode, resumption
 
 **Framework test**:
 A real, framework-executable test file produced by `generate-framework-tests`, for pytest, vitest, jest, `go test`, `cargo test`, or JUnit Jupiter. It contains no YAML frontmatter and no skill markers. It is plain framework code, and the project's test runner runs it directly.
@@ -110,29 +106,21 @@ _Avoid_: delta detection, change detection, re-gen
 The hard invariant in `generate-framework-tests`: any test case present in a framework test file but absent from the sidecar manifest's `cases[]` for that source is treated as user-authored and is never proposed for change, removal, or update, regardless of what drift-diff detects in the source.
 _Avoid_: user case protection, manual case preservation
 
-**Phase loop**:
-`implementation-plan-execute`'s single execution mode. The main thread implements each phase inline, with no `claude` implementer subagent. The plan's `## Public interface` is the contract, and everything behind it is the model's call, so no implementation choice is gated on user approval. Nothing is tested as a phase completes; testing runs once, in the mandatory Verification phase. If the contract itself proves wrong or incomplete mid-run, the loop halts for a user decision rather than changing a signature silently. Reads the **Exploration summary file** instead of re-reading whole files, per **Point, don't paste**.
-_Avoid_: group loop, hands-on mode, supervise mode, parallel mode
+**Green loop**:
+`implement-ticket`'s single execution mode. The main thread implements inline, with no implementer subagent, then runs only the **Acceptance tests** the **Red branch** added, reads every failure before fixing any of them, and repeats until the suite is green. The pass number is reported each time, so a loop that isn't converging shows itself.
+_Avoid_: phase loop, retry loop, TDD loop
 
 **Point, don't paste**:
-The `implementation-plan-execute` context rule. Plan sections are read from the plan file at the moment they're needed, never pasted into a response or into a subagent brief. It exists because a pasted block repeats verbatim across every retry, and that repetition accumulates in the main thread's own context, which is the main driver of context growth over a multi-phase run. Paired with **Terse verdicts**.
+The `implement-ticket` context rule. The **Ticket** body, the stubs, and the tests are read at the moment they're needed and never pasted back into a response. It exists because a pasted block repeats verbatim across every retry, and that repetition accumulates in the main thread's own context, which is the main driver of context growth over a multi-phase run. Paired with **Terse verdicts**.
 _Avoid_: pointer pattern, lazy loading
 
 **Terse verdicts**:
-The `implementation-plan-execute` rule that once a phase finishes or Verification returns a result, the main thread states a one-line verdict and moves on, never re-pasting a report or restating a prior phase. The plan file's checkboxes are the sole source of truth for cross-phase state. Paired with **Point, don't paste**.
+The `implement-ticket` rule that once a **Green loop** pass returns, the main thread states a one-line verdict and moves on, never re-pasting runner output for a passing test or restating what it just implemented. The `Edit` call is the record. Paired with **Point, don't paste**.
 _Avoid_: status update, progress note
 
-**Verification failure rule**:
-The single failure-handling mechanism in `implementation-plan-execute`. No phase is retried on its own. Only the mandatory `Phase N: Verification` can fail, and it escalates to the user on the **first** failing `AC-N`, every time, with no automatic retry and no attempt cap. The model names its best guess at the responsible phase and says what it thinks happened, but the user decides the next action: redo a phase, fix it manually, amend the `AC-N` or the `## Public interface` contract, or stop the plan. Whatever they choose runs once, then Verification reruns fresh, and a repeat failure escalates again the same way.
-_Avoid_: retry budget, phase-level retry, attempt cap
-
-**Bootstrap exploration sweep**:
-The `implementation-plan-execute` step that runs once before Phase 0, refreshed per feature phase thereafter, dispatching one `Explore` subagent on haiku to summarize the current shape of the files the plan touches. It writes to the **Exploration summary file**, so the discovery legwork happens in a subagent's disposable context rather than the main thread's. It is the only subagent the skill dispatches.
-_Avoid_: pre-scan, discovery pass, warmup sweep
-
-**Exploration summary file**:
-The scratch file, such as `implementation_plans/.exploration-summary_N.N.md`, that `implementation-plan-execute`'s bootstrap exploration sweep writes to before Phase 0, refreshed per phase by overwriting the changed entries. The main thread reads its own scoped slice before implementing a phase. Its contents are never held in context beyond that scoped read, and never pasted into a response. Deleted during Finalization, since it is scratch, not a plan artifact.
-_Avoid_: in-memory summary, exploration cache
+**Loop exits**:
+The three things that stop `implement-ticket`'s **Green loop** and go to the user, because none is the implementer's to fix: the **Public interface** can't express the behaviour, an **Acceptance test** contradicts the **Ticket** or the stub it sits under, or the same test fails with the same evidence two passes running. The model states its best guess at the cause as a guess, and the user decides: supply a hint, send the contract back to `architect-ticket`, or stop.
+_Avoid_: retry budget, escalation rule, attempt cap
 
 **Comment convention**:
 A `comment-convention.md` file at a user-chosen location in a project that stores per-language comment rules. Structured as `# Comment Convention` H1, optional `## Global rules`, then one `## <Language>` H2 per language. Produced by `add-comments`'s grill and consumed by its preview-walk.
@@ -151,7 +139,7 @@ A focused `add-comments` grill that runs only the topics for one missing languag
 _Avoid_: mini-grill, partial grill, language grill
 
 **pro-con**:
-The standalone decision skill. Weighs an option set and commits to a single recommendation, filling `template_output.md` exactly so every run has the same shape. Manual-invocation only, via `disable-model-invocation: true`, so it never fires on its own mid-task.
+The standalone decision skill. Weighs an option set and commits to a single recommendation, filling `template_output.md` exactly so every run has the same shape.
 _Avoid_: tradeoff skill, decision matrix, options analysis
 
 **Naked term**:
@@ -163,7 +151,7 @@ Either of the two model-invoked wording Skills in `schoolwork/`, namely `talk-to
 _Avoid_: voice skill, tone skill, style guide
 
 **eli Skill**:
-Either of the two manual-invocation modes in `schoolwork/`: `eli5`, which pairs with `talk-to-middleschooler`, and `eli10`, which pairs with `talk-to-highschooler`. Each owns only persistence, staying on every turn, including inside Skills invoked later, until the user says "stop eli5", "stop eli10", or "normal mode". The rules live in the paired **Talk-to Skill**, never restated here.
+Either of the two session modes in `schoolwork/`: `eli5`, which pairs with `talk-to-middleschooler`, and `eli10`, which pairs with `talk-to-highschooler`. Each owns only persistence, staying on every turn, including inside Skills invoked later, until the user says "stop eli5", "stop eli10", or "normal mode". The rules live in the paired **Talk-to Skill**, never restated here.
 _Avoid_: simplify mode, plain English skill, dumb it down
 
 **Course folder**:
@@ -201,18 +189,20 @@ _Avoid_: tag, label, keyword, subject
 - Because **Install** is flat, **Skill** names must be unique across **Categories**. Two Skills with the same name in different Categories would collide on one symlink
 - **Install** maps a **Skill** in this repo to a symlink under `~/.claude/skills/`
 - A **Bundled file** is only referenced by `SKILL.md` via a path relative to the **Skill** directory, never by an absolute path outside the **Skill**
-- One **Skill** may read another's **Bundled file** to avoid restating a shared contract, referenced as `../<skill-name>/<file>`. That path resolves under both this repo's category layout and the flat **Install**, since sibling **Skill** names are unique. **Ticket shapes** is the only such file today
-- `implementation-plan-execute` is a single-mode driver Skill. Its **Phase loop** implements each phase inline, in the main thread, against the plan's `## Public interface`. It reads the **Bootstrap exploration sweep**'s **Exploration summary file** rather than re-reading source, follows **Point, don't paste** everywhere, and reports under **Terse verdicts**. Nothing is tested as a phase completes: the plan's mandatory `Phase N: Verification` is the only place tests run, and the only place a failure can occur, per the **Verification failure rule**. On a from-issue plan's Verification pass, Finalization closes the GitHub issue with `gh issue close` and marks the matching `(N.M)` **Task** ✅ in the **Project plan**. Both steps are best-effort and gated on the issue reference being present.
-- A **Supervisor** running `implement-tdd` performs a **Runner preflight**, writes the red tests itself, dispatches one `claude` implementer per attempt against them, and dispatches one **Reviewer** once the tests pass. `implement-tdd` is the only Skill that dispatches an implementer.
-- `project-planning` runs a **Git-repo guard** first, hard-stopping outside a git repo, then the **Adaptive grill**, which reads any existing `CONTEXT.md` and **Project plan** and asks only on gaps, then an epic-breakdown confirm gate, then writes `CONTEXT.md` and the **Project plan**. Every step is Opus-direct, with no subagent dispatch. The plan's Directory tree section is left at its placeholder; nothing populates it.
-- `epic-planning` sits between `project-planning` and `implementation-planning` in the chain. It reads the **Project plan**, slices a chosen **Epic**'s goal into **Task** rows `(N.M)` appended to the plan, and creates or updates the epic's parent `(N)` GitHub issue. It publishes every **Ticket** through **Ticket shapes**, which it reads from `new-ticket/`, rather than through templates of its own. A charted **Task** goes straight to `implementation-planning`.
-- `new-ticket` lives in `kanban/` beside the chain rather than on it. It grills WHAT, meaning behavior, scope, and acceptance criteria, with no architecture or file paths, and publishes a **Ticket** for work no **Epic** covers. Its split path publishes a parent plus one **Sub-issue** per vertical slice, in dependency order, gated on the **two-tier coverage check**. It also owns **Ticket shapes**, which `epic-planning` reads, so an epic **Ticket** and a standalone one are the same artifact. A **Ticket** it produces can still be picked up by `implementation-planning`'s **From-issue path**, which is what the **WHAT / HOW split** exists for, though the normal route into a plan is a **Task** row.
-- `course-index` and `lecture-notes` connect through the **Course index** file, not by invocation, the same artifact handoff the `kanban/` chain uses. Both are manual-invocation only, so neither pays context load, and both are bounded by the **Course folder**. `course-index` fast-exits on a SHA manifest at `.course-index/manifest.json` the way `generate-framework-tests` does, so re-runs read only added or changed PDFs. `lecture-notes` discloses its video branch to `transcript.md`, reached only when a lecture link is in play; that file owns the two-tier transcript route (yt-dlp captions, then `whisper.cpp` locally) and the rule that Swedish audio uses KB-Whisper while English uses stock `large-v3-turbo`.
+- One **Skill** may read another's **Bundled file** to avoid restating a shared contract, referenced as `../<skill-name>/<file>`, which resolves at runtime because **Install** is flat and every **Skill** is a sibling under `~/.claude/skills/`. Within one **Category** the path also resolves in the repo; across **Categories** it resolves only after install, which is the case that matters since that is where Skills run. A file may only be reached this way if it declares itself a **shared contract** in its opening lines, and a `SKILL.md` never counts, per ADR-0001. Four files carry that declaration today: `codebase-rules/ADR-FORMAT.md`, **Ticket shapes**, `lecture-notes/map-format.md`, and `lecture-notes/teaching.md`
+- `architect-ticket` and `implement-ticket` are the first two legs of the **TDD cycle**, joined by the **Red branch** and nothing else. The first grills the **Public interface**, writes it as stubs, writes the **Acceptance tests**, observes them fail, and commits. The second reads the **Ticket** and the diff, runs the **Green loop** under **Point, don't paste** and **Terse verdicts**, and halts on a **Loop exit** rather than editing a frozen signature or test. On green, its Finalization closes the GitHub issue with `gh issue close`, best-effort and gated on the issue reference being present. Closing the issue is the whole status change, since no file mirrors it. `refactor-ticket` is the third leg, joined to the second by the green suite. It gates the diff true-to-spec against the **Ticket**, then edits shape only, and an affected test going red means the edit changed behaviour and was never a refactor.
+- Every **ADR** in `docs/adr/` is written by whichever Skill is shaping the codebase at the time, and all of them render it from the same `ADR-FORMAT.md`. Changing or retiring one takes a whole `challenge-adr` session, because these numbers are cited in review comments and open branches. That Skill is deliberately user-invoked: a Skill that could reach it would eventually reach it to unblock itself, which is the exact pressure the burden of proof exists to resist. So `codebase-rules`' maintenance branch detects drift and hands it back rather than amending anything, `refactor-ticket` fixes code to comply rather than arguing with an **ADR** it dislikes, and `architect-ticket` names a blocking decision and stops rather than designing around it.
+- **`behaviour/` is the only model-invoked Category. Everything else sets `disable-model-invocation: true`.** The line is what a Skill does, not what it is about. A `behaviour/` Skill is *borrowed* by work already running, so it has to be reachable: `grilling` supplies interview mechanics to most of the repo, `unslop` always applies, and a **Talk-to Skill** lends its voice to any Skill that needs it. Every other Skill *starts* work, and starting work is my decision, not Claude's.
+- Because of that, no Skill ever invokes another outside `behaviour/`. The `kanban/` chain hands off through artifacts instead, meaning an **Epic** issue, a **Ticket**, a **Red branch**, so no station needs to name the next one. `brainstorming` ends by naming a route rather than taking it, and a Skill blocked by an **ADR** stops and names it rather than opening `challenge-adr`. The cost of all this is context load I stop paying, traded for **Cognitive load** I take on instead: I am the index that has to remember these Skills exist.
+- `project-planning` lives in `developer-tools/` rather than on the board, since it runs once per project rather than per unit of work, but its **Epic skeleton** issues are what `map-epic` starts from. It runs a **Git-repo guard** first, hard-stopping outside a git repo, then the `gh` preflight from **Ticket shapes**, then the **Adaptive grill**, which reads any existing `CONTEXT.md` and the repo's **Epic** issues and asks only on gaps, then an epic-breakdown confirm gate, then writes `CONTEXT.md` and files one **Epic skeleton** per new epic. Every step runs in the main thread, with no subagent dispatch.
+- `map-epic` is the first station on the board and feeds `architect-ticket`. It reads a chosen **Epic** issue, slices its goal into `(N.M)` **Task** sub-issues, and fills in the **Epic skeleton** body around them. It publishes every **Ticket** through **Ticket shapes**, which it reads from `new-ticket/`, rather than through templates of its own. A charted **Task** goes straight to `architect-ticket`.
+- `new-ticket` lives in `kanban/` beside the chain rather than on it. It grills WHAT, meaning user-visible behaviour and scope, with no architecture, file paths, or tests, and publishes a **Ticket** for work no **Epic** covers. Its split path publishes a parent plus one **Sub-issue** per vertical slice, in dependency order, gated on the **two-tier coverage check**. It also owns **Ticket shapes**, which `map-epic` reads, so an epic **Ticket** and a standalone one are the same artifact. A **Ticket** it produces feeds `architect-ticket` exactly as a **Task** row does, which is what the **WHAT / HOW split** exists for.
+- `course-index` and `lecture-notes` connect through the **Course index** file, not by invocation, the same artifact handoff the `kanban/` chain uses. Both are bounded by the **Course folder**. `course-index` fast-exits on a SHA manifest at `.course-index/manifest.json` the way `generate-framework-tests` does, so re-runs read only added or changed PDFs. `lecture-notes` discloses its video branch to `transcript.md`, reached only when a lecture link is in play; that file owns the two-tier transcript route (yt-dlp captions, then `whisper.cpp` locally) and the rule that Swedish audio uses KB-Whisper while English uses stock `large-v3-turbo`.
 - The `schoolwork/` wording family is off the chain and reads no repo artifact. It only rewrites how output is worded. Each **eli Skill** invokes exactly one **Talk-to Skill** for its rules; the pairing is the only place a level is defined twice, and it is defined once. A **Talk-to Skill** treats a project's `CONTEXT.md` as the sole evidence that a term is already known to the user; anything absent from it, and off the level's floor, is a **Naked term**.
 - `add-comments` runs **ensure-convention** first, which locates or grills for a **Comment convention**, then **preview-walk**, its per-symbol approve loop. A missing language mid-walk triggers a **Scoped single-language grill** rather than the full grill.
 - `generate-framework-tests` is the repo's only live testing Skill. It produces **Framework tests**, meaning real runnable code, that the project's own runner executes. It uses a **Sidecar manifest** to enable **Fast-exit** on re-invocation and **Drift-diff** on changed sources. **User-added-case immunity** is enforced via the manifest's `cases[]` list. The markdown-spec approach it replaced, `generate-test` and `run-tests`, is archived.
 
 ## Example dialogue
 
-> **Me:** "Where should the implementation-plan template live?"
-> **Claude:** "Inside the `implementation-planning` Skill, next to its `SKILL.md`. It's a Bundled file. Skills are self-contained, so the template travels with the Skill rather than living in a shared `~/.claude/templates/` directory."
+> **Me:** "Where should the ADR format spec live?"
+> **Claude:** "Inside the `codebase-rules` Skill, next to its `SKILL.md`. It's a Bundled file, and every Skill that writes an ADR reaches it as `../codebase-rules/ADR-FORMAT.md`. Skills are self-contained, so the format travels with the Skill that owns it rather than living in a shared `~/.claude/templates/` directory."

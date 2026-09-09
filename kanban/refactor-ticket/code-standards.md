@@ -1,6 +1,6 @@
 # Code standards
 
-The baseline `review-diff` cleans against, in two groups: **code smells**, which are local, and **bad architecture**, which is structural. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source.
+The baseline `refactor-ticket` refactors against, in two groups: **code smells**, which are local, and **bad architecture**, which is structural. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source.
 
 ## Gates
 
@@ -40,7 +40,7 @@ Apply these before judging any entry:
 
 ## Bad architecture
 
-**The layer rules below apply only if the codebase already has layers**, meaning directories or packages that separate UI, application logic, domain and data access, whatever they're named. If it doesn't, skip every entry marked **(layered)** rather than proposing a restructure. Proposing an architecture is not cleanup. The unmarked entries apply everywhere.
+**The layer rules below apply only if the codebase already has layers**, meaning directories or packages that separate UI, application logic, domain and data access, whatever they're named. If it doesn't, skip every entry marked **(layered)** rather than proposing a restructure. Proposing an architecture is not a refactor. The unmarked entries apply everywhere.
 
 - **Low cohesion.** A unit whose knowledge and tasks don't belong to one abstraction, or whose name doesn't identify what it is. Split it so each unit represents one thing. This applies at every size: function, type, module, package. Cohesion is the main test for whether a unit is too big, and low cohesion usually means a type is missing rather than that one is too long. (5.2)
 - **Unnecessary coupling.** A dependency that isn't needed. What matters is how many, not what kind. The classic case is a shortcut reference to something already reachable through an existing path. Delete it. (5.2)

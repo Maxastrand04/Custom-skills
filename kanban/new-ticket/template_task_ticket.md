@@ -4,10 +4,10 @@
 
 {GOAL}
 
-## Acceptance criteria
+## Expected behaviour
 
-- [ ] {CRITERION_1}
-- [ ] {CRITERION_2}
+- {BEHAVIOUR_1}
+- {BEHAVIOUR_2}
 
 ## Out of scope
 
@@ -19,4 +19,4 @@
 
 ---
 
-> **Branch naming:** implement this ticket on `<this issue's number>-{BRANCH_SLUG}`. `implementation-planning` prepends the number, since the slug is chosen before the issue number exists. The number in the branch name is what lets `review-diff` link the work back to this ticket and its acceptance criteria.
+> **Branch naming:** implement this ticket on `<this issue's number>-{BRANCH_SLUG}`. `architect-ticket` prepends the number, since the slug is chosen before the issue number exists. The number in the branch name is what lets `refactor-ticket` link the work back to this ticket.

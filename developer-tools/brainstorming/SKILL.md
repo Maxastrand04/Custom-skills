@@ -1,29 +1,30 @@
 ---
 name: brainstorming
-description: Grill an idea until it either dies or holds, then route the surviving idea to the skill that should build it.
+description: Grill a raw idea until it dies or holds, then name the station that should take it.
 disable-model-invocation: true
 ---
 
 # brainstorming
 
-An idea has arrived. The product of this skill is a **shaped** idea, one that has already been through the gaps that would otherwise surface as refactors later. The instrument for shaping it is trying to **kill** it: hunt for where the idea falls apart, then either adapt it to survive that or conclude it can't be.
+This skill ends with a shaped idea and the one station that should take it next, or a dead idea and the reason it died.
 
-A first idea is almost never what gets built. Treating one as sound because the user likes it is the failure this skill exists to prevent, so the grill argues against the user by default and looks for the break, not the confirmation.
+The instrument for shaping an idea is trying to kill it. Hunt for where it falls apart, then either adapt it to survive that or conclude it can't be. Treating an idea as sound because the user likes it is the failure this skill exists to prevent, so the grill argues against the user by default and hunts the break rather than the confirmation.
 
 Size is not a factor. A one-line refactor and a brand-new product run the same loop; they differ only in how long they take to exhaust and where they route at the end.
 
 ## 1. Grill to kill
 
-Run `/grilling` on the idea. That skill owns the interview mechanics: one question at a time, recommended answer first, and exploring the codebase instead of asking whenever the codebase holds the answer.
+Run `/grilling` on the idea. That skill owns the interview mechanics.
 
-Two things this grill does that a plain grill does not:
+Three things this grill does that a plain grill does not:
 
-- **Argue its death.** At least once, make the strongest honest case for not doing this at all: do nothing, buy it instead, delete the code rather than extend it, or live with the problem. Press the case, and do not raise it and move on. An idea never asked to die only ever gets confirmed.
-- **Reshape on every break.** A gap that surfaces is not a strike against the idea, it is the work: adapt the idea to close it and keep grilling the adapted version. Most of a run is this loop, and the shaped idea it produces is the deliverable.
+- **Check, don't ask.** An assumption you can verify is not a question for the user. Read the code, run the thing, search the web for whether it already exists. Evidence kills ideas that argument only bruises. Rank it: the repo first, then `docs/adr/` and `CONTEXT.md`, then the web, and only for prior art and buy-versus-build.
+- **Argue its death.** At least once, make the strongest honest case for not doing this at all: do nothing, buy it instead, delete the code rather than extend it, or live with the problem. Press the case, and do not raise it and move on.
+- **Reshape on every break.** A gap that surfaces is the work. Adapt the idea to close it and keep grilling the adapted version. Most of a run is this loop, and the shaped idea it produces is the deliverable.
 
-There is no fixed set of angles. The idea decides what gets attacked. Follow whatever the last answer exposed, and go where the idea is weakest rather than where it is easiest to discuss.
+There is no fixed set of angles. Follow whatever the last answer exposed, and attack where the idea is weakest rather than where it is easiest to discuss.
 
-Completion: **exhausted**, meaning you cannot produce a question whose answer would change the verdict. Not a topic count, and not the point where the user sounds convinced.
+Completion: **exhausted**, meaning you cannot produce a question whose answer would change the verdict, and no assumption the verdict rests on is still unchecked. Not a topic count, and not the point where the user sounds convinced.
 
 ## 2. Verdict
 
@@ -38,7 +39,7 @@ No hedged third outcome. If it half-holds, the half that holds is the idea and t
 
 The grill usually settles something worth keeping. Propose it, and never write silently:
 
-- A rule that constrains future work becomes an ADR in `docs/adr/`, per `../codebase-rules/RULE-ADR-FORMAT.md`, which you read at runtime.
+- A rule that constrains future work becomes a **new** ADR in `docs/adr/`, per [`../codebase-rules/ADR-FORMAT.md`](../codebase-rules/ADR-FORMAT.md), which you read at runtime. Existing ADRs are not yours to touch; those go to the route table below.
 - A term the grill pinned down or renamed becomes an entry in `CONTEXT.md`.
 
 Propose nothing when the grill settled nothing durable; a killed idea can still be worth an ADR recording why not.
@@ -51,12 +52,12 @@ Only if it holds. Name one route and state the reason, so the user can override 
 
 | The surviving idea | Route |
 |---|---|
-| One change, one test suite, no architecture question | `/implement-tdd` |
-| One coherent behaviour needing a spec, no epic covering it | `/new-ticket` |
-| Big enough to need phases and acceptance criteria | `/implementation-planning` |
-| A goal that has to be sliced into several tickets | `/epic-planning` |
-| A whole new product, or a repo with no `CONTEXT.md` or `project_plan.md` yet | `/project-planning` |
+| Is blocked by a decision already recorded in `docs/adr/` | `/challenge-adr`, and nothing else happens until that session does |
+| Is one change with one test suite and no architecture question | Implement inline, in this session, once the user says go |
+| Is one coherent behaviour, and no epic covers it | `/new-ticket` |
+| Is a goal that has to be sliced into several tickets | `/map-epic` |
+| Is a whole new product, or the repo has no `CONTEXT.md` or epic issues yet | `/project-planning` |
 
-Route to the smallest thing that fits. Ceremony an idea does not need is a cost, not a safety net. "This is one file and one test, no plan earns its keep here" is a complete justification.
+Route to the smallest thing that fits. "This is one file and one test, no ticket earns its keep here" is a complete justification.
 
-Hand off, and do not start building. The routed skill runs its own grill on the surviving idea.
+Every route except the inline row is user-invoked, so you cannot start it and must not try. Name it and stop; the routed skill runs its own grill on the surviving idea. Inline still waits for the user to say go.

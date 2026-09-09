@@ -1,20 +1,21 @@
 ---
 name: new-ticket
-description: Grill the user into a single-ticket spec covering WHAT, meaning behavior, scope, and acceptance criteria, and never HOW, meaning architecture and files. Publishes the spec as a GitHub Issue. If scope is too large, chains into a sub-issue split. Output feeds `implementation-planning`. For epic-linked work use `epic-planning` instead; this skill is for standalone tickets with no epic. Use when user wants to file a new ticket, capture a feature request or bug, says "new ticket", "create an issue", or "spec this out".
+description: Beside the board, for standalone work no epic covers. Grills a ticket down to WHAT, never HOW, publishes it as a GitHub issue, and splits it into sub-issues if it is too big. For epic-linked work, use map-epic.
+disable-model-invocation: true
 ---
 
 # new-ticket
 
-Grill the user into a single, well-scoped GitHub ticket covering **WHAT** changes, meaning behavior, scope, and acceptance criteria, and never **HOW**, meaning architecture, files, and code. Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/implementation-planning` for the HOW.
+Grill the user into a single, well-scoped GitHub ticket covering **WHAT** changes, meaning user-visible behaviour and scope, and never **HOW**, meaning architecture, files, code, and tests. Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/architect-ticket` for the HOW.
 
-The published body is deliberately thin. The grill is not. Everything the grill surfaces must land as a **checkable acceptance criterion** or be consciously dropped. The criteria are this skill's real output, and they are what `implementation-planning` lifts.
+The published body is deliberately thin. The grill is not. Everything the grill surfaces must land as **expected behaviour** or be consciously dropped.
 
 Read the bundled files at runtime. Do not assume their contents from this document:
 
-- **`ticket-shapes.md` is the single source of truth** for body shape, title format, labels, branch slug, the AI disclaimer, gh preflight, the publish loop, and native wiring. `epic-planning` reads the same file, which is why none of it is restated here. Read it before the first `gh` call.
+- **`ticket-shapes.md` is the single source of truth** for body shape, title format, labels, branch slug, the AI disclaimer, gh preflight, the publish loop, and native wiring. `map-epic` reads the same file, which is why none of it is restated here.
 - `subissue-splitting.md` holds the vertical-slice rule and the two-tier coverage check.
 
-Run `ticket-shapes.md`'s **gh preflight** before any grilling.
+Read `ticket-shapes.md` and run its **gh preflight** before any grilling.
 
 ---
 
@@ -25,7 +26,7 @@ Two modes:
 1. **Cold start.** The user invokes with no extra text. Open with the first grill turn, feature vs bug.
 2. **One-liner seed.** The user invokes with a short phrase such as "users can sign up with email". Treat that phrase as **the seed of the grill, not a finished ticket body.** It hints at the topic; every grill topic still runs.
 
-If the user's phrase looks epic-linked, meaning it references an epic task, a `(N.M)` id, or `project_plan.md`, point them at `/epic-planning` instead. This skill does not resolve plan refs.
+If the user's phrase looks epic-linked, meaning it references an epic task, a `(N.M)` id, or an `(N) [epic]` issue, point them at `/map-epic` instead. This skill does not resolve epic refs.
 
 Do **not** synthesise a ticket from prior conversation context. The only inputs are the cold start and the one-liner seed.
 
@@ -39,7 +40,7 @@ The answer picks the **grill agenda** below and the type prefix on the published
 
 ---
 
-## Grill behavior, WHAT only
+## The grill, WHAT only
 
 You are a developer grilling a product owner about product requirements. Invoke the `grilling` skill for the interview mechanics, and work the agenda one topic at a time.
 
@@ -47,10 +48,10 @@ You are a developer grilling a product owner about product requirements. Invoke 
 
 1. Problem and motivation: the user-visible problem, and why now.
 2. Target user or actor: who triggers or benefits.
-3. Trigger or entry point: how the user reaches the behavior.
-4. Expected behavior: the happy path end-to-end, from the user's side.
+3. Trigger or entry point: how the user reaches the behaviour.
+4. Expected behaviour: the happy path end-to-end, from the user's side.
 5. Edge cases and failure modes: missing, invalid, or conflicting inputs, and operations that can't complete.
-6. Dependencies on existing functionality: behaviors this relies on or disturbs.
+6. Dependencies on existing functionality: behaviours this relies on or disturbs.
 7. Out of scope: what might look related but isn't.
 
 **Bug agenda:**
@@ -64,36 +65,27 @@ You are a developer grilling a product owner about product requirements. Invoke 
 7. Workarounds known: what users can do today, or "none known".
 8. Out of scope: related bugs or refactors this fix won't touch.
 
-**Drive every topic to a criterion.** For each answer, ask *"how would we know this is done?"* and write the observable condition. A topic that produces no criterion and no Out-of-scope line has left nothing in the ticket, so say so and resolve it before moving on. Bug tickets always carry two standing criteria: the reproduction steps no longer produce the symptom, and a regression test exists that would catch its return.
+**Drive every topic to an outcome.** For each answer, ask *"what can someone do, or stop having to do, once this ships?"* and write that. A topic that leaves neither an expected-behaviour line nor an Out-of-scope line has left nothing in the ticket, so say so and resolve it before moving on. Every bug ticket carries one standing line: the reproduction steps no longer produce the symptom.
 
-**Never settled in this ticket.** These are HOW topics, and they defer to `implementation-planning`:
+**Stay outside the code when you write it down.** "Expired sessions send the user back to login" belongs here. "`refresh_token` raises `AuthError` on an expired token" does not, however true it turns out to be. If you catch yourself reaching for a symbol name to say it precisely, the precision belongs to `architect-ticket`.
+
+**Never settled in this ticket.** These are HOW topics, and they defer to `architect-ticket`:
 
 - File paths, module names, function or class names, function signatures
 - Schema design, database tables, API contract shapes
-- Test framework choice, test file locations
+- Test names, test file locations, what any test asserts
 - Rollout order, migration strategy, feature flags
 - Library, dependency, or tooling choices
 
-**Codebase exploration during grill: read whatever you need.** `grilling`'s explore-before-asking rule applies in full here, **source files included**. The **WHAT/HOW line is about what lands in the ticket, not about what you're allowed to read.** Reading source to understand current behavior is fine; recording the implementation you inferred from it is not. If exploration turns up a HOW decision the ticket seems to need, that's a signal for `implementation-planning`, not a section to add here.
+**Read whatever you need during the grill.** `grilling`'s explore-before-asking rule applies in full here, **source files included**. The WHAT/HOW line governs what lands in the ticket, not what you're allowed to read. If exploration turns up a HOW decision the ticket seems to need, that's a signal for `architect-ticket`, not a section to add here.
 
 ---
 
 ## Propose-and-confirm split
 
-When the full WHAT-grill is complete, **Claude evaluates** whether this is one ticket or several, using the criteria below. Do **not** ask the user upfront which it will be.
+When the full WHAT-grill is complete, **you** decide whether this is one ticket or several. Do **not** ask the user upfront which it will be.
 
-**Propose a split when:**
-
-- Acceptance criteria span clearly separable user-visible concerns
-- Each potential slice is independently demoable end-to-end
-- Slices do not share so much state that they must ship together
-- The change touches multiple distinct user flows or subsystems
-
-**Keep as one ticket when:**
-
-- It is a single coherent user-visible behavior change
-- Acceptance criteria interlock, so no slice ships without the others
-- It is naturally one vertical slice
+**Split** when the expected behaviour spans separable user-visible concerns and each slice is independently demoable end-to-end. **Keep as one** when the behaviours interlock, so no slice ships without the others.
 
 State your recommendation with brief reasoning: either "one ticket, no split" or "N sub-issues" with each sub-issue's working title and one-line scope. Then **wait for confirmation or pushback** before moving on. If the user pushes back, iterate until they confirm.
 

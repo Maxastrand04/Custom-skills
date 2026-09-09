@@ -50,7 +50,7 @@ A flyover that skipped the last third of the deck is worse than none, because th
 
 Skip this step when the map already exists.
 
-Cut the deck and write the map file by the rules in [`../lecture-notes/SKILL.md`](../lecture-notes/SKILL.md), steps 4 and 5. Follow them as written, including how topics are matched to the canonical names in `course-index.md`, how the frequency counts are carried over, and the exact ` · ` separators in each metadata line. `lecture-notes` greps that file, so a map written loosely here breaks it later.
+Cut the deck and write the map file by [`../lecture-notes/map-format.md`](../lecture-notes/map-format.md). Follow it as written, including how topics are matched to the canonical names in `course-index.md`, how the frequency counts are carried over, and the exact ` · ` separators in each metadata line. `lecture-notes` greps that file, so a map written loosely here breaks it later.
 
 Two changes for this skill. The header's video field reads `Video: not asked`, since the lecture has not happened yet and there is nothing to fetch. And every metadata line still ends `Not covered yet.`, because a flyover covers nothing.
 

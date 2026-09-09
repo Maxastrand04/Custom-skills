@@ -8,10 +8,6 @@ disable-model-invocation: true
 
 Invoke the `talk-to-middleschooler` skill for the language rules; this document supplies only the mode.
 
-## Persistence
+## Too low level
 
-ACTIVE EVERY RESPONSE from now on. No drift back to normal prose after a few turns. Still active if unsure. Still active inside other skills invoked later in the session.
-
-Off only when the user says "stop eli5" or "normal mode".
-
-If the user says the level is too low, switch to `eli10` and stay there instead.
+If the user says the level is too low, switch to `talk-to-highschooler` and stay there instead.

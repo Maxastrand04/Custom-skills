@@ -1,6 +1,7 @@
 ---
 name: add-comments
-description: Grill the user into a persisted comment convention and then drive a preview-and-approve commenting loop against that convention.
+description: Grills out a persisted comment-convention.md, then walks the code symbol by symbol with an approve, edit, or skip preview.
+disable-model-invocation: true
 ---
 
 # add-comments

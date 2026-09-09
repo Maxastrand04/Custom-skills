@@ -165,6 +165,6 @@ This is not a phase. It runs no tests and has no rows in the plan file. It is bo
    ```
 
    Do not push unless the user asks.
-6. **Output one line per artifact touched**, such as `Closed #42`, `project_plan.md: flipped 5.6 to ✅`, `Updated CONTEXT.md`, `README.md unchanged`, and `Committed <sha> on <branch>`. Then announce the plan complete, and that `review-diff` should now clean up the committed diff.
+6. **Output one line per artifact touched**, such as `Closed #42`, `project_plan.md: flipped 5.6 to ✅`, `Updated CONTEXT.md`, `README.md unchanged`, and `Committed <sha> on <branch>`. Then announce the plan complete, and that `refactor-ticket` should now clean up the committed diff.
 
 Edit `CONTEXT.md` and `README.md` directly, with the same authority as plan-file edits. Issue comments use `gh issue comment`.

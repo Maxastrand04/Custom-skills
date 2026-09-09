@@ -1,6 +1,6 @@
 # Teaching one topic
 
-Reached from [`SKILL.md`](SKILL.md) when the notes file already exists. One topic, then the session ends.
+**A shared contract.** Reached from [`SKILL.md`](SKILL.md) when the notes file already exists, and published for any Skill that writes into a notes file. One topic, then the session ends.
 
 Invoke `talk-to-highschooler` for the opening explanation and `unslop` for anything written to the file. Both bend to whatever the user needs instead; the level that makes it click wins over the default level.
 

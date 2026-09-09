@@ -1,11 +1,7 @@
 ---
 name: generate-framework-tests
-description: >
-  Scaffold and maintain a project's framework-executable test suite through a
-  guided, approval-gated workflow. Use when the user says "generate framework
-  tests", "write tests for this", "add test coverage", "generate runnable
-  tests", or "scaffold tests". Creates real tests runnable by pytest, vitest,
-  jest, go test, cargo test, or JUnit Jupiter, not markdown scaffolds.
+description: Scaffolds and maintains real runnable tests for pytest, vitest, jest, go test, cargo test, or JUnit. A sidecar manifest gives fast-exit when nothing changed and drift-diff when it did. Never touches user-added cases.
+disable-model-invocation: true
 ---
 
 # generate-framework-tests
