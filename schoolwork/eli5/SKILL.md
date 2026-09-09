@@ -1,13 +1,15 @@
 ---
 name: eli5
-description: Turn on plain-language mode for the rest of the session, so everything is explained to a curious middle schooler who knows nothing about the subject.
+description: "Explaing-like-im-5", Explain in plain language, pitched at a curious middle schooler who knows nothing about the subject.
 disable-model-invocation: true
 ---
 
 # eli5
 
-Invoke the `talk-to-middleschooler` skill for the language rules; this document supplies only the mode.
+Invoke the `talk-to-middleschooler` skill for the language rules; this document supplies only the level.
+
+The level is not sticky. It applies to the explanation asked for here, and the user types `eli5` again when they want it again.
 
 ## Too low level
 
-If the user says the level is too low, switch to `talk-to-highschooler` and stay there instead.
+If the user says the level is too low, use `talk-to-highschooler` for this explanation instead.
