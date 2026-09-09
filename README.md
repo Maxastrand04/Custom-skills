@@ -84,14 +84,15 @@ Skills for when I'm the learner rather than the builder. See [schoolwork/README.
 
 | Skill | What it does |
 |-------|--------------|
-| `eli5` | Turns on middle-school mode for the session, assuming zero knowledge of the subject. |
-| `eli10` | Turns on high-school mode for the session, with algebra and basic programming assumed. |
-| `lecture-notes` | Slide PDF in, markdown revision file out. Pulls a YouTube lecture transcript when there is one, fills the rest, and tags every line by source so `grep '\[fill\]'` lists everything a model invented. |
-| `course-index` | Reads a course's `Exams/` and `Exercises/` once into `course-index.md`. Incremental via a SHA manifest. Produces the topic frequency table that `lecture-notes` flags high-yield material from. |
+| `eli5` | Explains at middle-school level, assuming zero knowledge of the subject. |
+| `eli10` | Explains at high-school level, with algebra and basic programming assumed. |
+| `lecture-preview` | Flies over a deck before the lecture. Ranks its topics against `course-index.md`, gives each one a picture, table, or bounded parallel, and says what to listen for. Writes the topic map `lecture-notes` picks up. |
+| `lecture-notes` | Teaches one lecture topic by topic. A topic reaches `Lecture-notes/` only once I can explain it back and have worked a real question from `Exercises/`. |
+| `course-index` | Reads a course's `Exams/` and `Exercises/` once into `course-index.md`. Incremental via a SHA manifest. Produces the topic frequency table and the per-question prerequisites the other two read. |
 
-The `eli*` pair own only persistence. The rules live in [`behaviour/`](behaviour/README.md), one source of truth per level, reachable from any other skill the way `grilling` is.
+The `eli*` pair do one thing, which is point at their wording rules in [`behaviour/`](behaviour/README.md), one source of truth per level, reachable from any other skill the way `grilling` is. Neither holds across turns. They used to claim they did, and the claim never held, so typing the name again is how you get the level again.
 
-`lecture-notes` and `course-index` hand off through `course-index.md` the way the board hands off through GitHub issues. Both stay inside one course folder.
+The three course skills hand off through `course-index.md` the way the board hands off through GitHub issues. All of them stay inside one course folder.
 
 Still planned: rehearsal, spaced repetition, exam prep.
 
