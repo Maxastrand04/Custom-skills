@@ -1,6 +1,6 @@
 # Sub-issue splitting guide
 
-Read this once you have proposed a split. Each sub-issue must ship on its own, and together they must cover everything the parent promised.
+Read this once you have proposed a split.
 
 ## Vertical-slice rule
 
@@ -32,13 +32,9 @@ For each sub-issue on its own:
 - Every expected-behaviour line in that sub-issue belongs to this slice.
 - The sub-issue's own expected behaviour fully covers the slice it claims to deliver, leaving nothing inside the slice unstated.
 
-A sub-issue that lists behaviour belonging to a different slice, or that under-specifies its own slice, fails Tier 1.
-
 ### Tier 2, systemic coverage
 
 Across the whole set of sub-issues:
 - The **union** of all sub-issue expected behaviour covers the **full** expected behaviour of the parent issue.
-- No parent behaviour falls through the cracks between slices.
-- No parent behaviour is silently dropped because it didn't fit neatly into any one slice.
 
 If Tier 2 fails, either expand an existing sub-issue, add a new sub-issue to absorb the gap, or pull the missing behaviour back into the parent and re-evaluate whether the split still makes sense.

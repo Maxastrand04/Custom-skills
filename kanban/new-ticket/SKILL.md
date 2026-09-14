@@ -12,7 +12,7 @@ The published body is deliberately thin. The grill is not. Everything the grill 
 
 Read the bundled files at runtime. Do not assume their contents from this document:
 
-- **`ticket-shapes.md` is the single source of truth** for body shape, title format, labels, branch slug, the AI disclaimer, gh preflight, the publish loop, and native wiring. `map-epic` reads the same file, which is why none of it is restated here.
+- **`ticket-shapes.md` is the single source of truth** for body shape, title format, labels, branch slug, the AI disclaimer, gh preflight, the publish loop, and native wiring.
 - `subissue-splitting.md` holds the vertical-slice rule and the two-tier coverage check.
 
 Read `ticket-shapes.md` and run its **gh preflight** before any grilling.
@@ -24,11 +24,11 @@ Read `ticket-shapes.md` and run its **gh preflight** before any grilling.
 Two modes:
 
 1. **Cold start.** The user invokes with no extra text. Open with the first grill turn, feature vs bug.
-2. **One-liner seed.** The user invokes with a short phrase such as "users can sign up with email". Treat that phrase as **the seed of the grill, not a finished ticket body.** It hints at the topic; every grill topic still runs.
+2. **One-liner seed.** The user invokes with a short phrase such as "users can sign up with email". Treat that phrase as **the seed of the grill, not a finished ticket body.** Every grill topic still runs.
 
 If the user's phrase looks epic-linked, meaning it references an epic task, a `(N.M)` id, or an `(N) [epic]` issue, point them at `/map-epic` instead. This skill does not resolve epic refs.
 
-Do **not** synthesise a ticket from prior conversation context. The only inputs are the cold start and the one-liner seed.
+Do **not** synthesise a ticket from prior conversation context.
 
 ---
 
@@ -36,7 +36,7 @@ Do **not** synthesise a ticket from prior conversation context. The only inputs 
 
 The first question is always: **"Is this a feature or a bug?"** Ask once. Do not infer.
 
-The answer picks the **grill agenda** below and the type prefix on the published title. It does **not** change the body shape or the label, since both feature and bug publish as a task ticket labelled `ticket:task`.
+The answer picks the **grill agenda** below and the type prefix on the published title. It does **not** change the body shape or the label.
 
 ---
 
@@ -87,7 +87,7 @@ When the full WHAT-grill is complete, **you** decide whether this is one ticket 
 
 **Split** when the expected behaviour spans separable user-visible concerns and each slice is independently demoable end-to-end. **Keep as one** when the behaviours interlock, so no slice ships without the others.
 
-State your recommendation with brief reasoning: either "one ticket, no split" or "N sub-issues" with each sub-issue's working title and one-line scope. Then **wait for confirmation or pushback** before moving on. If the user pushes back, iterate until they confirm.
+State your recommendation with brief reasoning, either "one ticket, no split" or "N sub-issues". Then **wait for confirmation or pushback** before moving on. If the user pushes back, iterate until they confirm. The sub-issue list itself is proposed under Publishing, once the parent is filed.
 
 For the split path, read `subissue-splitting.md` and follow its vertical-slice rule and two-tier coverage check.
 
