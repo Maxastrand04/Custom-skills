@@ -4,41 +4,7 @@
 
 Invoke `talk-to-highschooler` for the opening explanation and `unslop` for anything written to the file. Both bend to whatever the user needs instead; the level that makes it click wins over the default level.
 
-## Inline math is banned
-
-Holds everywhere in this skill, in the notes file and in chat. It is the rule most likely to slip, because writing `$x$` mid-sentence is a reflex, so check it deliberately rather than trusting that you followed it.
-
-**A line containing a single `$` is a bug.** Dollar signs appear only as a `$$` fence, alone on its own line, with a blank line above and below. Every other inline form is banned too: `$...$`, `\( ... \)`, and LaTeX wrapped in backticks.
-
-There is no exception for a short expression, a single variable, or a Greek letter. Short inline math is exactly what produces the unreadable output, since a paragraph broken up by a dozen dollar signs is harder to read than one that says the same thing in words.
-
-Three cases cover every temptation:
-
-| Reflex | Write instead |
-|---|---|
-| the vector `$v$`, `$n$` grows | the vector v, n grows. A bare Latin letter is written bare, with no markup at all |
-| `$\lambda$`, `$\epsilon \to 0$` | lambda, as epsilon shrinks to zero. Greek letters are spelled out in Latin letters |
-| `$O(n^2)$`, `$\frac{1}{2}mv^2$` | anything with structure, meaning a fraction, exponent, subscript, operator, or relation, is either said in words ("quadratic in the number of items") or moved into a `$$` block of its own |
-
-Every block gets its symbols named in words directly under it. An unnamed formula teaches nothing.
-
-```markdown
-The error shrinks with the square of the step size, so halving the step cuts the error to a quarter.
-
-$$
-E = C h^2
-$$
-
-E is the error, h is the step size, and C is a constant that depends on the function but not on h.
-```
-
-**Check it, do not trust it.** After writing to the notes file, run this against it:
-
-```bash
-grep -n '\$' "<path to notes file>" | grep -v ':\$\$$'
-```
-
-Every line it prints is inline math that got through. Rewrite each one by the table above and run it again. A clean run is the only evidence that the rule held.
+Invoke `science-output` for every expression, in the notes file and in chat. It owns the `$$`-block rule, the inline-math ban, and the cap on how much prose a block gets. After writing to the file, run the grep it specifies against that path.
 
 ## Step 1: Load one topic and nothing else
 
@@ -150,7 +116,7 @@ Rules for the body:
 - The **Clicked by** line is the refresher hook. Name the move and what it was built on, in one sentence, so re-reading it six weeks later restarts the same path.
 - **Exercises** names every question worked and what the mistake was, since the mistake is the part worth re-reading. When nothing was unlocked, it reads `None unlocked yet, sheet-04 Q3 is waiting on <topic>` instead.
 - Prose, not bullets. A bullet list mirroring the slide's bullet list has added nothing.
-- Math in `$$ ... $$` blocks only. Run the inline-math grep from the top of this file over the notes file once the body is written, and fix every line it prints.
+- Math in `$$ ... $$` blocks only. Run the `science-output` grep over the notes file once the body is written, and fix every line it prints.
 - A diagram only reaches the file when the user's picture leans on it, described the way they described it, since the file holds no images.
 - No naked terms. Any domain word gets a plain-words gloss in the sentence it first appears in. Where they used the word without ever unpacking it, ask them for the gloss at step 4 rather than supplying your own.
 - `[🎙 mm:ss]` tags a line from the video that the user took up as their own. A lecturer's phrasing they never adopted is not part of their picture and does not reach the file.

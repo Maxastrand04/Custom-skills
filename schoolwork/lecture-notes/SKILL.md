@@ -17,7 +17,6 @@ One topic per session. Context stays small and each topic gets the whole window.
 Check for `Lecture-notes/<deck-filename>.md`.
 
 - **Missing** -> this is the map run. Steps 1 to 5 below, then stop. No teaching.
-- **Present, header reads `Video: not asked`** -> `lecture-preview` wrote the map before the lecture and never settled the video. Do step 2 only, rewrite the header field with what it returns, then carry on into `teaching.md`.
 - **Present** -> this is a topic run. Read [`teaching.md`](teaching.md) and follow it. Nothing else on this page applies.
 
 ## Step 1: Locate the course
@@ -55,7 +54,7 @@ The Read tool caps a PDF at 20 pages per call and requires an explicit `pages` r
 
 ## Step 4: Cut the deck into topics and write the map
 
-Both are defined in [`map-format.md`](map-format.md), which `lecture-preview` reads too. Follow it as written, since every later run greps the file it describes.
+Both are defined in [`map-format.md`](map-format.md). Follow it as written, since every later run greps the file it describes.
 
 **Done when:** its two "Done when" lines both hold, meaning every deck page falls inside exactly one topic's slide range, and the map exists with every metadata line ending `Not covered yet.`
 

@@ -10,6 +10,7 @@ developer-tools/   everything else for coding, reached for as needed
 behaviour/         how Claude talks, not what it builds, borrowed by the rest
 schoolwork/        study skills, for when I'm the learner
 archive/           retired, never installed
+config/            my settings, CLAUDE.md, and hooks, reference only
 ```
 
 `install.sh` walks those categories and symlinks each skill flat into `~/.claude/skills/<name>`. Claude Code discovers skills by bare name, so the category is repo-level organisation only. See [setup](#setup) to install them.
@@ -17,6 +18,8 @@ archive/           retired, never installed
 **Invocation follows that grouping exactly.** `behaviour/` is model-invoked. Everything else sets `disable-model-invocation: true` and only starts when I type its name.
 
 The split is about what a skill does, not what it covers. A `behaviour/` skill is borrowed by work already running, so it has to be reachable by name. Every other skill starts work, and deciding what work happens next is my job. So they carry no model-facing description, cost nothing per turn, and no skill in this repo ever invokes another outside `behaviour/`. The chain hands off through artifacts, and `brainstorming` ends by naming a route instead of taking it.
+
+Behind that split, and behind every setting in [`config/`](config/README.md), is one goal: control what is in the context window, and get the same work out of the same task twice. A skill that only starts when I type its name costs nothing until I want it and does the same thing every time I do. A handoff through a committed artifact means the next session reads a file rather than remembering a conversation. Sessions here are meant to be stateless and repeatable rather than adaptive, because preferences shift between projects and over months, and a rule I can open and edit beats one the model picked up somewhere I cannot see.
 
 ---
 
@@ -139,15 +142,15 @@ Skills for when I'm the learner rather than the builder. See [schoolwork/README.
 |-------|--------------|
 | `eli5` | Explains at middle-school level, assuming zero knowledge of the subject. |
 | `eli10` | Explains at high-school level, with algebra and basic programming assumed. |
-| `lecture-preview` | Flies over a deck before the lecture. Ranks its topics against `course-index.md`, gives each one a picture, table, or bounded parallel, and says what to listen for. Writes the topic map `lecture-notes` picks up. |
+| `lecture-preview` | Turns one deck into a one-page formula sheet before the lecture. Every formula the deck introduces, its symbols named, one line on when to reach for it. |
 | `lecture-notes` | Teaches one lecture topic by topic. A topic reaches `Lecture-notes/` only once I can explain it back and have worked a real question from `Exercises/`. |
 | `course-index` | Reads a course's `Exams/` and `Exercises/` once into `course-index.md`. Incremental via a SHA manifest. Produces the topic frequency table and the per-question prerequisites the other two read. |
+| `example-workthrough` | Works one example end to end, opening with the theory and formulas it will use. Needs no course folder. Use it when a formula on the sheet is unclear. |
+| `write-formula-sheet` | Builds `formulas.md` and `formula-derivations.md` from the lectures, exercises, and exams, grouping formulas by what you use together and ranking the groups by exam frequency from `course-index.md`. |
 
 The `eli*` pair do one thing, which is point at their wording rules in [`behaviour/`](behaviour/README.md), one source of truth per level, reachable from any other skill the way `grilling` is. Neither holds across turns. They used to claim they did, and the claim never held, so typing the name again is how you get the level again.
 
-The three course skills hand off through `course-index.md` the way the board hands off through GitHub issues. All of them stay inside one course folder.
-
-In development, not in the repo yet: `write-formula-sheet`, which builds `formulas.md` and `formula-derivations.md` from the lectures, exercises, and exams, grouping formulas by what you use together and ranking the groups by exam frequency from `course-index.md`.
+The four course skills hand off through `course-index.md` the way the board hands off through GitHub issues. All of them stay inside one course folder. `example-workthrough` is the exception, it needs no course folder and only runs when you ask for it by name.
 
 Still planned: rehearsal, spaced repetition, exam prep.
 
@@ -156,6 +159,18 @@ Still planned: rehearsal, spaced repetition, exam prep.
 ## archive
 
 [`archive/`](archive/) holds skills I've retired. Never installed, not part of any workflow. See [archive/README.md](archive/README.md) for what's in there and why.
+
+---
+
+## config
+
+Skills are half of what makes Claude Code work for me. [`config/`](config/README.md) is the other half: my `CLAUDE.md`, the settings that turn features off, the hooks, and the status line.
+
+**Reference only.** `install.sh` does not touch it. There is one `~/.claude/settings.json` per machine and overwriting yours with mine would eat it, so this is copy what you want rather than run a script. Skills are all-or-nothing per skill. Settings are pick and choose.
+
+Every one of those settings serves the same goal as the skills, which is control over what sits in the context window and repeatability across runs. `autoMemoryEnabled: false` is the sharpest example. Memory would open every session with notes from sessions about something else, spending context I did not choose and making this run depend on the last one. Stateless beats adaptive here, because my preferences shift between projects and over months, and a rule I can point at in a file beats a preference the model inferred weeks ago. Same reasoning for `disableBundledSkills`, so the only skills advertised to the model are mine, and for the `deny` block, which drops tools I never use so their descriptions stop riding along in context and nothing reaches for them mid-task. [config/README.md](config/README.md) takes each one in turn.
+
+It also explains the thing that looks like over-engineering from outside, which is `unslop` running three ways at once. It is a model-invoked skill, plus a `SessionStart` hook that injects the full rule set, plus a `UserPromptSubmit` hook that re-states the worst offenders before every single reply. A rule read once at turn one loses to the model's defaults by turn twelve, and long output is where the tells come back. The redundancy is the point.
 
 ---
 
