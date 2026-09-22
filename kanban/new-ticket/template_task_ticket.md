@@ -19,4 +19,4 @@
 
 ---
 
-> **Branch:** implement this ticket on `<this issue's number>-{BRANCH_SLUG}`. `architect-ticket` prepends the number, since the slug is chosen before the issue number exists. The number in the branch name is what lets `refactor-ticket` link the work back to this ticket.
+> **Branch:** implement this ticket on `<this issue's number>-{BRANCH_SLUG}`. The station that opens the branch prepends the number, since the slug is chosen before the issue number exists. The number in the branch name is what links the work back to this ticket.

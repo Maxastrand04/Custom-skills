@@ -18,7 +18,7 @@ Run `/grilling` on the idea. That skill owns the interview mechanics.
 
 Three things this grill does that a plain grill does not:
 
-- **Check, don't ask.** An assumption you can verify is not a question for the user. Read the code, run the thing, search the web for whether it already exists. Evidence kills ideas that argument only bruises. Rank it: the repo first, then `docs/adr/` and `CONTEXT.md`, then the web, and only for prior art and buy-versus-build.
+- **Check, don't ask.** An assumption you can verify is not a question for the user. Read the code, run the thing, search the web for whether it already exists. Evidence kills ideas that argument only bruises. Rank it: the repo first, then `docs/pcr/`, `docs/adr/` and `CONTEXT.md`, then the web, and only for prior art and buy-versus-build.
 - **Argue its death.** At least once, make the strongest honest case for not doing this at all: do nothing, buy it instead, delete the code rather than extend it, or live with the problem. Press the case, and do not raise it and move on.
 - **Reshape on every break.** A gap that surfaces is the work. Adapt the idea to close it and keep grilling the adapted version. Most of a run is this loop, and the shaped idea it produces is the deliverable.
 
@@ -39,7 +39,7 @@ No hedged third outcome. If it half-holds, the half that holds is the idea and t
 
 The grill usually settles something worth keeping. Propose it, and never write silently:
 
-- A rule that constrains future work becomes a **new** ADR in `docs/adr/`, per [`../codebase-rules/ADR-FORMAT.md`](../codebase-rules/ADR-FORMAT.md), which you read at runtime. Existing ADRs are not yours to touch; those go to the route table below.
+- A rule that constrains future work becomes a **new** ADR in `docs/adr/`, per [`../architect-ticket/RECORD-FORMAT.md`](../architect-ticket/RECORD-FORMAT.md), which you read at runtime. Existing records are not yours to touch; a PCR in the way goes to the route table below.
 - A term the grill pinned down or renamed becomes an entry in `CONTEXT.md`.
 
 Propose nothing when the grill settled nothing durable; a killed idea can still be worth an ADR recording why not.
@@ -52,7 +52,7 @@ Only if it holds. Name one route and state the reason, so the user can override 
 
 | The surviving idea | Route |
 |---|---|
-| Is blocked by a decision already recorded in `docs/adr/` | `/challenge-adr`, and nothing else happens until that session does |
+| Is blocked by a convention recorded in `docs/pcr/` | `/challenge-pcr`, and nothing else happens until that session does |
 | Is one change with one test suite and no architecture question | Implement inline, in this session, once the user says go |
 | Is one coherent behaviour, and no epic covers it | `/new-ticket` |
 | Is a goal that has to be sliced into several tickets | `/map-epic` |

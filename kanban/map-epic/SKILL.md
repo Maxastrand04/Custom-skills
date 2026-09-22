@@ -111,8 +111,9 @@ Epic tickets take the `epic:` label scope.
 1. Draft the Goal, the Expected behaviour, the Out of scope, and the Branch slug from what the breadth-first grill already surfaced.
 2. Run the publish loop's preview and edit cycle. Spend the discussion on expected behaviour, and keep it user-visible per `ticket-shapes.md`.
 3. Assign the `(N.M)` id by taking `max(M) + 1` over the `(N.M)` ids already in the epic issue's sub-issue titles, starting at 1 if none exist. This is append-only. Never renumber or delete an existing ticket.
-4. Publish with the title `(N.M) [feature] <short title>`. Every task defaults to feature-shaped, so do not ask feature vs bug here.
-5. Move to the next task ticket.
+4. Judge it against `ticket-shapes.md`'s **autopilot criteria** and state the label, `epic:task` or `epic:autopilot`, with one line of reasoning. The user confirms or overrides.
+5. Publish with the title `(N.M) [feature] <short title>`. Every task defaults to feature-shaped, so do not ask feature vs bug here.
+6. Move to the next task ticket.
 
 **Wire every published ticket** as a sub-issue of the epic issue, and wire each confirmed blocking edge, per `ticket-shapes.md`'s native wiring.
 

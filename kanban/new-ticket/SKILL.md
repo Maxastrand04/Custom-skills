@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # new-ticket
 
-Grill the user into a single, well-scoped GitHub ticket covering **WHAT** changes, meaning user-visible behaviour and scope, and never **HOW**, meaning architecture, files, code, and tests. Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/architect-ticket` for the HOW.
+Grill the user into a single, well-scoped GitHub ticket covering **WHAT** changes, meaning user-visible behaviour and scope, and never **HOW**, meaning architecture, files, code, and tests. Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/architect-ticket` for the HOW, or to `/autopilot-ticket` when the ticket qualifies.
 
 The published body is deliberately thin. The grill is not. Everything the grill surfaces must land as **expected behaviour** or be consciously dropped.
 
@@ -96,6 +96,8 @@ For the split path, read `subissue-splitting.md` and follow its vertical-slice r
 ## Publishing
 
 Follow `ticket-shapes.md`'s **publish loop** for every ticket, parent and sub alike, and its **native wiring** for parentage and blocking.
+
+Before the first preview of each task ticket, judge it against `ticket-shapes.md`'s **autopilot criteria** and state the label you'd give it, `ticket:task` or `ticket:autopilot`, with one line of reasoning. The user confirms or overrides. Sub-issues are judged one at a time, since a parent that needs the architect can have a sub-issue that doesn't.
 
 For a split, publish **parent first**, so sub-issues have something to attach to:
 

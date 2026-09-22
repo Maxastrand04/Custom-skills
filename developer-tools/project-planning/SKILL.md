@@ -56,7 +56,7 @@ Keep the issues whose title starts with a `(N) [epic]` token, and parse `N` from
 
 Invoke the `grilling` skill for the interview mechanics; this section supplies only the agenda and its termination condition.
 
-**Read first.** Before asking anything, read `CONTEXT.md` at the project root if it exists, plus the epic list loaded above and the Destination line in each open epic's body. Summarize your current understanding back to the user in two to four sentences: what the project is, who it's for, what's already planned, and what's already done (closed epics). Be explicit about what you do and do not yet know.
+**Read first.** Before asking anything, read `CONTEXT.md` at the project root if it exists, every file in `docs/pcr/` if it exists, plus the epic list loaded above and the Destination line in each open epic's body. Summarize your current understanding back to the user in two to four sentences: what the project is, who it's for, what's already planned, and what's already done (closed epics). Be explicit about what you do and do not yet know.
 
 **Ask only on gaps.** Do not run a fixed N-question script. Ask only where understanding is genuinely absent or unclear; if `CONTEXT.md` and the epic issues already answer an area, do not re-ask it.
 
@@ -67,8 +67,9 @@ Areas to cover (ask only where gaps remain):
 3. **Success criteria.** One observable behavior that defines done.
 4. **Scope boundaries.** What is explicitly out of scope?
 5. **Domain language.** 3-6 nouns that recur in code and UI.
+6. **Project conventions.** The choices every ticket will have to live inside: language and stack, the libraries a file may import, naming, comment convention, object-oriented or not, test runner and layout. Read the repo before asking; an existing codebase already answers most of these, and a `docs/pcr/` that exists answers them all. Recommend an answer for each gap and let the user correct it. Each one settled becomes a PCR under Write artifacts.
 
-**Termination.** Stop the grill once you can fill in all five areas. Announce:
+**Termination.** Stop the grill once you can fill in all six areas. Announce:
 
 > `Understanding captured. Proposing epic breakdown.`
 
@@ -99,7 +100,7 @@ After proposing the breakdown, ask:
 
 ## Write artifacts
 
-On confirmation, do both of the following, in order. Never create files outside this list.
+On confirmation, do all three of the following, in order. Never create files outside this list.
 
 ### CONTEXT.md
 
@@ -109,11 +110,15 @@ If `CONTEXT.md` already exists, update it in place: add or revise Language entri
 
 **Out of scope lives here**, as a short `## Out of scope` section listing each exclusion and why. It is prose about the project's boundaries rather than trackable state, so it belongs beside the language, not in an issue.
 
+### PCRs
+
+One file per convention settled in area 6, written to `docs/pcr/NNNN-slug.md` per `../architect-ticket/RECORD-FORMAT.md`, a skill-relative path, which you read at runtime. Its PCR tests decide what gets a file: the convention has to bind the whole project and be phrasable as MUST or MUST NOT. Take the next free number. **Never edit a PCR that already exists**; that takes a `/challenge-pcr` session. A convention the grill re-confirmed unchanged writes nothing.
+
 ### Epic skeleton issues
 
 File one issue per **new** epic, in ascending `N` order. Nothing is filed for an epic that already has an issue.
 
-Render `../../kanban/map-epic/template_epic_issue.md`, a skill-relative path:
+Render `../map-epic/template_epic_issue.md`, a skill-relative path:
 
 - **Destination** is the epic goal, verbatim as confirmed at the gate.
 - **Notes**, **Decisions so far**, and **Not yet specified** each get the placeholder line `_Not yet charted. Run /map-epic on this epic._`
@@ -126,7 +131,7 @@ gh issue create --title "(N) [epic] <epic name>" --body "$(cat ...rendered...)"
 
 Preview every rendered title and body in chat before the first `gh issue create` call, and publish only on explicit approval, per `ticket-shapes.md`'s publish loop.
 
-Output the `CONTEXT.md` path and every epic issue URL after writing.
+Output the `CONTEXT.md` path, every PCR written, and every epic issue URL after writing.
 
 ---
 

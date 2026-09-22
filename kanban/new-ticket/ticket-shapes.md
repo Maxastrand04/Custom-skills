@@ -8,7 +8,7 @@ Every ticket is one of two bodies, and nothing else.
 
 - **Task ticket**, `template_task_ticket.md`. Goal, Expected behaviour, Out of scope, Branch. Used for a deliverable: a standalone feature, a standalone bug fix, or an epic task.
 
-  **Expected behaviour is user-visible and nothing else.** It says what someone can do once this ships, in the language of the product. It is not a checklist an implementer ticks off, and it never names a function, a file, or a test. `architect-ticket` turns it into the exact tests the implementation has to pass.
+  **Expected behaviour is user-visible and nothing else.** It says what someone can do once this ships, in the language of the product. It is not a checklist an implementer ticks off, and it never names a function, a file, or a test. `architect-ticket` or `autopilot-ticket` turns it into the exact tests the implementation has to pass.
 - **Question ticket**, `template_question_ticket.md`. A Question and nothing more. Used for research and prototype tickets, which exist to be answered in their own session, not implemented.
 
 Read the template file at publish time. Do not reconstruct either body from this document.
@@ -25,32 +25,46 @@ Read the template file at publish time. Do not reconstruct either body from this
 
 ## Labels
 
-`<scope>:<type>`. Scope records where the ticket came from, and type records what it is.
+`<scope>:<type>`. Scope records where the ticket came from, and type records which station picks it up.
 
-| | task | research | prototype |
-|---|---|---|---|
-| **filed under an epic** | `epic:task` | `epic:research` | `epic:prototype` |
-| **filed standalone** | `ticket:task` | `ticket:research` | `ticket:prototype` |
+| | task | autopilot | research | prototype |
+|---|---|---|---|---|
+| **filed under an epic** | `epic:task` | `epic:autopilot` | `epic:research` | `epic:prototype` |
+| **filed standalone** | `ticket:task` | `ticket:autopilot` | `ticket:research` | `ticket:prototype` |
 
-A feature and a bug both label as `task`. The `[feature]` or `[bug]` prefix in the title carries that distinction.
+A feature and a bug both label as `task` or `autopilot`. The `[feature]` or `[bug]` prefix in the title carries that distinction.
+
+`task` goes to `architect-ticket` and the three-station chain. `autopilot` uses the same task body and goes to `autopilot-ticket`, which runs all three legs unattended and opens a PR. Decide between them with the autopilot criteria below, once per task ticket, at publish time.
 
 Labels must exist before use, so create the ones this session needs, idempotently, once:
 
 ```
 gh label create epic:task --color 1D76DB || true
+gh label create epic:autopilot --color FBCA04 || true
 gh label create epic:research --color 5319E7 || true
 gh label create epic:prototype --color 0E8A16 || true
 gh label create ticket:task --color 1D76DB || true
+gh label create ticket:autopilot --color FBCA04 || true
 gh label create ticket:research --color 5319E7 || true
 gh label create ticket:prototype --color 0E8A16 || true
 ```
 
+## Autopilot criteria
+
+A task ticket is `autopilot` when settling the contract up front would cost more than reading the finished diff. That holds when all three are true, and the ticket is `task` when any one is false:
+
+1. **No public signature changes.** Nothing outside the files the ticket touches calls a name, parameter, or return value the change adds or alters. Internals are free.
+2. **No record is touched or needed.** No decision in `docs/pcr/` or `docs/adr/` is in the way, and the change makes no call a future reader could undo by accident.
+3. **`git revert` of the merged PR undoes it completely.** No migration, no external resource, no data written that a revert leaves behind.
+
+Small refactors, bug fixes, and implementation swaps behind a stable interface usually pass. A ticket whose Expected behaviour can't all be reached by automated tests fails, because `autopilot-ticket` has no other bar to check against. The label is a guess made before anyone read the code, so `autopilot-ticket` re-checks it and halts if it was wrong.
+
 ## Branch slug
 
-**The ticket names its own branch.** Fill `## Branch` on every task ticket before its first preview. `architect-ticket` derives a slug from the title when a ticket arrives without one, so filling it here is what keeps the slug deliberate rather than guessed. Question tickets have no branch, since nothing is implemented from them.
+**The ticket names its own branch.** Fill `## Branch` on every task ticket before its first preview. `architect-ticket` and `autopilot-ticket` derive a slug from the title when a ticket arrives without one, so filling it here is what keeps the slug deliberate rather than guessed. Question tickets have no branch, since nothing is implemented from them.
 
 - **2 to 4 words, kebab-case, no articles**, derived from the title. `[feature] Add OAuth login for admin dashboard` gives `oauth-admin-login`.
-- **Slug only.** No issue number, since the issue does not exist yet and `architect-ticket` prepends it. No `feature/` prefix, no type prefix.
+- **Slug only.** No issue number, since the issue does not exist yet and the station that opens the branch prepends it. No `feature/` prefix, no type prefix.
 
 ## AI disclaimer
 

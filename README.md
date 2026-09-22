@@ -83,7 +83,7 @@ The core of the repo is one chain that runs from "I have an idea" to "the diff i
 ```
 map-epic  →  architect-ticket  →  implement-ticket  →  refactor-ticket
 (N.M) tasks     stubs + failing      bodies filled,     shape fixed against
-under the epic  tests, committed     suite green        docs/adr/
+under the epic  tests, committed     suite green        the records
                      ↑                    ↑                  ↑
                     red        →        green        →    refactor
 ```
@@ -100,7 +100,7 @@ There is no plan file. The commit is the handoff, because a signature in a sourc
 
 **3. `implement-ticket`**, takes the branch **green**. Reads the ticket for the why and `git diff main...HEAD` for the what, then fills in the bodies until every acceptance test passes. Signatures and tests are frozen; everything behind them is free. A contract that proves wrong mid-run halts for a real decision instead of being edited quietly.
 
-**4. `refactor-ticket`**, **refactors** under the green suite. First it gates the diff **true-to-spec**, asking whether the acceptance tests genuinely cover the ticket's expected behaviour and whether the code meets it, because green only means the tests pass, not that they were the right tests. A finding halts the session rather than papering over it. Then it edits the code into line with the ADRs in `docs/adr/` and the code-smell baseline, re-runs the affected tests, and commits the refactor separately. Behaviour never changes here. An edit that takes the suite back to red was never a refactor and gets reverted.
+**4. `refactor-ticket`**, **refactors** under the green suite. First it gates the diff **true-to-spec**, asking whether the acceptance tests genuinely cover the ticket's expected behaviour and whether the code meets it, because green only means the tests pass, not that they were the right tests. A finding halts the session rather than papering over it. Then it edits the code into line with the PCRs in `docs/pcr/`, the ADRs in `docs/adr/`, and the code-smell baseline, re-runs the affected tests, and commits the refactor separately. Behaviour never changes here. An edit that takes the suite back to red was never a refactor and gets reverted.
 
 ---
 
@@ -111,9 +111,7 @@ Coding skills that aren't stations on the board. No ordering, and no artifacts p
 | Skill | What it does |
 |-------|--------------|
 | `project-planning` | Once per project. Grills me on problem, user, success criteria, scope, and domain language, then proposes vertical-slice epics. Writes `CONTEXT.md` and files one `(N) [epic]` skeleton issue per epic, which is where the board picks up. |
-| `codebase-rules` | Surveys the codebase and grills me into one-decision-per-file ADRs in `docs/adr/`, shaped `Decision / Reason / Consequence / Date`. These are what `refactor-ticket` cites. |
-| `challenge-adr` | The only door into an existing ADR. An ADR stands until a challenge beats it, and the case has to be that the architecture genuinely improves. Amends in place, retires, or rejects; nothing else edits `docs/adr/`. A blocked skill has to stop and hand the decision back to me. |
-| `add-comments` | Establishes a persisted `comment-convention.md`, then walks the code symbol by symbol with an approve/edit/skip preview. Missing language mid-walk triggers a scoped grill. |
+| `challenge-pcr` | The only door into an existing PCR, the project-wide conventions in `docs/pcr/`. A PCR stands until a challenge beats it, and the case has to be a real project adaption worth the ripple. Amends in place, retires, or rejects; nothing else edits `docs/pcr/`. A blocked skill has to stop and hand the decision back to me. |
 | `generate-framework-tests` | Real runnable tests for pytest, vitest, jest, go test, cargo test, or JUnit. A sidecar manifest gives fast-exit when nothing changed and drift-diff when it did. User-added cases are never touched. |
 | `brainstorming` | The front door to everything else. Grills an idea trying to **kill** it, then gives a binary verdict, either dead or a paragraph of concrete functionality, and routes the survivor to whichever skill is the smallest fit. |
 | `pro-con` | Weigh a decision and commit to a recommendation. Fixed output shape. |

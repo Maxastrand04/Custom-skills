@@ -1,6 +1,6 @@
 # Code standards
 
-The baseline `refactor-ticket` refactors against, in two groups: **code smells**, which are local, and **bad architecture**, which is structural. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source.
+The baseline `refactor-ticket` refactors against, in three groups: **code smells**, which are local, **bad architecture**, which is structural, and **test rules**, which are report only. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source.
 
 ## Gates
 
@@ -31,7 +31,7 @@ Apply these before judging any entry:
 - **Message chains.** Long `a.b().c().d()` navigation the caller shouldn't depend on. Hide the walk behind one call on the first object. (5.2)
 - **Middle man.** A unit that mostly just delegates onward. Cut it and call the real target. (5.2)
 - **Missing or wrong doc comments.** Every public declaration needs one, covering parameters and return value. It says *what*, never *how*, so the implementation stays free to change. Getters and setters included, since a blanket rule means nothing gets missed. (6.3, 6.6)
-- **Comments inside a body.** Needing one means the function is too long or does too much. Fix the code and delete the comment. Stale comments are worse than none, because they cost trust in all the others. (6.3)
+- **Comments inside a body.** Needing one means the function is too long or does too much. Fix the code and delete the comment. (6.3)
 - **Refused bequest. (OO only)** A subclass that ignores or overrides most of what it inherits. Drop the inheritance and use composition. (6.4)
 - **Inheritance used for code reuse. (OO only)** Reuse is better served by holding a reference and calling the methods. Inheritance passes down the implementation, not just the contract, so a superclass change silently breaks the subclass. Composition is usually longer and less elegant, and it works. Inherit only to modify behaviour through an overridable step, or to supply a default implementation. (9.3)
 - **Unsound hierarchy. (OO only)** Four conditions must all hold: every superclass member is meaningful in the subclass, the superclass is genuinely more general, the subclass genuinely more specialised, and the is-a reads true. They're necessary, not sufficient. Hierarchies suit invented abstractions, like `List`/`AbstractList`/`ArrayList`, and fail on real-world entities, which refuse to be a tree. (9.3)
