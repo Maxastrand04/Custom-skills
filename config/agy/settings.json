@@ -1,0 +1,13 @@
+{
+  "autoMemory": false,
+  "experimental": {
+    "autoMemory": false
+  },
+  "permissions": {
+    "deny": [
+      "ask_question",
+      "generate_image",
+      "write_file(/Users/max/.gemini/antigravity-cli/brain/*)"
+    ]
+  }
+}

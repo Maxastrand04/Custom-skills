@@ -1,6 +1,6 @@
 ---
 name: eli5
-description: "Explaing-like-im-5", Explain in plain language, pitched at a curious middle schooler who knows nothing about the subject.
+description: Explain like I am five. Plain language, pitched at a curious middle schooler who knows nothing about the subject.
 disable-model-invocation: true
 ---
 

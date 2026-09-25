@@ -1,6 +1,6 @@
 ---
 name: eli10
-description: "Explain-like-im-10", Explain pitched at a sharp high schooler, with algebra and basic programming assumed and domain terms glossed on first use.
+description: Explain like I am ten. Pitched at a sharp high schooler, with algebra and basic programming assumed and domain terms glossed on first use.
 disable-model-invocation: true
 ---
 

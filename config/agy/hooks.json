@@ -1,0 +1,18 @@
+{
+  "unslop-inject": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "python3 ~/.gemini/config/hooks/inject_unslop.py"
+      }
+    ]
+  },
+  "unslop-reminder": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "python3 ~/.gemini/config/hooks/remind_unslop.py"
+      }
+    ]
+  }
+}

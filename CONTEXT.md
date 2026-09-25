@@ -1,6 +1,6 @@
 # Custom-skills
 
-My personal Claude Code skills, symlinked into `~/.claude/skills/`. Not a distribution. This repo exists so the skills I actually use stay versioned and consistent with each other.
+My personal agent skills for Claude Code and Antigravity (agy), symlinked into `~/.claude/skills/` and `~/.gemini/config/skills/`. Not a distribution. This repo exists so the skills I actually use stay versioned and consistent with each other.
 
 This file is the canonical domain language for the repo. Several skills read it at runtime rather than restating definitions in their own `SKILL.md`.
 
@@ -15,7 +15,7 @@ A top-level directory grouping Skills by purpose: `kanban/` (the workflow chain)
 _Avoid_: group, namespace, section, folder
 
 **SKILL.md**:
-The entrypoint of a Skill. YAML frontmatter declares `name` and `description`; the body is the prompt content Claude Code loads.
+The entrypoint of a Skill. YAML frontmatter declares `name` and `description`; the body is the prompt content the agent loads.
 _Avoid_: manifest, config
 
 **Bundled file**:
@@ -23,8 +23,12 @@ A file inside a Skill directory that `SKILL.md` references via a relative path (
 _Avoid_: resource, asset, dependency
 
 **Install**:
-Creating a symlink from `~/.claude/skills/<name>` to this repo's `<category>/<name>/` directory so Claude Code loads the Skill. The symlink is always **flat**, because Claude Code discovers Skills by bare directory name and does not read **Categories**. A Skill that has moved between Categories is silently re-pointed on the next `install.sh` run.
-_Avoid_: deploy, sync, copy
+Creating a symlink from `~/.claude/skills/<name>` (Claude Code) or `~/.gemini/config/skills/<name>` (Antigravity) to this repo's `<category>/<name>/` directory so the agent loads the Skill. The symlink is always **flat**, because both agents discover Skills by bare directory name and do not read **Categories**. A Skill that has moved between Categories is silently re-pointed on the next `install.sh` run. The interactive menu also removes links that were unticked or have gone **stale**, but only links that point into this repo.
+_Avoid_: deploy, copy
+
+**Stale link**:
+An installed symlink that points into this repo but whose name no longer matches any live Skill, because the Skill was archived or renamed. Listed with its reason in the menu's plan and removed on apply. Reported and left alone on the add-only path.
+_Avoid_: dangling (too narrow, an archived Skill's link still resolves), orphan
 
 **TDD cycle**:
 The three stations `architect-ticket`, `implement-ticket` and `refactor-ticket`, run in that order on one **Ticket** and one branch, as the red, green and refactor legs of one red-green-refactor cycle. Each Skill's name says which leg it is. Red leaves every **Acceptance test** failing, green takes them all passing, refactor changes only shape underneath them. The cycle is split across three sessions rather than three phases of one session, so the legs hand off through the **Red branch** and then the green suite instead of through accumulated context.

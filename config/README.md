@@ -1,18 +1,17 @@
 # config
 
-The skills in this repo are half of what makes Claude Code useful to me. This directory is the other half: the global instruction file, the settings that turn features off, the hooks that re-state a rule the model would otherwise drift from, and the status line.
+The skills in this repo are half of what makes Claude Code and Antigravity (agy) useful to me. This directory is the other half: the global instruction file, the settings that turn features off, the hooks that re-state a rule the model would otherwise drift from, and the status line.
 
-**Nothing here is installed.** `install.sh` does not touch this directory and never will. There is exactly one `~/.claude/settings.json` and one `~/.claude/CLAUDE.md` per machine, and overwriting yours with mine would eat whatever you already had. Read the files, take the parts you want, paste them into your own.
+**Nothing here is installed.** `install.sh` does not touch this directory and never will. There is exactly one `~/.claude/settings.json` and one `~/.gemini/config/` per machine, and overwriting yours with mine would eat whatever you already had. Read the files, take the parts you want, paste them into your own.
 
-Copy `config/settings.json` wholesale only if your `~/.claude/settings.json` is empty. Otherwise merge key by key. The hooks and the status line are separate files and can be dropped into `~/.claude/` as they are:
+It is split per agent, and each folder is complete on its own, duplicated hook scripts included:
 
-```bash
-cp config/hooks/*.py ~/.claude/hooks/
-cp config/statusline-command.sh ~/.claude/
-chmod +x ~/.claude/hooks/*.py ~/.claude/statusline-command.sh
+```
+claude/   CLAUDE.md, settings.json, hooks/, statusline-command.sh
+agy/      AGENTS.md, settings.json, hooks.json, hooks/
 ```
 
-Then add the matching `hooks` and `statusLine` blocks from `settings.json`. Both use `$HOME` rather than a hardcoded path, so they work on any account.
+Install steps are in [`claude/README.md`](claude/README.md) and [`agy/README.md`](agy/README.md). The rest of this file is why the settings are what they are, which is the same for both.
 
 ---
 
@@ -81,17 +80,19 @@ The problem is that a rule read once at the start of a session loses to the mode
 
 **The skill.** `behaviour/unslop/SKILL.md` is the full rule set and the single source of truth. It is model-invoked, so it fires when Claude notices writing is happening, and any other skill can borrow it by name.
 
-**`inject_unslop.py`**, a `SessionStart` hook. Prints that same `SKILL.md` into context at startup, resume, clear, and compact. Model invocation is a judgment call and it misses. This makes the rules present from turn one whether or not anything invoked them. It also survives a compact, which is exactly when a rule loaded early would otherwise fall out.
+**`inject_unslop.py`**, a session-start hook. Prints that same `SKILL.md` into context at startup, resume, clear, and compact. Model invocation is a judgment call and it misses. This makes the rules present from turn one whether or not anything invoked them. It also survives a compact, which is exactly when a rule loaded early would otherwise fall out.
 
-**`remind_unslop.py`**, a `UserPromptSubmit` hook. Prints a condensed version, about twelve lines of the highest-frequency offenders, immediately before every reply. This is the one that does the real work. Recency wins over a rule sitting thousands of tokens back, and the failure mode I am fixing is drift, not ignorance.
+**`remind_unslop.py`**, a per-prompt hook. Prints a condensed version, about twelve lines of the highest-frequency offenders, immediately before every reply. This is the one that does the real work. Recency wins over a rule sitting thousands of tokens back, and the failure mode I am fixing is drift, not ignorance.
 
 That is roughly 250 tokens on every turn, plus the full skill at session start. If you copy one piece, copy `remind_unslop.py`. If you copy nothing else from this directory, copy that.
 
-Both hooks are unconditional and fire in sessions with no writing in them at all. I have decided that is worth it. You may not, and skipping the `SessionStart` injection while keeping the per-prompt reminder is a reasonable middle.
+Both hooks are unconditional and fire in sessions with no writing in them at all. I have decided that is worth it. You may not, and skipping the session-start injection while keeping the per-prompt reminder is a reasonable middle.
+
+The event names and the output format differ per agent. Claude Code wires them to `SessionStart` and `UserPromptSubmit` and reads plain text on stdout. Antigravity has no session-start event, so both scripts run on `PreInvocation` and the inject script guards on the invocation counter. Each agent folder has its own copies of the scripts for that reason.
 
 ---
 
-## statusline-command.sh
+## statusline-command.sh (Claude Code only)
 
 Model name, a context-usage bar, five-hour and weekly rate-limit usage, working directory, git branch.
 

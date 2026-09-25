@@ -1,21 +1,21 @@
 # Custom-skills
 
-My personal Claude Code skills. This repo is where I keep them, version them, and reason about how they fit together. It is built around how I work rather than packaged as a general-purpose kit, but it installs cleanly on any machine. See [setup](#setup).
+My personal skills for Claude Code and Antigravity (agy). This repo is where I keep them, version them, and reason about how they fit together. It is built around how I work rather than packaged as a general-purpose kit, but it installs cleanly on any machine. See [setup](#setup).
 
 Each skill is a directory with a `SKILL.md` entrypoint plus whatever bundled files it references. They're grouped by purpose:
 
 ```
 kanban/            the workflow chain, one artifact handed to the next
 developer-tools/   everything else for coding, reached for as needed
-behaviour/         how Claude talks, not what it builds, borrowed by the rest
+behaviour/         how the agent talks, not what it builds, borrowed by the rest
 schoolwork/        study skills, for when I'm the learner
 archive/           retired, never installed
-config/            my settings, CLAUDE.md, and hooks, reference only
+config/            per-agent settings, instruction files, and hooks, reference only
 ```
 
-`install.sh` walks those categories and symlinks each skill flat into `~/.claude/skills/<name>`. Claude Code discovers skills by bare name, so the category is repo-level organisation only. See [setup](#setup) to install them.
+`install.sh` walks those categories and symlinks each skill flat into `~/.claude/skills/<name>` for Claude Code and `~/.gemini/config/skills/<name>` for Antigravity (agy). Both tools discover skills by bare directory name, so the category is repo-level organisation only. See [setup](#setup) to install them.
 
-**Invocation follows that grouping exactly.** `behaviour/` is model-invoked. Everything else sets `disable-model-invocation: true` and only starts when I type its name.
+**Invocation follows that grouping exactly.** `behaviour/` is model-invoked. Everything else sets `disable-model-invocation: true` and only starts when I type its name. Antigravity ignores that flag, so there the same split holds only because the descriptions are written for a human reader and not as triggers. See [ADR 0005](docs/adr/0005-support-antigravity-alongside-claude-code.md).
 
 The split is about what a skill does, not what it covers. A `behaviour/` skill is borrowed by work already running, so it has to be reachable by name. Every other skill starts work, and deciding what work happens next is my job. So they carry no model-facing description, cost nothing per turn, and no skill in this repo ever invokes another outside `behaviour/`. The chain hands off through artifacts, and `brainstorming` ends by naming a route instead of taking it.
 
@@ -25,7 +25,7 @@ Behind that split, and behind every setting in [`config/`](config/README.md), is
 
 ## Setup
 
-Claude Code only. Nothing here is packaged for any other tool, and the frontmatter fields the install script checks are Claude Code's.
+Works with Claude Code and Antigravity (agy). Both read the same `SKILL.md` frontmatter, `name` and `description`, and `install.sh` checks for exactly those.
 
 **1. Clone the repo somewhere permanent.** The install links back to the clone rather than copying files, so moving or deleting the directory later breaks every installed skill.
 
@@ -40,31 +40,33 @@ cd ~/GitHub/Custom-skills
 ./install.sh
 ```
 
-It creates `~/.claude/skills/` if it is missing, then symlinks every skill in `kanban/`, `developer-tools/`, `behaviour/`, and `schoolwork/` to `~/.claude/skills/<name>`. `archive/` is skipped. Before linking anything it checks that each skill has a `SKILL.md` whose frontmatter carries a `name` and a `description`, and that the `name` matches the directory. A skill that fails any of those is reported and skipped, and the script exits non-zero.
+In a terminal this opens a menu. Pick Claude Code, Antigravity, or both, then toggle skills. Skills already installed for that agent start ticked, so pressing enter changes nothing. The menu is a sync: it prints a plan of what it will add and remove, asks once, then links the ticked skills and unlinks the rest. It only ever removes symlinks that point into this repo, so a link to some other skill collection or a real directory is never touched. With `fzf` on your PATH the menu is fzf, tab marks a skill to toggle and enter applies. Without it you get a numbered list and type numbers, a category name, `all`, or `none`.
 
-Installing a subset works too, by bare name or category-qualified path:
+Skills are linked flat into `~/.claude/skills/<name>` or `~/.gemini/config/skills/<name>`, and `archive/` is never offered. Before anything is linked, every skill in `kanban/`, `developer-tools/`, `behaviour/`, and `schoolwork/` is checked for a `SKILL.md` whose frontmatter carries a `name` and a `description`, with the `name` matching the directory. A skill that fails is reported, hidden from the menu, and the script exits non-zero.
+
+Passing skill names skips the menu and is add-only, so it is safe in scripts and never removes anything. Same for running without a terminal, where it links every skill to both agents. Target flags work in both modes:
 
 ```bash
-./install.sh grilling unslop
-./install.sh developer-tools/brainstorming
+./install.sh grilling unslop               # add two skills to both agents
+./install.sh --agy grilling                # add one skill to Antigravity
+./install.sh --claude                      # menu for Claude Code only
+./install.sh < /dev/null                   # no tty: link everything, add-only
 ```
 
-**3. Restart Claude Code** so it picks up the new directory, then check with `/skills`. Model-invoked skills from `behaviour/` are now live. Everything else is user-invoked, so type the name to start it, for example `grilling`.
+**3. Restart the agent.** In Claude Code check with `/skills`. In Antigravity type the skill name as a slash command, `/grilling` for instance.
 
 Re-running `install.sh` is safe. An existing link to the same target is left alone, and a link that points somewhere else inside the repo gets re-pointed, which is what happens when a skill moves between categories. A real file or directory already sitting at the target is never overwritten. That case is reported and skipped for you to resolve by hand.
 
 Because the install is symlinks, `git pull` is the whole update path for skills you already have. Only new skills need `install.sh` again.
 
-### Uninstalling
+### Uninstalling and stale links
 
-There is no uninstall script. Remove the links directly:
+Untick a skill in the menu and it is unlinked on apply. A skill that was archived or renamed leaves a link behind whose name no longer matches any live skill. The menu lists those under the plan as stale, with the reason, and removes them on apply. The add-only path reports them and leaves them for you.
+
+To pull everything out by hand instead:
 
 ```bash
-# one skill
-rm ~/.claude/skills/grilling
-
-# every link pointing into this repo
-find ~/.claude/skills -maxdepth 1 -type l -exec sh -c \
+find ~/.claude/skills ~/.gemini/config/skills -maxdepth 1 -type l -exec sh -c \
   'readlink "$1" | grep -q "/Custom-skills/" && rm "$1"' _ {} \;
 ```
 
@@ -162,13 +164,13 @@ Still planned: rehearsal, spaced repetition, exam prep.
 
 ## config
 
-Skills are half of what makes Claude Code work for me. [`config/`](config/README.md) is the other half: my `CLAUDE.md`, the settings that turn features off, the hooks, and the status line.
+Skills are half of what makes Claude Code and Antigravity work for me. [`config/`](config/README.md) is the other half, split into [`config/claude/`](config/claude/README.md) and [`config/agy/`](config/agy/README.md). Each folder is the full config for that one agent, the instruction file, hooks, and for Claude Code the settings that turn features off and the status line. The two overlap on purpose so either can be read on its own.
 
-**Reference only.** `install.sh` does not touch it. There is one `~/.claude/settings.json` per machine and overwriting yours with mine would eat it, so this is copy what you want rather than run a script. Skills are all-or-nothing per skill. Settings are pick and choose.
+**Reference only.** `install.sh` does not touch it. There is one `~/.claude/settings.json` and one `~/.gemini/config/` per machine, and overwriting yours with mine would eat whatever you already had. Read the files, take the parts you want, paste them into your own. Skills are all-or-nothing per skill. Settings are pick and choose.
 
 Every one of those settings serves the same goal as the skills, which is control over what sits in the context window and repeatability across runs. `autoMemoryEnabled: false` is the sharpest example. Memory would open every session with notes from sessions about something else, spending context I did not choose and making this run depend on the last one. Stateless beats adaptive here, because my preferences shift between projects and over months, and a rule I can point at in a file beats a preference the model inferred weeks ago. Same reasoning for `disableBundledSkills`, so the only skills advertised to the model are mine, and for the `deny` block, which drops tools I never use so their descriptions stop riding along in context and nothing reaches for them mid-task. [config/README.md](config/README.md) takes each one in turn.
 
-It also explains the thing that looks like over-engineering from outside, which is `unslop` running three ways at once. It is a model-invoked skill, plus a `SessionStart` hook that injects the full rule set, plus a `UserPromptSubmit` hook that re-states the worst offenders before every single reply. A rule read once at turn one loses to the model's defaults by turn twelve, and long output is where the tells come back. The redundancy is the point.
+It also explains the thing that looks like over-engineering from outside, which is `unslop` running three ways at once. It is a model-invoked skill, plus a `SessionStart` hook that injects the full rule set, plus a `UserPromptSubmit` hook (or `PreInvocation` in Antigravity) that re-states the worst offenders before every single reply. A rule read once at turn one loses to the model's defaults by turn twelve, and long output is where the tells come back. The redundancy is the point.
 
 ---
 
@@ -178,4 +180,6 @@ It also explains the thing that looks like over-engineering from outside, which 
 - **Installed by symlink**, so edits are live and the repo can live anywhere. See [ADR 0002](docs/adr/0002-install-via-symlink.md).
 - **Grouped by category, installed flat.** Skill names must stay unique across categories, and a new category means a new entry in the `CATEGORIES` array in `install.sh`. See [ADR 0003](docs/adr/0003-skills-grouped-by-category-directory.md).
 - **User-invoked outside `behaviour/`.** A skill that starts work only starts when I type its name, so no skill invokes another and every handoff goes through an artifact. See [ADR 0004](docs/adr/0004-skills-are-user-invoked-outside-behaviour.md).
+- **Claude Code and Antigravity, one skill tree.** Both agents get the same symlinks, config is per agent under `config/`, and Antigravity's lack of `disable-model-invocation` is a known gap. See [ADR 0005](docs/adr/0005-support-antigravity-alongside-claude-code.md).
+- **The menu syncs, arguments add.** Interactive runs remove unticked and stale links, but only ones pointing into this repo. Skill names on the command line never remove anything. See [ADR 0006](docs/adr/0006-interactive-install-is-a-sync.md).
 - `CONTEXT.md` holds the domain language for this repo. Several skills read it at runtime for canonical definitions, such as Supervisor, Red phase, and the Verification failure rule, rather than restating them.

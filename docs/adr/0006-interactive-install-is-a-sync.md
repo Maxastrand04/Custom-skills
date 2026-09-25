@@ -1,0 +1,9 @@
+# ADR-0006: Interactive install is a sync, arguments are add-only
+
+**Decision:** `install.sh` run with no skill arguments in a terminal MUST open a menu, agent first, then skills, with installed skills pre-selected, and MUST apply the result as a sync: link the ticked skills, unlink the unticked ones, and remove stale links whose name no longer matches a live skill. It MUST print the plan and ask before changing anything. It MUST only ever remove a symlink whose target resolves inside this repo. Run with skill arguments, or without a terminal, it MUST be add-only and MUST NOT remove anything. Validation failures MUST NOT cause removal.
+
+**Reason:** Before this, the installer only added, so archiving or renaming a skill left a link behind that Claude Code kept loading, and the only way out was a `find` one-liner in the README. A menu that shows current state and syncs to what you tick makes removal visible and deliberate. Arguments stay add-only because `./install.sh grilling` has always meant "add grilling" and turning it into "remove everything but grilling" would be a trap in scripts and muscle memory. The tty check keeps a dotfiles bootstrap or CI run working unchanged. The repo-only rule for removal exists because `~/.claude/skills` also holds links to other collections and real directories, none of which are this script's to touch.
+
+**Consequence:** The menu is the uninstall. There is no separate flag or script for it. "Both" in the menu runs the skill list once per agent, so a removal is always one you looked at for that agent. `fzf` gives a nicer menu when present, and the pure bash fallback is the one that gets tested here since it is the one that always exists. A skill that fails validation is hidden from the menu and reported; an installed link to it stays until the skill is fixed or unticked.
+
+**Date:** 2026-09-22
