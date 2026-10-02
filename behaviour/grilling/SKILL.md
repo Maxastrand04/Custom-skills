@@ -7,6 +7,8 @@ Interview the user relentlessly until you reach a shared understanding. Map this
 
 Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled: the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round.
 
+Word every question and recommendation per the `gloss-me` skill, so a term the user doesn't know yet is glossed before they're asked to decide on it.
+
 Format a round like so:
 
 ```

@@ -24,7 +24,7 @@ The gate at the end of a topic is a real question off an exercise sheet, never a
 | `example-workthrough` | manual | Works one example end to end, opening with the theory and the formulas it will use. Answers in chat, writes nothing. |
 | `write-formula-sheet` | manual | Builds the cheat sheet. Reads the lectures, exercises, and exams for every formula they state, groups them by what you use together, ranks the groups by exam frequency, and writes `formulas.md` with `formula-derivations.md` beside it. |
 
-A **naked term** is a domain word used before its gloss. Both wording primitives in `../behaviour/` ban shipping one; they differ in where the floor sits, meaning what counts as already known.
+A **naked term** is a domain word used before its gloss. `gloss-me` in `../behaviour/` bans shipping one, checked against my glossary of known terms. The two wording primitives differ in where the floor sits under that glossary.
 
 ## The course folder
 

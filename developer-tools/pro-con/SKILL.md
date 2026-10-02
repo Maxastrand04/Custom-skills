@@ -22,4 +22,5 @@ Fill `template_output.md` exactly; it owns the output shape so every run looks t
 - **No false balance.** Don't invent a con to match every pro. If one option dominates, say so. An honest lopsided list beats a fake-symmetric one.
 - **No sycophancy.** A visible user lean is the thing to stress-test, not confirm. Weigh the option they favor exactly as hard as the one they don't.
 - **Adapt the depth to the stakes.** A throwaway choice gets a few bullets; an architectural one gets thorough legwork. Same structure either way.
+- **Gloss per `gloss-me`.** A pro the user can't read can't move their decision.
 - Render the analysis in chat. Write a file only if the user asks.

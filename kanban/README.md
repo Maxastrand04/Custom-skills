@@ -22,7 +22,11 @@ The **green** leg. Reads the ticket for the why and `git diff main...HEAD` for t
 
 ### `refactor-ticket`
 
-The **refactor** leg, and the last station. First it gates the diff true-to-spec, asking whether the acceptance file genuinely covers the ticket's expected behaviour and whether the code meets it. Then it runs the whole suite and reconciles it: an old test the ticket contradicts is stale and gets rewritten to the new requirement, a red test nothing contradicts is a regression and gets fixed in its own commit or halted on. Under that full green it edits the code into line with the PCRs in `docs/pcr/`, the ADRs in `docs/adr/`, and its own `code-standards.md` baseline and commits the refactor separately. Last it folds the acceptance file's tests into the module test files, deletes it, and closes the issue.
+The **refactor** leg's first session. First it gates the diff true-to-spec, asking whether the acceptance file genuinely covers the ticket's expected behaviour and whether the code meets it. Then it runs the whole suite and reconciles it: an old test the ticket contradicts is stale and gets rewritten to the new requirement, a red test nothing contradicts is a regression and gets fixed in its own commit or halted on. Then one module halt asks me about anything whose visibility is unclear and any test that touches a private helper or leans on internal structure. Under that full green, with every test frozen, it edits the code into line with the PCRs in `docs/pcr/`, the ADRs in `docs/adr/`, and its own `code-standards.md` baseline and commits the refactor separately. It never touches tests after the module halt.
+
+### `unit-test-ticket`
+
+The refactor leg's second session, and the last station. It is split from `refactor-ticket` only so the test pass starts with a clean context. It checks the branch has a `Refactor:` commit, still carries its acceptance file, and is green. Then it tidies the changed modules' tests against its own `test-standards.md`, drops tautological and structure-sensitive tests from the acceptance file, folds the rest into the module test files, and deletes it. It never edits code. A new test that fails on the code is a bug for the reviewer, so it comes off the branch and goes into the issue comment. It never closes the issue; merging the branch does.
 
 ### `autopilot-ticket`
 
@@ -34,19 +38,19 @@ Sits beside the chain rather than on it. Files a standalone ticket for work no e
 
 ## TDD, red-green-refactor
 
-The last three stations are one TDD cycle on one ticket and one branch, split across three sessions instead of three phases of one. Each name says which leg it is.
+The last four stations are one TDD cycle on one ticket and one branch, split across four sessions instead of phases of one. The refactor leg takes two of them, `refactor-ticket` for the code and `unit-test-ticket` for the tests, so neither runs out of context. The other names say which leg they are.
 
 **Red.** `architect-ticket` leaves the branch red: stubs in the real source files, one acceptance file written against them, every test in it observed failing, committed. That commit is the entire handoff. A signature in a source file and a failing test carry the contract exactly where a plan file could only describe it, which is why there is no plan file.
 
 **Green.** `implement-ticket` reads the ticket and the diff and fills in the bodies until the acceptance file passes. It needs nothing else, because the red branch already says what must become true. A test that *errors* rather than fails is how a missing dependency surfaces, which is what a prerequisites checklist used to be for.
 
-**Refactor.** `refactor-ticket` changes shape and never behaviour. The green suite is what buys that, and it is the handoff from the second leg to the third. A test going red means the edit changed behaviour and was therefore never a refactor, so it gets reverted rather than accommodated.
+**Refactor.** `refactor-ticket` changes shape and never behaviour. The green suite is what buys that, and it is the handoff from the second leg to the third. A test going red means the edit changed behaviour and was therefore never a refactor, so it gets reverted rather than accommodated. The leg runs as two sessions: `unit-test-ticket` picks up the `Refactor:` commit and moves the tests, with the code frozen.
 
 Two things stay frozen from the moment the architect commits them, the signatures and the acceptance file, which is what keeps the three legs one cycle rather than three people editing the same branch. The one exception is `refactor-ticket`'s true-to-spec gate, where a test that does not honestly cover the ticket can be fixed with my go-ahead. Green only means the tests pass, not that they were the right tests, and refactoring code that is wrong spec-wise is wasted work.
 
 ## The acceptance file is disposable
 
-Acceptance criteria describe a ticket, and a ticket is a moment. Left in the suite as written, every closed ticket's criteria stay frozen and each new ticket has to satisfy requirements that may no longer hold, which is friction nobody asked for. So the acceptance file lives only on the ticket branch. `refactor-ticket` folds its tests into the module test files, where they are ordinary unit tests any later ticket may rewrite, then deletes it. Main never carries an acceptance file, and the durable safety net is the unit suite, which the newest ticket always wins against.
+Acceptance criteria describe a ticket, and a ticket is a moment. Left in the suite as written, every closed ticket's criteria stay frozen and each new ticket has to satisfy requirements that may no longer hold, which is friction nobody asked for. So the acceptance file lives only on the ticket branch. `unit-test-ticket` folds its tests into the module test files, where they are ordinary unit tests any later ticket may rewrite, then deletes it. Tautological and structure-sensitive tests never make the trip. Main never carries an acceptance file, and the durable safety net is the unit suite, which the newest ticket always wins against.
 
 Run them in order. Each one halts on its own precondition otherwise.
 
