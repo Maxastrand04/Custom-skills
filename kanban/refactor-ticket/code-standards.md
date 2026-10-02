@@ -1,6 +1,6 @@
 # Code standards
 
-The baseline `refactor-ticket` refactors against, in three groups: **code smells**, which are local, **bad architecture**, which is structural, and **test rules**, which are report only. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source.
+Shared contract. The baseline `refactor-ticket` refactors against and `autopilot-ticket` reads, in two groups: **code smells**, which are local, and **bad architecture**, which is structural. The rules for tests live in `../unit-test-ticket/test-standards.md`. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source.
 
 ## Gates
 
@@ -33,7 +33,7 @@ Apply these before judging any entry:
 - **Missing or wrong doc comments.** Every public declaration needs one, covering parameters and return value. It says *what*, never *how*, so the implementation stays free to change. Getters and setters included, since a blanket rule means nothing gets missed. (6.3, 6.6)
 - **Comments inside a body.** Needing one means the function is too long or does too much. Fix the code and delete the comment. (6.3)
 - **Refused bequest. (OO only)** A subclass that ignores or overrides most of what it inherits. Drop the inheritance and use composition. (6.4)
-- **Inheritance used for code reuse. (OO only)** Reuse is better served by holding a reference and calling the methods. Inheritance passes down the implementation, not just the contract, so a superclass change silently breaks the subclass. Composition is usually longer and less elegant, and it works. Inherit only to modify behaviour through an overridable step, or to supply a default implementation. (9.3)
+- **Inheritance used for code reuse. (OO only)** Reuse is better served by holding a reference and calling the methods. Inheritance passes down the implementation, not just the contract, so a superclass change silently breaks the subclass. Inherit only to modify behaviour through an overridable step, or to supply a default implementation. (9.3)
 - **Unsound hierarchy. (OO only)** Four conditions must all hold: every superclass member is meaningful in the subclass, the superclass is genuinely more general, the subclass genuinely more specialised, and the is-a reads true. They're necessary, not sufficient. Hierarchies suit invented abstractions, like `List`/`AbstractList`/`ArrayList`, and fail on real-world entities, which refuse to be a tree. (9.3)
 
 ---
@@ -44,8 +44,10 @@ Apply these before judging any entry:
 
 - **Low cohesion.** A unit whose knowledge and tasks don't belong to one abstraction, or whose name doesn't identify what it is. Split it so each unit represents one thing. This applies at every size: function, type, module, package. Cohesion is the main test for whether a unit is too big, and low cohesion usually means a type is missing rather than that one is too long. (5.2)
 - **Unnecessary coupling.** A dependency that isn't needed. What matters is how many, not what kind. The classic case is a shortcut reference to something already reachable through an existing path. Delete it. (5.2)
-- **Spider in the web.** One unit holding references to many peripheral units that reference almost nothing themselves. The spider gets pulled into every operation and grows messy, the peripherals decay into empty data bags. Move associations outward so peripherals reference each other. This can lower coupling without changing the total number of references. (5.2, 5.6)
-- **Leaky public interface.** Anything exported that no outside caller uses. The public interface is everything that breaks callers when changed: name, parameters, return type, and the thrown-exception list. Narrow it. In OO, `protected` counts as public interface, not implementation. (5.2)
+- **Spider in the web.** One unit holding references to many peripheral units that reference almost nothing themselves. Move associations outward so peripherals reference each other. This can lower coupling without changing the total number of references. (5.2, 5.6)
+- **Leaky public interface.** A helper left public. A function is private when it has no callers outside its module and exists to implement that module's logic. The public interface is everything that breaks callers when changed: name, parameters, return type, and the thrown-exception list. Mark each name public or private the language's standard way: a leading underscore in Python, no `export` in JS and TS, `private` in Java and C#, lowercase in Go, no `pub` in Rust. A PCR that picks another mechanism wins. In OO, `protected` counts as public interface, not implementation. (5.2)
+  - **Fix silently** a public function whose only callers sit inside its own module and that the ticket's public interface doesn't declare. It is a helper, so make it private.
+  - **Never fix silently**, escalate with a recommendation: a function the ticket declares public that has no callers yet, a public function with no callers inside or outside its module, which is either an entry point or dead code, and a private function another file reaches into.
 - **Exposed internal state.** Mutable fields reachable and writable from outside the unit that owns them. Make them private and expose only the operation actually needed. (5.2)
 - **I/O outside the presentation layer. (layered)** Console reads and writes, or UI calls, in application logic, domain or data access. Return the value upward and render it at the edge. (5.6)
 - **Storage access in the domain. (layered)** Database or external-system calls in the layer that holds business rules. Move them into the integration layer and call that. (5.6)
@@ -64,18 +66,3 @@ Apply these before judging any entry:
 - **Missing failure handling.** Unvalidated parameters and unhandled failure paths. A passing happy path proves nothing here. (8.4)
 - **Wrong error category. (OO only)** In languages with both, checked errors are for business-rule violations a caller can recover from, unchecked for programming bugs. Name the type after the condition. (8.2)
 
----
-
-## Test rules, report only
-
-Report these and leave them.
-
-- **Too few tests.** Every branch uncovered, and boundary and illegal values untested: null, zero, negative, wrong type. (7.5)
-- **Too many assertions in one test.** Execution stops at the first failure, so the rest never run. Prefer one per test. (7.5)
-- **Not self-evaluating.** Results checked with conditionals, or by making a human read output. (7.5)
-- **Test writes to standard output.** (7.5)
-- **Design worsened for testability.** Visibility widened or a seam added purely so a test can reach something. (7.5)
-- **Bug fixed with no test.** Every fix in the diff should arrive with a test that fails without it. (7.2)
-- **Test deleted.** Disable it instead. (7.2)
-
-Trivial accessors and private functions need no direct test. Not a finding.

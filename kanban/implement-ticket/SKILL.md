@@ -100,4 +100,4 @@ Issue     commented #42
 Commit    d4e5f6a
 ```
 
-Then say `/refactor-ticket` reconciles the suite, refactors, folds the acceptance file in, and closes the issue.
+Then say `/refactor-ticket` reconciles the suite and refactors, and `/unit-test-ticket` folds the acceptance file in after it. Merging the branch closes the issue.

@@ -54,7 +54,7 @@ Then the spine test. An ADR names something with structure behind it: what a mod
 
 A convention that holds across the whole project and that a single ticket must never move: the stack, the libraries a file may import, how identifiers are named, how comments are written, whether the code is object-oriented, which test runner and layout the suite uses. The test is ripple. If changing it means touching every file, it is a PCR. If it only touches one region, it is an ADR.
 
-A PCR that overlaps `refactor-ticket`'s `code-standards.md` baseline wins. A PCR saying the project is not object-oriented switches off every entry marked `(OO only)`.
+A PCR that overlaps `refactor-ticket`'s `code-standards.md` or `unit-test-ticket`'s `test-standards.md` baseline wins. A PCR saying the project is not object-oriented switches off every entry marked `(OO only)`.
 
 ## One decision per file
 

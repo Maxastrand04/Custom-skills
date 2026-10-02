@@ -14,7 +14,7 @@ That commit is the whole handoff. `implement-ticket` takes it **green** and `ref
 
 **The tests are the acceptance criteria.** There is no separate list. The ticket holds user-visible expected behaviour; you convert it into named test functions, and each test's name and docstring is the criterion it enforces. Never write an AC list beside the tests it duplicates.
 
-**They all land in one acceptance file.** One new file at the root of the test tree, named in the project's style, `tests/test_acceptance.py` or `tests/acceptance.test.ts`, holding this ticket's tests and nothing else. It lives only on this branch; `refactor-ticket` folds it into the module test files before the issue closes.
+**They all land in one acceptance file.** One new file at the root of the test tree, named in the project's style, `tests/test_acceptance.py` or `tests/acceptance.test.ts`, holding this ticket's tests and nothing else. It lives only on this branch; `unit-test-ticket` folds it into the module test files before the branch merges.
 
 ---
 
@@ -116,6 +116,8 @@ Write each settled entry point into its real file: the signature, the contract a
 ### 3. Tests
 
 Write every test settled in Phase 1 into the acceptance file, calling the code **only through the stubs as written**. These tests are what pin the contract, so a test that reaches around the public interface into internals pins nothing and blocks the implementer from restructuring.
+
+**Never write a structure-sensitive test**, as `../unit-test-ticket/test-standards.md` defines it. That includes any test touching a private function or field. `unit-test-ticket` drops one that slips through, and the behaviour it covered loses its test.
 
 Each test's docstring states the behaviour it enforces, in one sentence.
 
