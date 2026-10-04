@@ -1,0 +1,14 @@
+{
+  "name": "custom-skills",
+  "description": "Max Åstrand's skills, packaged for installing by URL",
+  "owner": {
+    "name": "Max Åstrand"
+  },
+  "plugins": [
+    {
+      "name": "kanban-ci",
+      "source": "./ci",
+      "description": "Runs implement, refactor and unit-test for an architected ticket in GitHub Actions, then hands a PR to a review session"
+    }
+  ]
+}

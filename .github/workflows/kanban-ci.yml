@@ -1,0 +1,105 @@
+# Reusable workflow for kanban-ci. Projects call it from a small caller,
+# ci/templates/kanban-ci.yml. It never runs in this repo on its own.
+name: kanban-ci
+
+on:
+  workflow_call:
+    inputs:
+      setup-command:
+        description: Installs the project's dependencies, such as "uv sync" or "npm ci"
+        type: string
+        default: ""
+      test-command:
+        description: Runs the whole suite, exit 0 means green
+        type: string
+        required: true
+      base:
+        description: Branch the PRs target
+        type: string
+        default: main
+      branch:
+        description: One ticket branch to run. Empty, or the base, runs the queue
+        type: string
+        default: ""
+      skills-ref:
+        description: Ref of Custom-skills to take the plugin and loop from
+        type: string
+        default: main
+      max-turns-implement:
+        type: number
+        default: 150
+      max-turns-refactor:
+        type: number
+        default: 200
+      max-turns-unit-test:
+        type: number
+        default: 150
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN:
+        description: From `claude setup-token`, runs on your Claude subscription
+        required: true
+      KANBAN_CI_PUSH_TOKEN:
+        description: Optional. A token whose pushes and PRs trigger your test workflow
+        required: false
+
+jobs:
+  chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    concurrency:
+      group: kanban-ci-${{ github.repository }}
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ secrets.KANBAN_CI_PUSH_TOKEN || github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.KANBAN_CI_PUSH_TOKEN || github.token }}
+
+      - name: Fetch kanban-ci
+        uses: actions/checkout@v4
+        with:
+          repository: Maxastrand04/Custom-skills
+          ref: ${{ inputs.skills-ref }}
+          path: .kanban-ci
+          sparse-checkout: ci
+
+      - name: Keep kanban-ci out of the project's commits
+        run: echo ".kanban-ci/" >> .git/info/exclude
+
+      - name: Set up the project
+        if: inputs.setup-command != ''
+        run: ${{ inputs.setup-command }}
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Git identity
+        run: |
+          git config user.name "kanban-ci"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Run the chain
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          BASE: ${{ inputs.base }}
+          BRANCH: ${{ inputs.branch }}
+          TEST_COMMAND: ${{ inputs.test-command }}
+          PLUGIN_DIR: ${{ github.workspace }}/.kanban-ci/ci
+          MAX_TURNS_IMPLEMENT: ${{ inputs.max-turns-implement }}
+          MAX_TURNS_REFACTOR: ${{ inputs.max-turns-refactor }}
+          MAX_TURNS_UNIT_TEST: ${{ inputs.max-turns-unit-test }}
+          LOG_DIR: ${{ runner.temp }}
+        run: bash .kanban-ci/ci/scripts/run-chain.sh
+
+      - name: Keep the station logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanban-ci-logs
+          path: |
+            ${{ runner.temp }}/*.json
+            ${{ runner.temp }}/suite.log
+            ${{ runner.temp }}/pr-body.md
+          if-no-files-found: ignore
