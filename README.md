@@ -90,11 +90,9 @@ under the epic  tests, committed     suite green        the records
                     red        →        green        →    refactor
 ```
 
-The board starts from the `(N) [epic]` issues `project-planning` files. That skill lives in `developer-tools/` because it runs once per project rather than once per unit of work.
-
 **The last three stations are one TDD cycle split across three sessions**, on one ticket and one branch, and each name says which leg it is.
 
-**1. `map-epic`**, once per epic. Slices one epic goal into `(N.M)` tickets filed as native sub-issues of the epic, wired with native blocking, and fills in the epic issue's notes, decisions, and fog. Research and prototype tickets are first-class here, so unknowns get charted rather than guessed at.
+**1. `map-epic`**, once per epic and again as tickets close. Files the `(N) [epic]` skeleton issue from a one-sentence goal, then slices that goal into `(N.M)` tickets filed as native sub-issues of the epic, wired with native blocking, and fills in the epic issue's notes, decisions, and fog. Research and prototype tickets are first-class here, so unknowns get charted rather than guessed at. A later run graduates fog into tickets.
 
 **2. `architect-ticket`**, once per ticket. Grills hardest on the **public interface**: the names, parameters, return values, and contracts the implementer is held to. Then it writes that interface as stubs into the real source files, writes the acceptance tests against them, runs them, confirms every one fails, and commits. It leaves the branch **red**.
 
@@ -112,9 +110,7 @@ Coding skills that aren't stations on the board. No ordering, and no artifacts p
 
 | Skill | What it does |
 |-------|--------------|
-| `project-planning` | Once per project. Grills me on problem, user, success criteria, scope, and domain language, then proposes vertical-slice epics. Writes `CONTEXT.md` and files one `(N) [epic]` skeleton issue per epic, which is where the board picks up. |
 | `challenge-pcr` | The only door into an existing PCR, the project-wide conventions in `docs/pcr/`. A PCR stands until a challenge beats it, and the case has to be a real project adaption worth the ripple. Amends in place, retires, or rejects; nothing else edits `docs/pcr/`. A blocked skill has to stop and hand the decision back to me. |
-| `generate-framework-tests` | Real runnable tests for pytest, vitest, jest, go test, cargo test, or JUnit. A sidecar manifest gives fast-exit when nothing changed and drift-diff when it did. User-added cases are never touched. |
 | `brainstorming` | The front door to everything else. Grills an idea trying to **kill** it, then gives a binary verdict, either dead or a paragraph of concrete functionality, and routes the survivor to whichever skill is the smallest fit. |
 | `pro-con` | Weigh a decision and commit to a recommendation. Fixed output shape. |
 | `prune-skill` | Prunes a skill after it is written or changed. Reads it against a fixed list of smells, reports every finding with a verdict, then applies the approved cuts in one pass. |

@@ -68,7 +68,7 @@ The filename slug is the decision's shorthand. Pick it so the directory reads as
 
 Either of those two stations may **amend** an existing ADR when the work in front of it has a reason the record did not anticipate. Keep the number, rewrite Decision, Reason, and Consequence together so the file reads as one current decision, and bump the Date. **The reasoning for the change does not go in the file.** State it to the user in the session and put it in the commit message. The ADR stays a clean statement of what binds now. **Retire** an ADR the same way, by setting `Status: retired` and bumping the Date, when the code it governed is gone. Never delete one.
 
-**PCRs.** `project-planning` seeds them once per project. `architect-ticket` writes a new one when its ticket is the first to settle a project-wide convention, for example the first ticket that picks a test runner. Nothing else writes one.
+**PCRs.** `architect-ticket` writes a new one when its ticket is the first to settle a project-wide convention, for example the first ticket that picks a test runner. Nothing else writes one.
 
 **Changing or retiring a PCR takes a full `/challenge-pcr` session, and there is no other route.** No skill edits a file in `docs/pcr/` in passing, not to fix drift, not to reword, not to retire, and no skill deletes one. So when a PCR blocks the work in front of you:
 

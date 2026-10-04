@@ -4,13 +4,11 @@ The workflow skills. They run in order and each one leaves an artifact the next 
 
 There is no plan file. GitHub holds project state: an epic is its `(N) [epic]` issue, a task is a sub-issue of one, and done means closed.
 
-The epic issues the board starts from come from `../developer-tools/project-planning`, which runs once per project rather than once per unit of work, so it isn't a station.
-
 ## The stations
 
 ### `map-epic`
 
-Once per epic. Slices one epic goal into `(N.M)` tickets, filed as native sub-issues of the epic and wired with native blocking, then fills in the epic issue's notes, decisions, and fog. Research and prototype tickets are first-class here, so unknowns get charted instead of guessed at.
+Where every epic starts. Files a new `(N) [epic]` skeleton issue from a one-sentence goal, then charts it: slices the goal into `(N.M)` tickets, filed as native sub-issues of the epic and wired with native blocking, and fills in the epic issue's notes, decisions, and fog. Research and prototype tickets are first-class here, so unknowns get charted instead of guessed at. Re-run on a charted epic once tickets close, and it graduates fog into new tickets.
 
 ### `architect-ticket`
 
@@ -56,7 +54,7 @@ Run them in order. Each one halts on its own precondition otherwise.
 
 Two kinds, one format, `architect-ticket/RECORD-FORMAT.md`. An ADR binds one region of the code: a module's purpose and shape, what code inside it may not do, a dependency direction, an interface that beat a real alternative. A PCR binds the whole project: stack, allowed libraries, naming, comment convention, OOP or not, test suite.
 
-Only the stations that argue write. `architect-ticket` writes an ADR per argument its grill had, which is one or two on a ticket that argued something and none on most. `refactor-ticket` writes one when a diff introduces a shape neighbours will copy. `implement-ticket` and `autopilot-ticket` write none, because neither makes a decision; one of them weighing a call is a contract gap and halts. Either writing station may amend an ADR when the work gives it a reason, with the reason in the session and the commit message and never in the file. A PCR moves only in a `/challenge-pcr` session, because changing one ripples through every file. `project-planning` seeds the PCRs, and `architect-ticket` adds one when its ticket is the first to settle something project-wide.
+Only the stations that argue write. `architect-ticket` writes an ADR per argument its grill had, which is one or two on a ticket that argued something and none on most. `refactor-ticket` writes one when a diff introduces a shape neighbours will copy. `implement-ticket` and `autopilot-ticket` write none, because neither makes a decision; one of them weighing a call is a contract gap and halts. Either writing station may amend an ADR when the work gives it a reason, with the reason in the session and the commit message and never in the file. A PCR moves only in a `/challenge-pcr` session, because changing one ripples through every file. `architect-ticket` adds one when its ticket is the first to settle something project-wide.
 
 There is no separate skill that surveys a codebase for records. They come from tickets.
 
