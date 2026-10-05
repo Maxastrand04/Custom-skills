@@ -538,11 +538,11 @@
 
 <!-- ============ SETUP ============ -->
 <h2 id="setup">Setup</h2>
-<p>Clone the repo somewhere you'll keep it, then run the installer. It links each skill into <code>~/.claude/skills/</code>, so the clone has to stay where it is.</p>
-<pre>git clone https://github.com/Maxastrand04/Custom-skills.git ~/GitHub/Custom-skills
-cd ~/GitHub/Custom-skills
-./install.sh</pre>
-<p>The installer opens a menu where you tick the skills you want. Restart Claude Code and check with <code>/skills</code>. To update later, <code>git pull</code> in the clone. Only brand-new skills need <code>./install.sh</code> again.</p>
+<p>Inside Claude Code, add the marketplace and install the plugin:</p>
+<pre>/plugin marketplace add Maxastrand04/Custom-skills
+/plugin install max@custom-skills</pre>
+<p>Restart Claude Code or run <code>/reload-plugins</code>. Every skill from the plugin carries a <code>max:</code> prefix, so <code>/map-epic</code> on this page means <code>/max:map-epic</code> for you. To update later, run <code>/plugin marketplace update custom-skills</code>.</p>
+<p>Want the skills without the prefix, or using Antigravity? Clone the repo somewhere you'll keep it and run <code>./install.sh</code> instead. The <a href="https://github.com/Maxastrand04/Custom-skills#readme">README</a> covers that route.</p>
 <p>The board skills need the <code>gh</code> command line tool, logged in to the repo you work in, because tickets live as GitHub issues.</p>
 
 <!-- ============ BOARD ============ -->
