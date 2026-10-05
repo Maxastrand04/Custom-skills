@@ -389,7 +389,7 @@
 <p class="muted">Reasons for each setting are in <a href="https://github.com/Maxastrand04/Custom-skills/blob/main/config/README.md">config/README.md</a>.</p>
 
 <h2 id="how">Model invocation</h2>
-<p>Board skills wait for you to type their name. Behaviour skills are model-invoked, meaning Claude loads them itself. Each one's short description sits in Claude's context window on every turn. When the conversation matches it, Claude loads the full skill. The board skills borrow them mid-run too, like <code>architect-ticket</code> using <code>grilling</code> for its interview.</p>
+<p>Every skill outside behaviour waits for you to type its name. Behaviour skills are model-invoked, meaning Claude loads them itself. Each one's short description sits in Claude's context window on every turn. When the conversation matches it, Claude loads the full skill. The kanban skills borrow them mid-run too, like <code>architect-ticket</code> using <code>grilling</code> for its interview.</p>
 <p>That description costs tokens every turn, so only skills that shape work already running get one. You can still call them by name, or ask in plain words. "Explain it simply" is enough to pull in <code>talk-to-middleschooler</code>.</p>
 
 <section class="card" id="grilling">

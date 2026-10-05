@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup</title>
+<style>
+  :root {
+    --bg: #232323;
+    --panel: #2a2a2a;
+    --line: #3a3a3a;
+    --text: #cfcfcf;
+    --muted: #8c8c8c;
+    --faint: #5c5c5c;
+    --blue: #8fa8bd;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 72px 24px 120px; }
+  h1 { font-weight: 500; font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font-weight: 500; font-size: 20px; margin: 72px 0 12px; }
+  h3 { font-weight: 500; font-size: 16px; margin: 0 0 6px; }
+  p { margin: 0 0 14px; }
+  .lead { color: var(--muted); margin-bottom: 40px; }
+  .muted { color: var(--muted); }
+  a { color: var(--text); text-decoration-color: var(--faint); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--text); }
+  code, pre {
+    font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 13.5px;
+  }
+  code { color: #e2e2e2; }
+  pre {
+    background: #1c1c1c;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 8px 0 14px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+  pre .c { color: var(--faint); }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--muted); }
+  nav.toc a { color: var(--muted); }
+  .step {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 22px 24px 10px 18px;
+    margin: 18px 0;
+    background: var(--panel);
+  }
+  .num {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1px solid var(--blue); color: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  ul { padding-left: 18px; margin: 0 0 14px; }
+  li { margin-bottom: 4px; }
+  .note { border-left: 2px solid var(--faint); padding: 2px 0 2px 14px; color: var(--muted); margin: 18px 0; }
+  table.pick { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 15px; }
+  table.pick th { text-align: left; font-weight: 500; color: var(--muted); font-size: 13px; padding: 0 12px 8px 0; border-bottom: 1px solid var(--line); }
+  .tag { font-size: 12px; color: var(--blue); border: 1px solid var(--blue); border-radius: 99px; padding: 1px 9px; margin-left: 8px; vertical-align: 2px; }
+  table.pick td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+</style>
+</head>
+<body>
+<main>
+
+<p class="muted"><a href="index.html">Cheat sheets</a></p>
+<h1>Setup</h1>
+<p class="lead">Get the skills into Claude Code in about two minutes. Pick a route, then follow its steps.</p>
+
+<nav class="toc">
+  <a href="#which">Which route</a>
+  <a href="#before">Before you start</a>
+  <a href="#marketplace">Marketplace install</a>
+  <a href="#updating">Updating and removing</a>
+  <a href="#install-sh">install.sh and making your own</a>
+</nav>
+
+<!-- ============ WHICH ============ -->
+<h2 id="which">Which route - Pick ONE</h2>
+<table class="pick">
+  <tr><th>You want to</th><th>Use</th></tr>
+  <tr><td>Use the skills as they are, in Claude Code</td><td><a href="#marketplace">The marketplace</a><span class="tag">Recommended</span></td></tr>
+  <tr><td>Change the skills, add your own, or use Antigravity</td><td><a href="#install-sh">install.sh on a fork</a></td></tr>
+</table>
+
+<!-- ============ BEFORE ============ -->
+<h2 id="before">Before you start</h2>
+<ul>
+  <li><a href="https://code.claude.com/docs/en/setup">Claude Code</a> installed and logged in.</li>
+  <li>The <a href="https://cli.github.com/"><code>gh</code> command line tool</a>, logged in with <code>gh auth login</code>. The kanban skills (<code>map-epic</code>, <code>new-ticket</code>, and the four <code>*-ticket</code> workflow skills) file tickets as GitHub issues and stop without it. The other skills don't need it.</li>
+</ul>
+
+<!-- ============ MARKETPLACE ============ -->
+<h2 id="marketplace">Marketplace install<span class="tag">Recommended</span></h2>
+
+<div class="step">
+  <div class="num">1</div>
+  <div>
+    <h3>Add the marketplace</h3>
+    <p>Start Claude Code anywhere and type:</p>
+    <pre>/plugin marketplace add Maxastrand04/Custom-skills</pre>
+    <p class="muted">This tells Claude Code where the skills live. It installs nothing yet.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="num">2</div>
+  <div>
+    <h3>Install the plugin</h3>
+    <pre>/plugin install max@custom-skills</pre>
+    <p class="muted">A panel opens with the plugin's details. Confirm the install there.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="num">3</div>
+  <div>
+    <h3>Load it</h3>
+    <pre>/reload-plugins</pre>
+    <p class="muted">Restarting Claude Code does the same.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="num">4</div>
+  <div>
+    <h3>Check it worked</h3>
+    <p>Type <code>/max:</code> and the list should show 15 skills. Try one:</p>
+    <pre>/max:brainstorming a CLI that renames photos by the date they were taken</pre>
+    <p class="muted">Every skill from the plugin starts with <code>max:</code>. The other sheets write them without it, so <code>/map-epic</code> there means <code>/max:map-epic</code> for you.</p>
+  </div>
+</div>
+
+<p>Prefer a shell? These do steps 1 and 2:</p>
+<pre>claude plugin marketplace add Maxastrand04/Custom-skills
+claude plugin install max@custom-skills</pre>
+
+<p>You get the kanban skills, the developer tools, and the behaviour skills. The <a href="skills-tutorial.html">developer skills sheet</a> covers what each one does and where to start.</p>
+
+<!-- ============ UPDATING ============ -->
+<h2 id="updating">Updating and removing</h2>
+<p>Pull the latest skills:</p>
+<pre>/plugin marketplace update custom-skills</pre>
+<p>Remove them:</p>
+<pre>/plugin uninstall max@custom-skills</pre>
+
+<!-- ============ INSTALL.SH ============ -->
+<h2 id="install-sh">install.sh and making your own</h2>
+<p>The marketplace gives you a copy you can't edit. If you want to change a skill, write new ones, or treat this repo as the base for your own set, fork it and use <code>install.sh</code> instead.</p>
+<p>The script links each skill folder into <code>~/.claude/skills/</code> (or Antigravity's skills folder), so Claude Code reads straight from your clone. Edit a <code>SKILL.md</code> and the next run of that skill uses the new version. Nothing to reinstall. Skills installed this way have no prefix, so it's <code>/grilling</code>, not <code>/max:grilling</code>.</p>
+<p>The short version:</p>
+<pre><span class="c"># fork Maxastrand04/Custom-skills on GitHub first, then</span>
+git clone https://github.com/&lt;you&gt;/Custom-skills.git ~/GitHub/Custom-skills
+cd ~/GitHub/Custom-skills
+./install.sh</pre>
+<p>The <a href="https://github.com/Maxastrand04/Custom-skills#installsh-step-by-step">README walks through it step by step</a>: the menu, adding your own skills, and pulling in my changes later.</p>
+<p class="note">Already installed from the marketplace? Run <code>/plugin uninstall max@custom-skills</code> first, so you don't end up with two copies of every skill.</p>
+
+</main>
+</body>
+</html>
