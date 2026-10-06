@@ -23,7 +23,7 @@ claude plugin install max@custom-skills
 
 Restart Claude Code or run `/reload-plugins`. Every skill carries the `max:` prefix, so you type `/max:grilling` or `/max:map-epic`. The tutorial writes them without the prefix.
 
-You get the kanban chain, the developer tools, and the behaviour skills, 15 in all. Run `/plugin marketplace update custom-skills` to pick up changes, and `/plugin uninstall max@custom-skills` to remove it.
+You get the kanban chain, the developer tools, and the behaviour skills, 16 in all. Run `/plugin marketplace update custom-skills` to pick up changes, and `/plugin uninstall max@custom-skills` to remove it.
 
 ## install.sh, step by step
 

@@ -121,6 +121,7 @@
   <a href="#how">Model invocation</a>
   <a href="#grilling">grilling</a>
   <a href="#unslop">unslop</a>
+  <a href="#gloss-me">gloss-me</a>
   <a href="#talk-to-middleschooler">talk-to-middleschooler</a>
   <a href="#talk-to-highschooler">talk-to-highschooler</a>
 </nav>
@@ -165,7 +166,7 @@
 <p class="muted">Both replies are written for this page to show the pattern, not copied from a logged run. The first one isn't wrong. It's padded, formatted like a slide deck, and it uses "attention" and "transformer" without saying what they are. The second gives a number you can check and a thing to do, and a teammate who has never heard of attention can follow it.</p>
 
 <h2 id="why">Why behaviour skills</h2>
-<p>By default Claude writes as if you already know the field. Terms go unexplained, the answer hides under headers and filler, and the reply reads fine to an expert and loses everyone else. That gets worse the further you step outside what you know. Work on a stack or a domain you're new to, and Claude stops being the slow part. The slow part is you, working out what it just told you. <code>unslop</code> strips the padding, and the <code>talk-to-*</code> skills set the level, so the reply is written for the reader you are on this topic.</p>
+<p>By default Claude writes as if you already know the field. Terms go unexplained, the answer hides under headers and filler, and the reply reads fine to an expert and loses everyone else. That gets worse the further you step outside what you know. Work on a stack or a domain you're new to, and Claude stops being the slow part. The slow part is you, working out what it just told you. <code>unslop</code> strips the padding, and the <code>talk-to-*</code> skills set the level, so the reply is written for the reader you are on this topic. <code>gloss-me</code> remembers which terms you already know, so you only get definitions for the ones you don't.</p>
 
 <h2 id="config">The config folder</h2>
 <p><a href="https://github.com/Maxastrand04/Custom-skills/tree/main/config">config/</a> holds the settings, hooks and instruction file, one folder each for Claude Code and Antigravity. <code>install.sh</code> doesn't touch it, so copy the parts you want into your own settings.</p>
@@ -415,6 +416,19 @@ grill me on whether we need a cache at all</pre>
     <dt>To make it stick</dt><dd>Add the two hooks from <a href="https://github.com/Maxastrand04/Custom-skills/tree/main/config/claude">config/claude</a> to your own settings. One loads the full rule set when a session starts, and one restates the worst offenders before every reply. The installer doesn't do this for you, because it never touches your settings.</dd>
   </dl>
   <pre>unslop this README section</pre>
+</section>
+
+<section class="card" id="gloss-me">
+  <header><h3>gloss-me</h3><span class="tag">terms</span></header>
+  <p>Keeps a list of the terms you already know in <code>~/.claude/glossary.md</code>, one file for every project. Any term from the field that isn't on the list gets a one-line definition in a short "New terms" block, placed right before the paragraph that first uses it. Algebra and basic programming count as known without being listed. A term defined in the project's own docs still gets a definition, because those docs say what the project means, not what you know.</p>
+  <p>A reply that defined anything ends with one line asking which new terms you're comfortable with. Name them and they go on the list, so you never see those definitions again. Say a term didn't land and Claude offers synonyms, a simpler definition, or a rewrite without the term, then picks up where it stopped. Say nothing and nothing is added.</p>
+  <dl>
+    <dt>You call it</dt><dd><code>/gloss-me</code> with nothing else going on fills the list one field at a time. Claude shows 30 to 50 common terms and you name the ones you don't know.</dd>
+    <dt>Starts when</dt><dd>Any reply written for you to read. <code>grilling</code>, <code>pro-con</code> and both <code>talk-to-*</code> skills borrow it.</dd>
+    <dt>To make it stick</dt><dd>Add the <code>gloss-me</code> line from <a href="https://github.com/Maxastrand04/Custom-skills/tree/main/config/claude">config/claude</a>'s <code>CLAUDE.md</code> to your own. Without it, a plain question that no skill started won't get definitions.</dd>
+  </dl>
+  <pre>/gloss-me
+gloss-me, I didn't get "idempotent"</pre>
 </section>
 
 <section class="card" id="talk-to-middleschooler">

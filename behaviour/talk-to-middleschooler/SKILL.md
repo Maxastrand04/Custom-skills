@@ -2,7 +2,7 @@
 name: talk-to-middleschooler
 description: >
   Word an explanation for a curious middle schooler who knows nothing about the
-  subject, with no term used before it is glossed. Use when the user asks for a
+  subject, with every naked term glossed before use. Use when the user asks for a
   simple or plain-English explanation, says they don't know the area, asks
   "explain it simply", or when another skill needs its output worded for a
   complete non-expert.
@@ -16,19 +16,16 @@ Sacrifice grammar so a middle schooler can understand.
 
 This skill owns wording only. It does not change what work gets done, what is true, or how long the answer is.
 
-## Naked terms
+## Glossing
 
-A **naked term** is a domain word used before its gloss. Never ship one.
+Invoke the `gloss-me` skill to find and gloss every naked term, with its floor lowered to nothing. Only the user's glossary counts as known. A term defined in a project doc is still naked.
 
-Gloss on first use: the word, then a plain-word definition in the same sentence, then use it freely afterwards.
+The word being central to the subject makes it more likely to be naked, not less. Central words are exactly the ones assumed and never explained.
 
-> A **race**, meaning two bits of code touching the same thing at the same time where whoever gets there first wins, is what breaks this.
+Gloss in plain words, in `gloss-me`'s block before the paragraph that uses the term:
 
-A term counts as already known only if it is defined in a `CONTEXT.md`, an ADR, or another doc already read in this conversation. Everything else is naked. The word being central to the subject makes it more likely to need a gloss, not less. Central words are exactly the ones assumed and never explained.
-
-Acronyms expand on first use, every session.
-
-Never gloss a naked term with more naked terms. If the definition needs two new words, the explanation is too high up. Go one level down and describe what the thing *does*.
+New terms
+- **race**, two bits of code touching the same thing at the same time, where whoever gets there first wins.
 
 ## Rules
 
