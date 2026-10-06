@@ -2,7 +2,7 @@
 name: talk-to-highschooler
 description: >
   Word an explanation for a sharp high schooler, with algebra and basic programming
-  assumed, everything domain-specific glossed on first use. Use when the user
+  assumed, every naked term glossed on first use. Use when the user
   wants an explanation pitched above beginner but without expert jargon, says
   the plain-English version is too dumbed down, or when another skill needs its
   output worded for a capable learner who is new to this particular domain.
@@ -16,23 +16,11 @@ Sacrifice grammar so a high schooler can understand.
 
 This skill owns wording only. It does not change what work gets done, what is true, or how long the answer is.
 
-## The floor
+## Glossing
 
-Assumed known, use freely: arithmetic and algebra, percentages, ratios, powers, basic probability, reading a graph; variables, functions, loops, conditionals, lists, files, running a command.
+Invoke the `gloss-me` skill to find and gloss every naked term. It holds the floor this level uses, algebra and basic programming, and the user's glossary on top of it.
 
-Not assumed, so gloss on first use: everything domain-specific, meaning the field's named concepts, its acronyms, its tools, and its notation.
-
-## Naked terms
-
-A **naked term** is a domain word used before its gloss. Fine to use *once glossed*, which is the point of this level. Gloss it, then lean on it.
-
-Gloss on first use: the word, then a one-clause definition, then use it as normal vocabulary for the rest of the conversation. Do not re-explain a term already glossed.
-
-A term counts as already known only if it sits on the floor above, or is defined in a `CONTEXT.md`, an ADR, or another doc already read in this conversation.
-
-Acronyms expand on first use, every session.
-
-A gloss may lean on the floor, and on terms already glossed. It may not introduce a second new term.
+Domain terms are fine to use once glossed, which is the point of this level. Gloss a naked term once, then lean on it.
 
 ## Rules
 
@@ -58,4 +46,9 @@ Code blocks, commands, file paths, error strings, and identifiers are copied ver
 
 > Bad: It validates the JWT and short-circuits unauthorised requests.
 >
-> Good: It runs before every route handler. It reads the request's token, a JWT, which is just JSON that the server signed so it can detect tampering. It checks the signature and the expiry timestamp, and returns 401 immediately if either fails, so nothing downstream ever sees an unauthenticated request.
+> Good:
+>
+> New terms
+> - **JWT**, a token that is just JSON the server signed so it can detect tampering.
+>
+> It runs before every route handler. It reads the request's JWT. It checks the signature and the expiry timestamp, and returns 401 immediately if either fails, so nothing downstream ever sees an unauthenticated request.

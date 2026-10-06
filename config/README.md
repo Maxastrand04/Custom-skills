@@ -29,16 +29,19 @@ Predictable does not mean byte-identical, and chasing that would be silly. It me
 
 ## CLAUDE.md
 
-Two lines. That is the point.
+Three lines. That is the point.
 
 ```
 - Push back on user input and ensure a mutual understanding before writing.
 - Check all output, file or chat, against the unslop skill before sending. No em dashes.
+- Gloss every domain term not in ~/.claude/glossary.md, per the gloss-me skill. Project docs like CONTEXT.md never count as known terms.
 ```
 
-A long global instruction file is a tax on every session, and the model follows the first half of it and forgets the rest. Anything longer than a couple of lines belongs in a skill I invoke when I need it, or in a project's own `CLAUDE.md`. These two earn their place because they apply to literally every turn.
+A long global instruction file is a tax on every session, and the model follows the first half of it and forgets the rest. Anything longer than a couple of lines belongs in a skill I invoke when I need it, or in a project's own `CLAUDE.md`. These three earn their place because they apply to literally every turn.
 
 The first line is the one I would keep if I could keep only one. Without it the default is to agree and start writing, and I get a confident implementation of the thing I asked for rather than the thing I meant. With it I get a question first. Most of `kanban/` and all of `grilling` build on the same instinct, so the global file and the skills push the same direction.
+
+The third is there for sessions no skill started. A quick question in some repo is where I meet the most terms I don't know, and nothing else would load `gloss-me` there. The glossary lives in `~/.claude/` so both agents read the same list, and it only records terms I already know, so a missing entry costs me one extra gloss rather than a word I can't follow. The second sentence is there because an agent that has read a project's `CONTEXT.md` tends to treat its terms as shared vocabulary. The project knowing a word doesn't mean I do.
 
 ---
 
