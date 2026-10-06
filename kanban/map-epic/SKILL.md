@@ -1,14 +1,18 @@
 ---
 name: map-epic
-description: Breadth-first grills one epic skeleton issue and publishes its tasks, research, and prototypes as GitHub sub-issues with native blocking. Re-run to graduate fog.
+description: Files a new epic skeleton issue, breadth-first grills one epic into tasks, research, and prototypes published as GitHub sub-issues with native blocking, and re-runs to graduate fog.
 disable-model-invocation: true
 ---
 
 # map-epic
 
-Let the user pick one of the repo's `(N) [epic]` issues, filed as a skeleton by `project-planning`, and turn its goal into a GitHub-native **map**. The epic issue holds the destination and a running decision log, and its **tickets**, native GitHub sub-issues typed `task`, `research`, or `prototype`, are wired together with native blocking. Everything reachable now gets grilled and published in this session; anything not yet specifiable is written down as fog and revisited on a later run.
+Each run does one of three jobs:
 
-This skill owns every epic-linked ticket end to end. `new-ticket` is only for standalone tickets with no epic. Invoke the `grilling` skill for interview mechanics throughout.
+- **Filing** turns a goal into a new `(N) [epic]` skeleton issue, holding the Destination and nothing else.
+- **Charting** turns a skeleton's goal into a GitHub-native **map**. The epic issue holds the destination and a running decision log, and its **tickets**, native GitHub sub-issues typed `task`, `research`, or `prototype`, are wired together with native blocking. Anything not yet specifiable is written down as fog.
+- **Graduating** revisits a charted epic once tickets have closed, and turns fog that is now specifiable into tickets.
+
+This skill owns every epic and every epic-linked ticket end to end. `new-ticket` is only for standalone tickets with no epic. Invoke the `grilling` skill for interview mechanics throughout.
 
 Read these at runtime. Do not assume their contents from this document:
 
@@ -23,42 +27,75 @@ Run the **gh preflight** from `ticket-shapes.md`, including its remediation step
 
 ---
 
-## Step 2: Load epics and select one
+## Step 2: Load epics and pick the job
 
 ```
 gh issue list --state all --limit 500 --json number,title,state
 ```
 
-Keep the issues whose title starts with a `(N) [epic]` token and parse `N` from each. If none exist, stop and tell the user to run `/project-planning` first.
+Keep the issues whose title starts with a `(N) [epic]` token and parse `N` from each.
 
-**If an epic number `N` was passed as an argument**, as in `/map-epic 2`, match it against that list. If it isn't found, list the available epics and ask the user to pick.
+**If the argument is a number `N`**, as in `/map-epic 2`, match it against that list. If it isn't found, list the available epics and ask the user to pick one or file a new one.
 
-**If no argument was passed**, list every epic with its number, name, and open or closed state, then ask the user to pick one.
+**If the argument is text**, as in `/map-epic users can import their data from a CSV file`, it is the seed for a new epic. Go to **filing mode**.
 
-Do not proceed until an epic is selected.
+**If no argument was passed**, list every epic with its number, name, and open or closed state, plus a "file a new epic" option, then ask the user to pick. If no epics exist, go straight to filing mode.
+
+Do not proceed until an epic is selected or filing is chosen.
 
 ---
 
 ## Step 3: Detect mode, charting or graduating
 
-Charting or graduating depends on whether the epic issue already has sub-issues:
+For a selected epic, charting or graduating depends on whether the epic issue already has sub-issues:
 
 ```
 gh api repos/{owner}/{repo}/issues/<epic-issue-number>/sub_issues --jq 'length'
 ```
 
-- **Zero sub-issues** means **charting mode**, Steps 4 through 8.
-- **One or more** means **graduating mode**, Step 9. The epic is already charted, so this run looks for newly-resolved tickets and graduates fog.
+- **Zero sub-issues** means **charting mode**, Steps 6 through 10.
+- **One or more** means **graduating mode**, Step 11.
+
+---
+
+## Filing mode
+
+### Step 4: Grill the epic goal
+
+If no `CONTEXT.md` exists at the project root, say once that `/grill-with-docs` can seed one, then carry on. It is not a precondition.
+
+Read `CONTEXT.md` if it exists, and the Destination line of every open epic, so the new goal neither overlaps one nor redefines a term. Grill the user, via the `grilling` skill, until the **epic goal** is one sentence stating the observable outcome when the epic is done.
+
+The epic must be a **vertical slice**, delivering working, demonstrable functionality end to end rather than one layer. "Backend for CSV import" is a layer; "users can import their data from a CSV file" is a slice. If the goal is really one ticket's worth, say so, point at `/new-ticket`, and stop unless the user still wants an epic.
+
+**Existing epics are immutable, open and closed alike.** If the user wants an existing epic's goal changed, tell them to edit the issue directly.
+
+### Step 5: File the skeleton
+
+Take `N` as `max(N) + 1` over the epics loaded in Step 2, starting at 1 if none exist. Never renumber or reuse a number, including one whose issue was closed.
+
+Render `template_epic_issue.md`:
+
+- **Destination** is the epic goal, verbatim as agreed.
+- **Notes**, **Decisions so far**, and **Not yet specified** each get the placeholder line `_Not yet charted. Run /map-epic on this epic._`
+
+Run the publish loop's preview, edit, and approve steps from `ticket-shapes.md`, then:
+
+```
+gh issue create --title "(N) [epic] <epic name>" --body "$(cat ...rendered...)"
+```
+
+Output the issue URL, then ask whether to chart it now. On yes, continue at Step 6 with this epic. On no, stop.
 
 ---
 
 ## Charting mode
 
-### Step 4: Read the destination
+### Step 6: Read the destination
 
 Read the epic issue body with `gh issue view <epic-issue-number> --json body`. Extract and display its **Destination** line, which is the epic goal.
 
-### Step 5: Breadth-first grill
+### Step 7: Breadth-first grill
 
 Grill the user, via the `grilling` skill, across the **whole epic scope at once**. Fan out, and don't go deep on any one item yet.
 
@@ -73,7 +110,7 @@ Also propose **blocking edges**, meaning which items can't be worked until anoth
 
 **One-issue sizing** for `task` items: each should be a thin vertical slice, independently demoable as a single GitHub issue. Split anything bigger, and merge anything that always ships together.
 
-### Step 6: Batch confirm gate
+### Step 8: Batch confirm gate
 
 Show the user, together:
 
@@ -83,7 +120,7 @@ Show the user, together:
 
 Support natural-language edits, including retyping a fog line into a real ticket or the reverse. Ask: **"Publish this batch?"** Do not create anything until the user confirms.
 
-### Step 7: Fill in the epic issue
+### Step 9: Fill in the epic issue
 
 The issue already exists. Re-render `template_epic_issue.md` over its skeleton body and edit it in place:
 
@@ -100,16 +137,16 @@ gh issue edit <epic-issue-number> --body "$(cat ...rendered...)"
 
 Capture the issue's numeric database id, per `ticket-shapes.md`.
 
-### Step 8: Publish tickets
+### Step 10: Publish tickets
 
 Epic tickets take the `epic:` label scope.
 
-**Research and prototype tickets** use the question ticket shape. Publish the whole batch directly, with no further per-item discussion, since the question was already agreed at the Step 6 gate.
+**Research and prototype tickets** use the question ticket shape. Publish the whole batch directly, with no further per-item discussion, since the question was already agreed at the Step 8 gate.
 
 **Task tickets** use the task ticket shape and are processed **one at a time**, sequentially. For each:
 
 1. Draft the Goal, the Expected behaviour, the Out of scope, and the Branch slug from what the breadth-first grill already surfaced.
-2. Run the publish loop's preview and edit cycle. Spend the discussion on expected behaviour, and keep it user-visible per `ticket-shapes.md`.
+2. Run the publish loop's preview, edit, and approve steps. Spend the discussion on expected behaviour, and keep it user-visible per `ticket-shapes.md`.
 3. Assign the `(N.M)` id by taking `max(M) + 1` over the `(N.M)` ids already in the epic issue's sub-issue titles, starting at 1 if none exist. This is append-only. Never renumber or delete an existing ticket.
 4. Judge it against `ticket-shapes.md`'s **autopilot criteria** and state the label, `epic:task` or `epic:autopilot`, with one line of reasoning. The user confirms or overrides.
 5. Publish with the title `(N.M) [feature] <short title>`. Every task defaults to feature-shaped, so do not ask feature vs bug here.
@@ -121,7 +158,7 @@ Epic tickets take the `epic:` label scope.
 
 ## Graduating mode
 
-### Step 9: Detect resolved tickets and graduate fog
+### Step 11: Detect closed tickets and graduate fog
 
 1. List the epic issue's sub-issues and find any that are **closed** but not yet reflected in its Decisions so far section.
 
@@ -134,7 +171,7 @@ Epic tickets take the `epic:` label scope.
    - [<ticket title>](<url>): <one-line gist of the answer or outcome>
    ```
 3. With these resolutions in hand, grill the user, via the `grilling` skill, on this question: **"Given this, what from Not yet specified is now specifiable?"** Fan out across the fog section only, not the whole epic again.
-4. Whatever graduates goes through Step 8 unchanged, typing, publish flow, `(N.M)` ids, and wiring. Remove graduated lines from **Not yet specified**; anything still too vague stays in the fog.
+4. Whatever graduates goes through Step 10 unchanged, typing, publish flow, `(N.M)` ids, and wiring. Remove graduated lines from **Not yet specified**; anything still too vague stays in the fog.
 5. Update the epic issue body with `gh issue edit <epic-issue-number> --body "..."`, carrying the refreshed Decisions so far and Not yet specified sections.
 
 If nothing has closed since the last run, tell the user there's nothing to graduate yet and stop.

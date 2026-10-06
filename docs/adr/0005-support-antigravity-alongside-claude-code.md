@@ -11,3 +11,5 @@ Antigravity ignores `disable-model-invocation`, so ADR-0004's split between mode
 Whether `~/.gemini/config/AGENTS.md` loads as a global rule is documented but untested. `config/agy/README.md` says so.
 
 **Date:** 2026-09-22
+
+**Superseded in part by ADR-0007**, which adds a Claude Code marketplace as a second install path.

@@ -7,3 +7,6 @@
 # Scratch produced while developing the skills on this repo itself
 implementation_plans/
 .exploration-summary*
+
+# Local scratch files, may hold env dumps
+scratch/

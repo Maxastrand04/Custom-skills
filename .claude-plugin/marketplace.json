@@ -1,10 +1,37 @@
 {
   "name": "custom-skills",
-  "description": "Max Åstrand's skills, packaged for installing by URL",
+  "description": "Max Åstrand's skills for Claude Code, shared with AI Society.",
   "owner": {
-    "name": "Max Åstrand"
+    "name": "Max Åstrand",
+    "url": "https://github.com/Maxastrand04"
   },
   "plugins": [
+    {
+      "name": "max",
+      "source": ".",
+      "strict": false,
+      "description": "The kanban chain, developer tools, and behaviour skills from the tutorial.",
+      "homepage": "https://maxastrand04.github.io/Custom-skills/",
+      "repository": "https://github.com/Maxastrand04/Custom-skills",
+      "skills": [
+        "./kanban/map-epic",
+        "./kanban/new-ticket",
+        "./kanban/architect-ticket",
+        "./kanban/implement-ticket",
+        "./kanban/refactor-ticket",
+        "./kanban/autopilot-ticket",
+        "./developer-tools/brainstorming",
+        "./developer-tools/challenge-pcr",
+        "./developer-tools/pro-con",
+        "./developer-tools/eli5",
+        "./developer-tools/eli10",
+        "./behaviour/grilling",
+        "./behaviour/unslop",
+        "./behaviour/gloss-me",
+        "./behaviour/talk-to-middleschooler",
+        "./behaviour/talk-to-highschooler"
+      ]
+    },
     {
       "name": "kanban-ci",
       "source": "./ci",

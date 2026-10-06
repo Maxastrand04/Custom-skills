@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skills cheat-sheet</title>
+<style>
+  :root {
+    --bg: #232323;
+    --panel: #2a2a2a;
+    --line: #3a3a3a;
+    --text: #cfcfcf;
+    --muted: #8c8c8c;
+    --faint: #5c5c5c;
+    --red: #c98282;
+    --green: #93b893;
+    --amber: #c9b27f;
+    --blue: #8fa8bd;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 72px 24px 120px; }
+  h1 { font-weight: 500; font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font-weight: 500; font-size: 20px; margin: 72px 0 12px; }
+  h3 { font-weight: 500; font-size: 16px; margin: 0 0 6px; }
+  p { margin: 0 0 14px; }
+  .lead { color: var(--muted); margin-bottom: 40px; }
+  .muted { color: var(--muted); }
+  a { color: var(--text); text-decoration-color: var(--faint); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--text); }
+  code, pre {
+    font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 13.5px;
+  }
+  code { color: #e2e2e2; }
+  pre {
+    background: #1c1c1c;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 8px 0 14px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+  pre .c { color: var(--faint); }
+  pre.tree { white-space: pre; font-size: 12.5px; }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--muted); }
+  nav.toc a { color: var(--muted); }
+  figure { margin: 24px 0 8px; }
+  figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  svg { width: 100%; height: auto; display: block; }
+  svg text { font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; }
+  svg .mono { font-family: "SF Mono", Menlo, monospace; }
+  svg a { cursor: pointer; }
+  svg a circle { transition: r .15s; }
+  svg a:hover circle { stroke: var(--text); stroke-width: 2; r: 11; }
+  svg a:hover rect { stroke: var(--text); }
+  svg a:hover text { fill: #ececec; }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 22px 24px 10px;
+    margin: 18px 0;
+    background: var(--panel);
+    scroll-margin-top: 24px;
+  }
+  .card:target { border-color: var(--muted); }
+  .card header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 1px 9px; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 2px; }
+  dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 16px; margin: 6px 0 14px; font-size: 15px; }
+  dt { color: var(--muted); }
+  dd { margin: 0; }
+  ul { padding-left: 18px; margin: 0 0 14px; }
+  li { margin-bottom: 4px; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 56px 0; }
+  .note { border-left: 2px solid var(--faint); padding: 2px 0 2px 14px; color: var(--muted); margin: 18px 0; }
+  .term { border: 1px solid var(--line); border-radius: 8px; margin: 18px 0; background: #191919; overflow: hidden; }
+  .term-bar { display: flex; align-items: center; gap: 7px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: #222; }
+  .term-bar span { width: 10px; height: 10px; border-radius: 50%; background: #444; }
+  .term-bar em { font-style: normal; font-size: 12px; color: var(--muted); margin-left: auto; margin-right: auto; font-family: "SF Mono", Menlo, monospace; }
+  .term-body { padding: 16px 18px 18px; font-family: "SF Mono", "JetBrains Mono", Menlo, monospace; font-size: 13px; line-height: 1.6; color: var(--text); }
+  .term-body p { margin: 0 0 12px; }
+  .term .opts { margin: 0 0 12px 16px; }
+  .term .opts div { padding-left: 3ch; text-indent: -3ch; }
+  .term-body b { color: #ececec; font-weight: 600; }
+  .term .in { color: #ececec; background: #242424; border-left: 2px solid var(--blue); padding: 6px 10px; margin: 4px 0 14px; }
+  .term .out { display: grid; grid-template-columns: 18px 1fr; margin-bottom: 4px; }
+  .term .bullet { color: var(--muted); }
+  .term .rule { border-top: 1px solid var(--line); margin: 6px 0 14px; }
+  .split { display: grid; grid-template-columns: 340px 1fr; gap: 32px; align-items: center; margin: 24px 0; }
+  @media (max-width: 720px) { .split { grid-template-columns: 1fr; } }
+  table.pick { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 15px; }
+  table.pick th { text-align: left; font-weight: 500; color: var(--muted); font-size: 13px; padding: 0 12px 8px 0; border-bottom: 1px solid var(--line); }
+  table.pick td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.pick td:last-child { width: 38%; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>How we use the skills</h1>
+<p class="lead">A walkthrough of the Claude Code skills from <a href="https://github.com/Maxastrand04/Custom-skills">Custom-skills</a>. Start with the principles and the diagrams, then jump to the skill you need. How Claude is set up to write, talk and load context, the behaviour skills and the config, is on <a href="agent-configuration.html">its own page</a>.</p>
+
+<nav class="toc">
+  <a href="#principles">Principles</a>
+  <a href="#context">Context management</a>
+  <a href="#clear-compact">Clear vs compact</a>
+  <a href="#layout">Repo layout</a>
+  <a href="#setup">Setup</a>
+  <a href="#board">The board</a>
+  <a href="#git">The git flow</a>
+  <a href="#grill">A grilling round</a>
+  <a href="#which">Where to start</a>
+  <a href="#map-epic">map-epic</a>
+  <a href="#new-ticket">new-ticket</a>
+  <a href="#architect-ticket">architect-ticket</a>
+  <a href="#implement-ticket">implement-ticket</a>
+  <a href="#refactor-ticket">refactor-ticket</a>
+  <a href="#autopilot-ticket">autopilot-ticket</a>
+  <a href="#side">Side skills</a>
+  <a href="#example">Full example</a>
+  <a href="agent-configuration.html">Agent configuration</a>
+</nav>
+
+<!-- ============ PRINCIPLES ============ -->
+<h2 id="principles">Principles</h2>
+<p>Two ideas shape every skill here. Knowing them makes the rest of the page predictable.</p>
+
+<h3 style="margin-top:36px">Test-driven development</h3>
+<p>Test-driven development, TDD for short, means you write the test before the code it tests. The test fails at first, because the code doesn't exist yet. Then you write code until it passes, then you tidy up. The loop is called red, green, refactor. Red and green are the colours a test runner shows for failing and passing tests.</p>
+
+<div class="split">
+<svg viewBox="0 0 340 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Red green refactor cycle">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6a6a6a"/>
+    </marker>
+  </defs>
+  <path d="M212,72 C262,92 282,140 270,184" fill="none" stroke="#6a6a6a" marker-end="url(#arr2)"/>
+  <path d="M222,252 C196,276 144,276 118,252" fill="none" stroke="#6a6a6a" marker-end="url(#arr2)"/>
+  <path d="M70,184 C58,140 78,92 128,72" fill="none" stroke="#6a6a6a" marker-end="url(#arr2)"/>
+
+  <a href="#architect-ticket">
+    <circle cx="170" cy="60" r="44" fill="#2a2a2a" stroke="#c98282" stroke-width="2"/>
+    <text x="170" y="57" fill="#c98282" font-size="15" text-anchor="middle">Red</text>
+    <text x="170" y="75" fill="#8c8c8c" font-size="11" text-anchor="middle">a test fails</text>
+  </a>
+  <a href="#implement-ticket">
+    <circle cx="262" cy="226" r="44" fill="#2a2a2a" stroke="#93b893" stroke-width="2"/>
+    <text x="262" y="223" fill="#93b893" font-size="15" text-anchor="middle">Green</text>
+    <text x="262" y="241" fill="#8c8c8c" font-size="11" text-anchor="middle">it passes</text>
+  </a>
+  <a href="#refactor-ticket">
+    <circle cx="78" cy="226" r="44" fill="#2a2a2a" stroke="#c9b27f" stroke-width="2"/>
+    <text x="78" y="223" fill="#c9b27f" font-size="15" text-anchor="middle">Refactor</text>
+    <text x="78" y="241" fill="#8c8c8c" font-size="11" text-anchor="middle">clean it up</text>
+  </a>
+
+  <text x="300" y="112" fill="#8c8c8c" font-size="11" text-anchor="middle">write code</text>
+  <text x="170" y="294" fill="#8c8c8c" font-size="11" text-anchor="middle">tests stay green</text>
+  <text x="40" y="112" fill="#8c8c8c" font-size="11" text-anchor="middle">next ticket</text>
+</svg>
+<div>
+  <p><strong>Red.</strong> <code>architect-ticket</code> writes the tests and checks that every one fails for the right reason. Done is now decided, before any real code exists.</p>
+  <p><strong>Green.</strong> <code>implement-ticket</code> writes code until those tests pass. It may not edit the tests, so it can't make the work easier by lowering the bar.</p>
+  <p><strong>Refactor.</strong> <code>refactor-ticket</code> improves the code's shape without changing what it does. The tests prove nothing broke.</p>
+</div>
+</div>
+<p class="muted">Textbook TDD goes around this loop every few minutes, one test at a time. We go around once per ticket, with all its tests at once, and each step is its own skill, its own session and its own commit. It's slower per lap, but each commit is a clean checkpoint you can review on its own. <code>autopilot-ticket</code> runs the same loop in one session for small tickets.</p>
+
+<h3 style="margin-top:44px">Who decides what</h3>
+<p>Decisions belong to people. Typing belongs to Claude. The skills that settle what to build and what the code looks like from outside need you in the chat. The ones that only carry out a settled plan run on their own.</p>
+
+<figure>
+<svg viewBox="0 0 960 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Where a human is needed in the loop">
+  <defs>
+    <marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8fa8bd"/>
+    </marker>
+    <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6a6a6a"/>
+    </marker>
+  </defs>
+
+  <!-- you lane -->
+  <rect x="20" y="20" width="920" height="56" rx="8" fill="#2a2a2a" stroke="#3a3a3a"/>
+  <text x="36" y="53" fill="#cfcfcf" font-size="13" letter-spacing="1">YOU</text>
+
+  <!-- split -->
+  <line x1="590" y1="92" x2="590" y2="370" stroke="#3a3a3a" stroke-dasharray="3 4"/>
+  <text x="30" y="370" fill="#8c8c8c" font-size="12" letter-spacing="1">HUMAN IN THE LOOP</text>
+  <text x="610" y="370" fill="#8c8c8c" font-size="12" letter-spacing="1">HEADLESS</text>
+
+  <!-- human stations -->
+  <rect x="30" y="160" width="300" height="50" rx="6" fill="#2a2a2a" stroke="#4a4a4a"/>
+  <line x1="180" y1="160" x2="180" y2="174" stroke="#3a3a3a"/>
+  <line x1="180" y1="196" x2="180" y2="210" stroke="#3a3a3a"/>
+  <text x="180" y="189" fill="#8c8c8c" font-size="11" text-anchor="middle" letter-spacing="1">OR</text>
+  <a href="#map-epic"><rect x="30" y="160" width="140" height="50" fill="transparent"/>
+    <text x="105" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">map-epic</text></a>
+  <a href="#new-ticket"><rect x="190" y="160" width="140" height="50" fill="transparent"/>
+    <text x="255" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">new-ticket</text></a>
+  <a href="#architect-ticket">
+    <rect x="450" y="160" width="125" height="50" rx="6" fill="#2a2a2a" stroke="#c98282"/>
+    <text x="512" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">architect-ticket</text>
+  </a>
+  <line x1="330" y1="185" x2="446" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+
+  <!-- two-way arrows -->
+  <g stroke="#8fa8bd" stroke-width="1.5" fill="none">
+    <line x1="172" y1="80" x2="172" y2="155" marker-end="url(#arr3)"/>
+    <line x1="188" y1="157" x2="188" y2="82" marker-end="url(#arr3)"/>
+    <line x1="504" y1="80" x2="504" y2="155" marker-end="url(#arr3)"/>
+    <line x1="520" y1="157" x2="520" y2="82" marker-end="url(#arr3)"/>
+  </g>
+  <text x="165" y="122" fill="#8c8c8c" font-size="11" text-anchor="end">answers</text>
+  <text x="195" y="122" fill="#8c8c8c" font-size="11">questions</text>
+
+  <text x="180" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">you approve each ticket before it publishes</text>
+  <text x="512" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">you approve the diff</text>
+
+  <!-- headless stations -->
+  <a href="#implement-ticket">
+    <rect x="620" y="160" width="135" height="50" rx="6" fill="#2a2a2a" stroke="#93b893"/>
+    <text x="687" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">implement-ticket</text>
+  </a>
+  <a href="#refactor-ticket">
+    <rect x="795" y="160" width="135" height="50" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
+    <text x="862" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">refactor-ticket</text>
+  </a>
+  <line x1="575" y1="185" x2="616" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+  <line x1="755" y1="185" x2="791" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+
+  <text x="687" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">loops until green</text>
+  <text x="862" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">cleans up, closes ticket</text>
+
+  <!-- autopilot -->
+  <path d="M180,242 C180,285 260,300 616,300" fill="none" stroke="#6a6a6a" stroke-dasharray="2 3" marker-end="url(#arr4)"/>
+  <text x="400" y="292" fill="#8c8c8c" font-size="11">autopilot label</text>
+  <a href="#autopilot-ticket">
+    <rect x="620" y="275" width="310" height="50" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="775" y="305" fill="#cfcfcf" font-size="13" text-anchor="middle">autopilot-ticket</text>
+  </a>
+  <text x="775" y="345" fill="#5c5c5c" font-size="11" text-anchor="middle">red, green, refactor in one go, then you review the PR</text>
+
+  <!-- escalation arrows -->
+  <g stroke="#6a6a6a" stroke-width="1.5" fill="none" stroke-dasharray="4 4">
+    <line x1="687" y1="157" x2="687" y2="82" marker-end="url(#arr4)"/>
+    <line x1="862" y1="157" x2="862" y2="82" marker-end="url(#arr4)"/>
+  </g>
+  <text x="695" y="122" fill="#8c8c8c" font-size="11">escalates</text>
+  <text x="870" y="122" fill="#8c8c8c" font-size="11">escalates</text>
+</svg>
+<figcaption>Solid blue arrows run back and forth all session. Dashed arrows only fire when something needs you. <code>autopilot-ticket</code> escalates the same way.</figcaption>
+</figure>
+
+<div class="note">
+  <code>implement-ticket</code>, <code>refactor-ticket</code> and <code>autopilot-ticket</code> don't ask for permission, but they don't guess either. They come back to you when:
+  <ul style="margin:8px 0 0">
+    <li>a test contradicts the ticket, or a stub can't do what its docstring promises</li>
+    <li>the same test fails the same way two passes in a row</li>
+    <li>a PCR or ADR blocks the only workable fix</li>
+    <li>a test turns out weaker than the ticket asked for (refactor asks before strengthening it)</li>
+    <li>they finish, with a short report of what they did and the commit hash</li>
+  </ul>
+</div>
+
+<!-- ============ CONTEXT ============ -->
+<h2 id="context">Context management</h2>
+<p>Context window = everything one session holds. Chat, files read, command output. Counted in tokens, about ¾ of a word each. Fuller window, worse Claude. Past ~150k it drops early answers, rereads files, misses bugs in the diff. That's the dumb zone. Rule: finish the job before 150k, then clear. Hence one station per session, handoff through the ticket or the commit, never through memory.</p>
+
+<figure>
+<svg viewBox="0 0 860 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Task understanding falls as the context fills">
+  <defs><pattern id="dz2" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#c98282" stroke-opacity="0.18" stroke-width="3"/></pattern></defs>
+  <rect x="361.25" y="30" width="468.75" height="210" fill="url(#dz2)"/>
+  <line x1="361.25" y1="20" x2="361.25" y2="240" stroke="#c98282" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="369.25" y="34" fill="#c98282" font-size="12" letter-spacing="1">DUMB ZONE</text>
+  <path d="M80.0,38.8 L89.4,38.8 L98.8,39.0 L108.1,39.3 L117.5,39.7 L126.9,40.1 L136.2,40.5 L145.6,41.0 L155.0,41.6 L164.4,42.2 L173.8,42.8 L183.1,43.5 L192.5,44.3 L201.9,45.0 L211.2,45.8 L220.6,46.7 L230.0,47.6 L239.4,48.5 L248.8,49.4 L258.1,50.4 L267.5,51.5 L276.9,52.5 L286.2,53.6 L295.6,54.7 L305.0,55.9 L314.4,57.1 L323.8,58.3 L333.1,59.5 L342.5,60.8 L351.9,62.1 L361.2,63.4 L370.6,64.8 L380.0,66.2 L389.4,67.6 L398.8,69.0 L408.1,70.5 L417.5,72.0 L426.9,73.5 L436.2,75.1 L445.6,76.6 L455.0,78.2 L464.4,79.9 L473.8,81.5 L483.1,83.2 L492.5,84.9 L501.9,86.6 L511.2,88.4 L520.6,90.2 L530.0,92.0 L539.4,93.8 L548.8,95.6 L558.1,97.5 L567.5,99.4 L576.9,101.3 L586.2,103.2 L595.6,105.2 L605.0,107.2 L614.4,109.2 L623.8,111.2 L633.1,113.3 L642.5,115.4 L651.9,117.4 L661.2,119.6 L670.6,121.7 L680.0,123.9 L689.4,126.0 L698.8,128.2 L708.1,130.5 L717.5,132.7 L726.9,135.0 L736.2,137.3 L745.6,139.6 L755.0,141.9 L764.4,144.2 L773.8,146.6 L783.1,149.0 L792.5,151.4 L801.9,153.8 L811.2,156.3 L820.6,158.8 L830.0,161.2 L830.0,248.8 L820.6,244.8 L811.2,240.9 L801.9,237.1 L792.5,233.2 L783.1,229.4 L773.8,225.6 L764.4,221.9 L755.0,218.1 L745.6,214.5 L736.2,210.8 L726.9,207.2 L717.5,203.6 L708.1,200.0 L698.8,196.4 L689.4,192.9 L680.0,189.5 L670.6,186.0 L661.2,182.6 L651.9,179.2 L642.5,175.9 L633.1,172.5 L623.8,169.3 L614.4,166.0 L605.0,162.8 L595.6,159.6 L586.2,156.4 L576.9,153.3 L567.5,150.2 L558.1,147.2 L548.8,144.2 L539.4,141.2 L530.0,138.2 L520.6,135.3 L511.2,132.5 L501.9,129.6 L492.5,126.8 L483.1,124.0 L473.8,121.3 L464.4,118.6 L455.0,116.0 L445.6,113.4 L436.2,110.8 L426.9,108.2 L417.5,105.7 L408.1,103.3 L398.8,100.9 L389.4,98.5 L380.0,96.2 L370.6,93.9 L361.2,91.6 L351.9,89.4 L342.5,87.2 L333.1,85.1 L323.8,83.0 L314.4,81.0 L305.0,79.0 L295.6,77.1 L286.2,75.2 L276.9,73.4 L267.5,71.6 L258.1,69.8 L248.8,68.2 L239.4,66.5 L230.0,65.0 L220.6,63.4 L211.2,62.0 L201.9,60.6 L192.5,59.2 L183.1,57.9 L173.8,56.7 L164.4,55.6 L155.0,54.5 L145.6,53.5 L136.2,52.6 L126.9,51.8 L117.5,51.0 L108.1,50.4 L98.8,49.8 L89.4,49.4 L80.0,49.2 Z" fill="#8fa8bd" fill-opacity="0.18"/>
+  <path d="M80.0,44.0 L89.4,44.1 L98.8,44.4 L108.1,44.8 L117.5,45.3 L126.9,45.9 L136.2,46.6 L145.6,47.3 L155.0,48.0 L164.4,48.9 L173.8,49.8 L183.1,50.7 L192.5,51.7 L201.9,52.8 L211.2,53.9 L220.6,55.1 L230.0,56.3 L239.4,57.5 L248.8,58.8 L258.1,60.1 L267.5,61.5 L276.9,62.9 L286.2,64.4 L295.6,65.9 L305.0,67.5 L314.4,69.0 L323.8,70.7 L333.1,72.3 L342.5,74.0 L351.9,75.7 L361.2,77.5 L370.6,79.3 L380.0,81.2 L389.4,83.0 L398.8,84.9 L408.1,86.9 L417.5,88.9 L426.9,90.9 L436.2,92.9 L445.6,95.0 L455.0,97.1 L464.4,99.3 L473.8,101.4 L483.1,103.6 L492.5,105.9 L501.9,108.1 L511.2,110.4 L520.6,112.7 L530.0,115.1 L539.4,117.5 L548.8,119.9 L558.1,122.3 L567.5,124.8 L576.9,127.3 L586.2,129.8 L595.6,132.4 L605.0,135.0 L614.4,137.6 L623.8,140.2 L633.1,142.9 L642.5,145.6 L651.9,148.3 L661.2,151.1 L670.6,153.9 L680.0,156.7 L689.4,159.5 L698.8,162.3 L708.1,165.2 L717.5,168.1 L726.9,171.1 L736.2,174.0 L745.6,177.0 L755.0,180.0 L764.4,183.1 L773.8,186.1 L783.1,189.2 L792.5,192.3 L801.9,195.4 L811.2,198.6 L820.6,201.8 L830.0,205.0" fill="none" stroke="#8fa8bd" stroke-width="2.5"/>
+  <line x1="80" y1="240" x2="830" y2="240" stroke="#3a3a3a"/>
+  <line x1="80" y1="30" x2="80" y2="240" stroke="#3a3a3a"/>
+  <text x="70" y="40" fill="#8c8c8c" font-size="11" text-anchor="end">sharp</text>
+  <text x="70" y="240" fill="#8c8c8c" font-size="11" text-anchor="end">lost</text>
+  <text x="155.0" y="34.0" fill="#cfcfcf" font-size="12">holds the task, decides well</text>
+  <text x="548.75" y="91.9" fill="#cfcfcf" font-size="12">forgets early answers, guesses</text>
+  <text x="698.75" y="214.4" fill="#8c8c8c" font-size="11" text-anchor="middle">band: run-to-run spread</text>
+  <text x="80.0" y="258" fill="#5c5c5c" font-size="11" text-anchor="middle">0k</text>
+  <text x="267.5" y="258" fill="#5c5c5c" font-size="11" text-anchor="middle">100k</text>
+  <text x="361.25" y="258" fill="#5c5c5c" font-size="11" text-anchor="middle">150k</text>
+  <text x="455.0" y="258" fill="#5c5c5c" font-size="11" text-anchor="middle">200k</text>
+  <text x="642.5" y="258" fill="#5c5c5c" font-size="11" text-anchor="middle">300k</text>
+  <text x="830.0" y="258" fill="#5c5c5c" font-size="11" text-anchor="middle">400k</text>
+  <text x="455.0" y="280" fill="#8c8c8c" font-size="11" text-anchor="middle">tokens in the context window</text>
+</svg>
+<figcaption>Illustrative. No cliff, a slope that steepens, and answers vary more between runs as the window fills.</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 860 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Context usage per session against a 150k dumb zone line">
+  <defs><pattern id="dz" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="#c98282" stroke-opacity="0.18" stroke-width="3"/></pattern></defs>
+  <rect x="440.0" y="40" width="400.0" height="360" fill="url(#dz)"/>
+  <line x1="440.0" y1="32" x2="440.0" y2="400" stroke="#c98282" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="448.0" y="44" fill="#c98282" font-size="12" letter-spacing="1">DUMB ZONE, 150k AND UP</text>
+  <text x="200.0" y="418" fill="#5c5c5c" font-size="11" text-anchor="middle">0k</text>
+  <line x1="200.0" y1="400" x2="200.0" y2="405" stroke="#5c5c5c"/>
+  <text x="360.0" y="418" fill="#5c5c5c" font-size="11" text-anchor="middle">100k</text>
+  <line x1="360.0" y1="400" x2="360.0" y2="405" stroke="#5c5c5c"/>
+  <text x="520.0" y="418" fill="#5c5c5c" font-size="11" text-anchor="middle">200k</text>
+  <line x1="520.0" y1="400" x2="520.0" y2="405" stroke="#5c5c5c"/>
+  <text x="680.0" y="418" fill="#5c5c5c" font-size="11" text-anchor="middle">300k</text>
+  <line x1="680.0" y1="400" x2="680.0" y2="405" stroke="#5c5c5c"/>
+  <text x="840.0" y="418" fill="#5c5c5c" font-size="11" text-anchor="middle">400k</text>
+  <line x1="840.0" y1="400" x2="840.0" y2="405" stroke="#5c5c5c"/>
+  <line x1="200" y1="400" x2="840" y2="400" stroke="#3a3a3a"/>
+  <text x="20" y="46" fill="#8c8c8c" font-size="12" letter-spacing="1">ONE SESSION</text>
+  <text x="20" y="78.0" fill="#cfcfcf" font-size="13" class="mono">everything</text>
+  <text x="20" y="93.0" fill="#8c8c8c" font-size="11">one chat, start to finish</text>
+  <rect x="200" y="64" width="640" height="32" rx="3" fill="none" stroke="#3a3a3a"/>
+  <rect x="200.0" y="64" width="19.2" height="32" fill="#5c5c5c" fill-opacity="0.85"/>
+  <rect x="219.2" y="64" width="76.8" height="32" fill="#8fa8bd" fill-opacity="0.85"/>
+  <rect x="296.0" y="64" width="60.8" height="32" fill="#a993b8" fill-opacity="0.85"/>
+  <rect x="356.8" y="64" width="67.2" height="32" fill="#c98282" fill-opacity="0.85"/>
+  <rect x="424.0" y="64" width="153.6" height="32" fill="#93b893" fill-opacity="0.85"/>
+  <rect x="577.6" y="64" width="70.4" height="32" fill="#c9b27f" fill-opacity="0.85"/>
+  <text x="656.0" y="84.0" fill="#cfcfcf" font-size="12">280k</text>
+  <text x="612.8" y="118" fill="#c9b27f" font-size="11" text-anchor="middle">checking at 236k</text>
+  <line x1="20" y1="140" x2="840" y2="140" stroke="#3a3a3a"/>
+  <text x="20" y="166" fill="#8c8c8c" font-size="12" letter-spacing="1">ONE SESSION PER STATION</text>
+  <text x="20" y="195.0" fill="#cfcfcf" font-size="13" class="mono">new-ticket</text>
+  <rect x="200" y="184" width="640" height="26" rx="3" fill="none" stroke="#3a3a3a"/>
+  <rect x="200.0" y="184" width="19.2" height="26" fill="#5c5c5c" fill-opacity="0.85"/>
+  <rect x="219.2" y="184" width="16.0" height="26" fill="#8fa8bd" fill-opacity="0.85"/>
+  <rect x="235.2" y="184" width="54.4" height="26" fill="#a993b8" fill-opacity="0.85"/>
+  <text x="297.6" y="201.0" fill="#cfcfcf" font-size="12">56k</text>
+  <text x="20" y="237.0" fill="#cfcfcf" font-size="13" class="mono">architect-ticket</text>
+  <rect x="200" y="226" width="640" height="26" rx="3" fill="none" stroke="#3a3a3a"/>
+  <rect x="200.0" y="226" width="19.2" height="26" fill="#5c5c5c" fill-opacity="0.85"/>
+  <rect x="219.2" y="226" width="64.0" height="26" fill="#8fa8bd" fill-opacity="0.85"/>
+  <rect x="283.2" y="226" width="48.0" height="26" fill="#a993b8" fill-opacity="0.85"/>
+  <rect x="331.2" y="226" width="57.6" height="26" fill="#c98282" fill-opacity="0.85"/>
+  <text x="396.8" y="243.0" fill="#cfcfcf" font-size="12">118k</text>
+  <text x="20" y="279.0" fill="#cfcfcf" font-size="13" class="mono">implement-ticket</text>
+  <rect x="200" y="268" width="640" height="26" rx="3" fill="none" stroke="#3a3a3a"/>
+  <rect x="200.0" y="268" width="19.2" height="26" fill="#5c5c5c" fill-opacity="0.85"/>
+  <rect x="219.2" y="268" width="28.8" height="26" fill="#8fa8bd" fill-opacity="0.85"/>
+  <rect x="248.0" y="268" width="131.2" height="26" fill="#93b893" fill-opacity="0.85"/>
+  <text x="387.2" y="285.0" fill="#cfcfcf" font-size="12">112k</text>
+  <text x="20" y="321.0" fill="#cfcfcf" font-size="13" class="mono">refactor-ticket</text>
+  <rect x="200" y="310" width="640" height="26" rx="3" fill="none" stroke="#3a3a3a"/>
+  <rect x="200.0" y="310" width="19.2" height="26" fill="#5c5c5c" fill-opacity="0.85"/>
+  <rect x="219.2" y="310" width="35.2" height="26" fill="#8fa8bd" fill-opacity="0.85"/>
+  <rect x="254.4" y="310" width="76.8" height="26" fill="#c9b27f" fill-opacity="0.85"/>
+  <text x="339.2" y="327.0" fill="#cfcfcf" font-size="12">82k</text>
+  <text x="20" y="363.0" fill="#cfcfcf" font-size="13" class="mono">autopilot-ticket</text>
+  <rect x="200" y="352" width="640" height="26" rx="3" fill="none" stroke="#3a3a3a"/>
+  <rect x="200.0" y="352" width="19.2" height="26" fill="#5c5c5c" fill-opacity="0.85"/>
+  <rect x="219.2" y="352" width="32.0" height="26" fill="#8fa8bd" fill-opacity="0.85"/>
+  <rect x="251.2" y="352" width="22.4" height="26" fill="#c98282" fill-opacity="0.85"/>
+  <rect x="273.6" y="352" width="64.0" height="26" fill="#93b893" fill-opacity="0.85"/>
+  <rect x="337.6" y="352" width="35.2" height="26" fill="#c9b27f" fill-opacity="0.85"/>
+  <text x="380.8" y="369.0" fill="#cfcfcf" font-size="12">108k</text>
+  <rect x="20" y="444" width="12" height="12" rx="2" fill="#5c5c5c"/>
+  <text x="38" y="454" fill="#8c8c8c" font-size="12">start-up</text>
+  <rect x="115.6" y="444" width="12" height="12" rx="2" fill="#8fa8bd"/>
+  <text x="133.6" y="454" fill="#8c8c8c" font-size="12">exploration</text>
+  <rect x="232.8" y="444" width="12" height="12" rx="2" fill="#a993b8"/>
+  <text x="250.8" y="454" fill="#8c8c8c" font-size="12">grilling</text>
+  <rect x="328.4" y="444" width="12" height="12" rx="2" fill="#c98282"/>
+  <text x="346.4" y="454" fill="#8c8c8c" font-size="12">architecting</text>
+  <rect x="452.79999999999995" y="444" width="12" height="12" rx="2" fill="#93b893"/>
+  <text x="470.79999999999995" y="454" fill="#8c8c8c" font-size="12">implementing</text>
+  <rect x="577.1999999999999" y="444" width="12" height="12" rx="2" fill="#c9b27f"/>
+  <text x="595.1999999999999" y="454" fill="#8c8c8c" font-size="12">checking</text>
+</svg>
+<figcaption>Made-up numbers, one 400k scale. Start-up is the system prompt and skills, paid by every fresh session. One long session runs the check deepest in the dumb zone.</figcaption>
+</figure>
+
+<div class="term">
+  <div class="term-bar"><span></span><span></span><span></span><em>claude</em></div>
+  <div class="term-body">
+<div class="in">&gt; looks good, commit</div>
+<div class="out"><span class="bullet">⏺</span><div>
+<p>Committed <b>a1b2c3d</b> Architect #42: Keep users logged in across reloads.<br>Branch 42-fix-expired-session. Tests 5 written, 5 red.</p>
+</div></div>
+<div class="in">&gt; /context</div>
+<div class="out"><span class="bullet">⏺</span><div>
+<p>118k tokens used</p>
+</div></div>
+<div class="in">&gt; /clear</div>
+<div class="out"><span class="bullet">⏺</span><div>
+<p class="muted">(no content)</p>
+</div></div>
+<div class="in">&gt; /implement-ticket</div>
+<div class="out"><span class="bullet">⏺</span><div>
+<p>Reading #42 and <code>git diff main...HEAD</code>. 5 acceptance tests red, starting pass 1.</p>
+</div></div>
+  </div>
+</div>
+<p class="muted"><code>/context</code> shows the count. <code>/clear</code> empties the window, the branch keeps the work. Station heading past 150k? Ticket too big. Stop, split it.</p>
+
+<!-- ============ CLEAR VS COMPACT ============ -->
+<h2 id="clear-compact">Clear vs compact</h2>
+<p><code>/clear</code> empties the window. Back to start-up, nothing else. <code>/compact</code> swaps the chat for a summary Claude writes itself, then keeps going. Smaller, not cleaner. Claude picks what survives, you don't see it, and every instruction after gets read through it. Auto-compact does the same when the window fills. Between stations, always clear. The ticket and the branch hold everything the next station needs.</p>
+
+<figure>
+<svg viewBox="0 0 860 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Context window contents after clear and after compact">
+  <defs><pattern id="sumh" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#cfcfcf" stroke-opacity="0.12" stroke-width="2"/></pattern></defs>
+  <line x1="20" y1="50.0" x2="840" y2="50.0" stroke="#c98282" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="840" y="42.0" fill="#c98282" font-size="12" text-anchor="end" letter-spacing="1">150k, DUMB ZONE ABOVE</text>
+  <rect x="40" y="50.0" width="170" height="300.0" rx="4" fill="none" stroke="#3a3a3a"/>
+  <rect x="40" y="326" width="170" height="24" fill="#5c5c5c" fill-opacity="0.85"/>
+  <text x="125.0" y="342" fill="#ececec" font-size="11" text-anchor="middle">start-up</text>
+  <line x1="40" y1="326" x2="210" y2="326" stroke="#232323"/>
+  <rect x="40" y="246" width="170" height="80" fill="#8fa8bd" fill-opacity="0.85"/>
+  <text x="125.0" y="290" fill="#ececec" font-size="11" text-anchor="middle">exploration</text>
+  <line x1="40" y1="246" x2="210" y2="246" stroke="#232323"/>
+  <rect x="40" y="186" width="170" height="60" fill="#a993b8" fill-opacity="0.85"/>
+  <text x="125.0" y="220" fill="#ececec" font-size="11" text-anchor="middle">grilling</text>
+  <line x1="40" y1="186" x2="210" y2="186" stroke="#232323"/>
+  <rect x="40" y="114" width="170" height="72" fill="#c98282" fill-opacity="0.85"/>
+  <text x="125.0" y="154" fill="#ececec" font-size="11" text-anchor="middle">architecting</text>
+  <line x1="40" y1="114" x2="210" y2="114" stroke="#232323"/>
+  <rect x="40" y="100" width="170" height="12" fill="#cfcfcf"/>
+  <text x="125.0" y="94" fill="#8c8c8c" font-size="11" text-anchor="middle">last message</text>
+  <text x="125.0" y="372" fill="#cfcfcf" font-size="13" text-anchor="middle">end of a session</text>
+  <text x="125.0" y="390" fill="#8c8c8c" font-size="11" text-anchor="middle">118k</text>
+  <rect x="250" y="50.0" width="170" height="300.0" rx="4" fill="none" stroke="#3a3a3a"/>
+  <rect x="250" y="326" width="170" height="24" fill="#5c5c5c" fill-opacity="0.85"/>
+  <text x="335.0" y="342" fill="#ececec" font-size="11" text-anchor="middle">start-up</text>
+  <line x1="250" y1="326" x2="420" y2="326" stroke="#232323"/>
+  <rect x="250" y="312" width="170" height="12" fill="#cfcfcf"/>
+  <text x="335.0" y="306" fill="#cfcfcf" font-size="11" text-anchor="middle" class="mono">/implement-ticket</text>
+  <text x="335.0" y="372" fill="#cfcfcf" font-size="13" text-anchor="middle">after /clear</text>
+  <text x="335.0" y="390" fill="#8c8c8c" font-size="11" text-anchor="middle">13k</text>
+  <rect x="460" y="50.0" width="170" height="300.0" rx="4" fill="none" stroke="#3a3a3a"/>
+  <rect x="460" y="326" width="170" height="24" fill="#5c5c5c" fill-opacity="0.85"/>
+  <text x="545.0" y="342" fill="#ececec" font-size="11" text-anchor="middle">start-up</text>
+  <line x1="460" y1="326" x2="630" y2="326" stroke="#232323"/>
+  <rect x="460" y="294" width="170" height="32" fill="#6b6458" fill-opacity="0.85"/>
+  <rect x="460" y="294" width="170" height="32" fill="url(#sumh)"/>
+  <text x="545.0" y="314" fill="#ececec" font-size="11" text-anchor="middle">summary of the session</text>
+  <line x1="460" y1="294" x2="630" y2="294" stroke="#232323"/>
+  <rect x="460" y="280" width="170" height="12" fill="#cfcfcf"/>
+  <text x="545.0" y="274" fill="#cfcfcf" font-size="11" text-anchor="middle" class="mono">/implement-ticket</text>
+  <text x="545.0" y="372" fill="#cfcfcf" font-size="13" text-anchor="middle">after /compact</text>
+  <text x="545.0" y="390" fill="#8c8c8c" font-size="11" text-anchor="middle">29k</text>
+  <rect x="670" y="50.0" width="170" height="300.0" rx="4" fill="none" stroke="#3a3a3a"/>
+  <rect x="670" y="326" width="170" height="24" fill="#5c5c5c" fill-opacity="0.85"/>
+  <text x="755.0" y="342" fill="#ececec" font-size="11" text-anchor="middle">start-up</text>
+  <line x1="670" y1="326" x2="840" y2="326" stroke="#232323"/>
+  <rect x="670" y="308" width="170" height="18" fill="#6b6458" fill-opacity="0.85"/>
+  <rect x="670" y="308" width="170" height="18" fill="url(#sumh)"/>
+  <rect x="671" y="309" width="168" height="16" fill="none" stroke="#c98282" stroke-width="1.5"/>
+  <text x="755.0" y="321" fill="#ececec" font-size="11" text-anchor="middle">summary 1, ticket #41</text>
+  <line x1="670" y1="308" x2="840" y2="308" stroke="#232323"/>
+  <rect x="670" y="284" width="170" height="24" fill="#6b6458" fill-opacity="0.85"/>
+  <rect x="670" y="284" width="170" height="24" fill="url(#sumh)"/>
+  <rect x="671" y="285" width="168" height="22" fill="none" stroke="#c98282" stroke-width="1.5"/>
+  <text x="755.0" y="300" fill="#ececec" font-size="11" text-anchor="middle">summary 2, CSS detour</text>
+  <line x1="670" y1="284" x2="840" y2="284" stroke="#232323"/>
+  <rect x="670" y="254" width="170" height="30" fill="#6b6458" fill-opacity="0.85"/>
+  <rect x="670" y="254" width="170" height="30" fill="url(#sumh)"/>
+  <rect x="671" y="255" width="168" height="28" fill="none" stroke="#c98282" stroke-width="1.5"/>
+  <text x="755.0" y="273" fill="#ececec" font-size="11" text-anchor="middle">summary 3, ticket #42</text>
+  <line x1="670" y1="254" x2="840" y2="254" stroke="#232323"/>
+  <rect x="670" y="240" width="170" height="12" fill="#cfcfcf"/>
+  <text x="755.0" y="234" fill="#cfcfcf" font-size="11" text-anchor="middle" class="mono">/implement-ticket</text>
+  <text x="755.0" y="372" fill="#cfcfcf" font-size="13" text-anchor="middle">after 3 compacts</text>
+  <text x="755.0" y="390" fill="#8c8c8c" font-size="11" text-anchor="middle">49k</text>
+  <rect x="40" y="406" width="12" height="12" fill="#6b6458"/><rect x="40" y="406" width="12" height="12" fill="url(#sumh)"/>
+  <text x="58" y="416" fill="#8c8c8c" font-size="12">summary Claude wrote of earlier chat</text>
+  <rect x="300" y="406" width="12" height="12" fill="none" stroke="#c98282" stroke-width="1.5"/>
+  <text x="318" y="416" fill="#8c8c8c" font-size="12">unrelated, wrong or stale</text>
+  <rect x="530" y="406" width="12" height="12" fill="#cfcfcf"/>
+  <text x="548" y="416" fill="#8c8c8c" font-size="12">your instruction</text>
+</svg>
+<figcaption>Same scale in every column, top edge = 150k. All three after-states sit far under it. Size isn't the problem after a compact, content is.</figcaption>
+</figure>
+
+<p>Three compacts in, this is what sits in front of <code>/implement-ticket</code>:</p>
+<div class="term">
+  <div class="term-bar"><span></span><span></span><span></span><em>context after 3 compacts</em></div>
+  <div class="term-body">
+<p class="muted">[summary 1] Worked on #41 password reset. User said <b>no new files, put helpers in auth.py</b>.</p>
+<p class="muted">[summary 2] Login page CSS misaligned on mobile, tried three fixes, reverted. <b>test_session_expiry is flaky, skipped it</b>.</p>
+<p class="muted">[summary 3] #42 architect done. Renamed <b>refresh_session to renew_session</b>. 5 tests red.</p>
+<div class="in">&gt; /implement-ticket</div>
+<div class="out"><span class="bullet">⏺</span><div>
+<p>Putting the helper in auth.py, no new files. Skipping test_session_expiry as flaky...</p>
+</div></div>
+  </div>
+</div>
+<ul>
+  <li><strong>Unrelated.</strong> "No new files" was a rule for #41. Now it shapes #42.</li>
+  <li><strong>Wrong.</strong> The "flaky" test was the bug #42 exists to fix. The summary kept the guess, dropped the evidence.</li>
+  <li><strong>Stale.</strong> You reversed the rename before committing. The summary was written first, so the code says <code>refresh_session</code> and Claude says <code>renew_session</code>.</li>
+</ul>
+<p class="muted">After <code>/clear</code>, <code>/implement-ticket</code> reads the ticket and <code>git diff main...HEAD</code>. Both are facts. A summary is Claude's memory of facts.</p>
+
+<!-- ============ LAYOUT ============ -->
+<h2 id="layout">Repo layout</h2>
+<p>Skills look in fixed places. Info in the wrong place = info Claude never reads. Keep the project like this:</p>
+<pre class="tree">your-project/
+├── CLAUDE.md             <span class="c">commands, loaded every session</span>
+├── README.md             <span class="c">how to run the project</span>
+├── CONTEXT.md            <span class="c">project vocabulary</span>
+├── docs/
+│   ├── adr/              <span class="c">decisions, one part of code</span>
+│   │   ├── 0001-handlers-depend-inward.md
+│   │   └── 0002-no-orm-in-domain.md
+│   └── pcr/              <span class="c">conventions, whole project</span>
+│       ├── 0001-pytest-for-all-tests.md
+│       └── 0002-http-only-through-client.md
+├── src/
+└── tests/
+    ├── test_session.py   <span class="c">module tests, permanent</span>
+    └── test_acceptance.py  <span class="c">one ticket, its branch only</span></pre>
+<p>No plan files, no <code>TODO.md</code>. Project state lives in GitHub issues: epics, tickets, the decision log in each epic. Done = closed.</p>
+
+<table class="pick">
+  <tr><th>Where</th><th>Holds</th><th>Written by</th><th>Read by</th></tr>
+  <tr><td><code>CONTEXT.md</code></td><td>Domain terms and the words to avoid</td><td><code>/grill-with-docs</code> seeds it. refactor and autopilot update terms</td><td>map-epic, architect, refactor, autopilot, brainstorming</td></tr>
+  <tr><td><code>docs/adr/</code></td><td>One decision per file. A module's shape, a dependency direction, an interface that beat a real alternative</td><td>architect, one per design argument. refactor, when new code sets a pattern others will copy</td><td>All four code stations</td></tr>
+  <tr><td><code>docs/pcr/</code></td><td>One convention per file. Stack, allowed libraries, naming, test runner</td><td>architect adds one when its ticket settles something project-wide. Only <code>/challenge-pcr</code> changes one</td><td>All four code stations</td></tr>
+  <tr><td><code>README.md</code></td><td>How to run and configure</td><td>You. refactor and autopilot, when a run step changes</td><td>architect, refactor, autopilot</td></tr>
+  <tr><td>Acceptance file</td><td>This ticket's tests</td><td>architect</td><td>implement. refactor folds it into module tests and deletes it</td></tr>
+  <tr><td>GitHub issues</td><td>Epics, tickets, decisions so far, fog</td><td>map-epic, new-ticket</td><td>Every station</td></tr>
+</table>
+<p class="muted">Records share one format: Decision, Reason, Consequence, Date, file named <code>NNNN-slug.md</code>. A record blocks the work? The skill names it and stops. It never codes around it.</p>
+
+<!-- ============ SETUP ============ -->
+<h2 id="setup">Setup</h2>
+<p>The <a href="setup.html">setup sheet</a> has the full steps. The short version, inside Claude Code:</p>
+<pre>/plugin marketplace add Maxastrand04/Custom-skills
+/plugin install max@custom-skills</pre>
+<p>Restart Claude Code or run <code>/reload-plugins</code>. Every skill from the plugin carries a <code>max:</code> prefix, so <code>/map-epic</code> on this page means <code>/max:map-epic</code> for you. To update later, run <code>/plugin marketplace update custom-skills</code>.</p>
+<p>Want the skills without the prefix, or using Antigravity? Clone the repo somewhere you'll keep it and run <code>./install.sh</code> instead. The <a href="https://github.com/Maxastrand04/Custom-skills#readme">README</a> covers that route.</p>
+<p>The kanban skills need the <code>gh</code> command line tool, logged in to the repo you work in, because tickets live as GitHub issues.</p>
+
+<!-- ============ BOARD ============ -->
+<h2 id="board">The board</h2>
+<p>The skills form a kanban board. Each skill is a station, and a piece of work moves left to right through them. Work starts as a ticket, a GitHub issue filed by either <code>map-epic</code> or <code>new-ticket</code>, never both. From there it takes one of two routes onto a branch. A <code>task</code> ticket goes through the three code stations. An <code>autopilot</code> ticket goes through <code>autopilot-ticket</code> alone.</p>
+
+<figure>
+<svg viewBox="0 0 960 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kanban board of skills">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6a6a6a"/>
+    </marker>
+  </defs>
+
+  <!-- zones -->
+  <text x="20" y="22" fill="#8c8c8c" font-size="12" letter-spacing="1">ON GITHUB, NO CODE</text>
+  <text x="540" y="22" fill="#8c8c8c" font-size="12" letter-spacing="1">ON A BRANCH, IN CODE</text>
+  <line x1="520" y1="10" x2="520" y2="250" stroke="#3a3a3a" stroke-dasharray="3 4"/>
+
+  <!-- planning -->
+  <a href="#map-epic">
+    <rect x="20" y="44" width="140" height="54" rx="6" fill="none" stroke="#4a4a4a" stroke-dasharray="4 4"/>
+    <text x="90" y="68" fill="#cfcfcf" font-size="13" text-anchor="middle">a big goal</text>
+    <text x="90" y="86" fill="#8c8c8c" font-size="11" text-anchor="middle">or an existing epic</text>
+  </a>
+  <a href="#new-ticket">
+    <rect x="20" y="150" width="140" height="54" rx="6" fill="none" stroke="#4a4a4a" stroke-dasharray="4 4"/>
+    <text x="90" y="174" fill="#cfcfcf" font-size="13" text-anchor="middle">a bug or a</text>
+    <text x="90" y="192" fill="#8c8c8c" font-size="11" text-anchor="middle">small feature</text>
+  </a>
+  <rect x="190" y="34" width="130" height="180" rx="6" fill="#2a2a2a" stroke="#4a4a4a"/>
+  <line x1="202" y1="124" x2="237" y2="124" stroke="#3a3a3a"/>
+  <line x1="273" y1="124" x2="308" y2="124" stroke="#3a3a3a"/>
+  <text x="255" y="128" fill="#8c8c8c" font-size="11" text-anchor="middle" letter-spacing="1">OR</text>
+  <a href="#map-epic"><rect x="190" y="34" width="130" height="80" fill="transparent"/>
+    <text x="255" y="68" fill="#cfcfcf" font-size="13" text-anchor="middle">map-epic</text>
+    <text x="255" y="86" fill="#8c8c8c" font-size="11" text-anchor="middle">tickets under an epic</text></a>
+  <a href="#new-ticket"><rect x="190" y="134" width="130" height="80" fill="transparent"/>
+    <text x="255" y="168" fill="#cfcfcf" font-size="13" text-anchor="middle">new-ticket</text>
+    <text x="255" y="186" fill="#8c8c8c" font-size="11" text-anchor="middle">one standalone ticket</text></a>
+
+  <!-- ticket -->
+  <rect x="350" y="96" width="120" height="54" rx="27" fill="none" stroke="#8fa8bd"/>
+  <text x="410" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">ticket #42</text>
+  <text x="410" y="138" fill="#8c8c8c" font-size="11" text-anchor="middle">the WHAT</text>
+
+  <!-- code stations -->
+  <a href="#architect-ticket">
+    <rect x="550" y="96" width="120" height="54" rx="6" fill="#2a2a2a" stroke="#c98282"/>
+    <text x="610" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">architect</text>
+    <text x="610" y="138" fill="#c98282" font-size="11" text-anchor="middle">red</text>
+  </a>
+  <a href="#implement-ticket">
+    <rect x="690" y="96" width="120" height="54" rx="6" fill="#2a2a2a" stroke="#93b893"/>
+    <text x="750" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">implement</text>
+    <text x="750" y="138" fill="#93b893" font-size="11" text-anchor="middle">green</text>
+  </a>
+  <a href="#refactor-ticket">
+    <rect x="830" y="96" width="120" height="54" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
+    <text x="890" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">refactor</text>
+    <text x="890" y="138" fill="#c9b27f" font-size="11" text-anchor="middle">clean, close</text>
+  </a>
+  <a href="#autopilot-ticket">
+    <rect x="550" y="180" width="400" height="54" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="750" y="204" fill="#cfcfcf" font-size="13" text-anchor="middle">autopilot</text>
+    <text x="750" y="222" fill="#8c8c8c" font-size="11" text-anchor="middle">all three legs in one session, opens a PR</text>
+  </a>
+
+  <!-- arrows -->
+  <line x1="160" y1="71" x2="186" y2="71" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="160" y1="177" x2="186" y2="177" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="320" y1="123" x2="346" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="470" y1="123" x2="546" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <path d="M440,148 C460,207 500,207 546,207" fill="none" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="670" y1="123" x2="686" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="810" y1="123" x2="826" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <text x="508" y="114" fill="#8c8c8c" font-size="11" text-anchor="middle">task</text>
+  <text x="488" y="226" fill="#8c8c8c" font-size="11" text-anchor="middle">autopilot</text>
+
+  <!-- side skills -->
+  <line x1="20" y1="272" x2="950" y2="272" stroke="#3a3a3a"/>
+  <text x="20" y="296" fill="#8c8c8c" font-size="12" letter-spacing="1">USE ANY TIME</text>
+  <a href="#side">
+    <text x="20" y="324" fill="#cfcfcf" font-size="13">brainstorming</text>
+    <text x="140" y="324" fill="#cfcfcf" font-size="13">grilling</text>
+    <text x="230" y="324" fill="#cfcfcf" font-size="13">pro-con</text>
+    <text x="320" y="324" fill="#cfcfcf" font-size="13">challenge-pcr</text>
+  </a>
+  <text x="450" y="324" fill="#5c5c5c" font-size="11">not stations, these help you decide what goes on the board</text>
+</svg>
+<figcaption>Click a box to jump to that skill.</figcaption>
+</figure>
+
+<!-- ============ GIT ============ -->
+<h2 id="git">The git flow</h2>
+<p>A ticket gets its own branch, cut from <code>main</code> and named <code>&lt;issue-number&gt;-&lt;slug&gt;</code>. Each code station leaves its own commit on that branch, so you can read the history and see exactly what each station did. The three-station route never pushes or merges. Opening the pull request and merging it back is your job.</p>
+
+<figure>
+<svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Git graph of a ticket branch">
+  <!-- main -->
+  <text x="20" y="64" fill="#8c8c8c" font-size="12" class="mono">main</text>
+  <line x1="70" y1="60" x2="840" y2="60" stroke="#6a6a6a" stroke-width="2"/>
+  <circle cx="110" cy="60" r="7" fill="#232323" stroke="#8c8c8c" stroke-width="2"/>
+  <text x="110" y="38" fill="#8c8c8c" font-size="11" text-anchor="middle">you are here</text>
+
+  <!-- merge commit -->
+  <circle cx="790" cy="60" r="8" fill="#8fa8bd"/>
+  <text x="790" y="38" fill="#cfcfcf" font-size="11" text-anchor="middle">merge PR</text>
+
+  <!-- branch -->
+  <path d="M110,60 C140,60 140,170 180,170" fill="none" stroke="#8fa8bd" stroke-width="2"/>
+  <line x1="180" y1="170" x2="710" y2="170" stroke="#8fa8bd" stroke-width="2"/>
+  <path d="M710,170 C760,170 760,60 790,60" fill="none" stroke="#8fa8bd" stroke-width="2" stroke-dasharray="5 5"/>
+  <text x="180" y="150" fill="#8c8c8c" font-size="12" class="mono">42-fix-expired-session</text>
+
+  <!-- commits -->
+  <a href="#architect-ticket">
+    <circle cx="270" cy="170" r="9" fill="#c98282"/>
+    <text x="270" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">architect-ticket</text>
+    <text x="270" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Architect #42</text>
+    <text x="270" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">stubs + failing tests</text>
+  </a>
+  <a href="#implement-ticket">
+    <circle cx="440" cy="170" r="9" fill="#93b893"/>
+    <text x="440" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">implement-ticket</text>
+    <text x="440" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Implement #42</text>
+    <text x="440" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">tests pass</text>
+  </a>
+  <a href="#refactor-ticket">
+    <circle cx="610" cy="170" r="9" fill="#c9b27f"/>
+    <text x="610" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">refactor-ticket</text>
+    <text x="610" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Refactor #42</text>
+    <text x="610" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">clean code, close issue</text>
+  </a>
+
+  <text x="818" y="128" fill="#8c8c8c" font-size="11" text-anchor="middle">you push,</text>
+  <text x="818" y="142" fill="#8c8c8c" font-size="11" text-anchor="middle">open a PR</text>
+
+  <!-- issue lane -->
+  <line x1="70" y1="270" x2="840" y2="270" stroke="#3a3a3a" stroke-dasharray="2 4"/>
+  <text x="20" y="274" fill="#5c5c5c" font-size="12" class="mono">#42</text>
+  <text x="110" y="290" fill="#5c5c5c" font-size="11" text-anchor="middle">issue open</text>
+  <text x="610" y="290" fill="#5c5c5c" font-size="11" text-anchor="middle">issue closed</text>
+</svg>
+<figcaption>Red, green, refactor. Click a commit to read about the skill that made it.</figcaption>
+</figure>
+
+<div class="note">
+  <code>architect-ticket</code> and <code>autopilot-ticket</code> run <code>git checkout -b</code> from whatever branch you are on. Run <code>git checkout main &amp;&amp; git pull</code> before you start either, or the ticket branch will grow out of the wrong place.
+</div>
+
+<p>Two terms the diagram leans on:</p>
+<ul>
+  <li><strong>Stub.</strong> A function with its final name, parameters and docstring, whose body only raises "not implemented". It pins down what the function looks like before anyone writes it.</li>
+  <li><strong>Acceptance file.</strong> One test file at the root of the test tree, named in the project's style, like <code>tests/test_acceptance.py</code> or <code>tests/acceptance.test.ts</code>. It holds this ticket's tests and nothing else, and it is the finish line for implement. Refactor moves its tests into the normal test files and deletes it, so <code>main</code> never carries one.</li>
+</ul>
+<p class="muted">An autopilot branch looks different. It has one <code>Test #42</code> commit, one <code>Implement #42</code> commit per behaviour, and a <code>Refactor</code> commit. Then the skill pushes and opens the PR itself. The issue closes when you merge.</p>
+
+<!-- ============ GRILL ============ -->
+<h2 id="grill">What a grilling round looks like</h2>
+<p>Most skills interview you before they write anything. The questions come in numbered rounds, and every question carries Claude's recommended answer. Here is one round from <code>/new-ticket users can export a report as CSV</code>.</p>
+
+<div class="term">
+  <div class="term-bar"><span></span><span></span><span></span><em>claude</em></div>
+  <div class="term-body">
+<div class="in">&gt; /new-ticket users can export a report as CSV</div>
+<div class="out"><span class="bullet">⏺</span><div>
+<p>❓ <b>Q1</b> - <b>Which columns go in the file?</b>: A report table can hide columns the user switched off. Which should the export include?</p>
+<div class="opts">
+<div>a) Only the columns visible on screen</div>
+<div>b) Every column, hidden ones too</div>
+<div>c) A fixed set, the same for every user</div>
+</div>
+<p>➡️ a. The user expects the file to match what they were looking at.</p>
+<div class="rule"></div>
+<p>❓ <b>Q2</b> - <b>Empty report</b>: A filter can leave a report with no rows. What should the user see?</p>
+<p>➡️ Disable the export button while the report is empty.</p>
+</div></div>
+<div class="in">&gt; Q1 a, but always include the row ID. Q2 agree.</div>
+<div class="out"><span class="bullet">⏺</span><div>
+<p>Settled. The export holds the visible columns plus the row ID. Empty reports disable the button.</p>
+<p>❓ <b>Q3</b> - ...</p>
+</div></div>
+  </div>
+</div>
+
+<p>Answer by number and keep it short. Pick an option by its letter, add a tweak if the option is close but not right, or say "agree" to take the recommendation. Disagreeing is fine and often the point. If every answer is "agree", you probably skipped the thinking the interview exists for.</p>
+
+<hr>
+
+<!-- ============ STATIONS ============ -->
+<h2 id="which">Where to start</h2>
+<p><code>map-epic</code> and <code>new-ticket</code> both end in tickets, but they never work on the same thing. <code>map-epic</code> owns every ticket under an epic. <code>new-ticket</code> refuses epic work and points you to <code>map-epic</code>. An epic is a large goal that needs several tickets, and it exists as a GitHub issue titled <code>(N) [epic] ...</code>.</p>
+<table class="pick">
+  <tr><th>Your work</th><th>Use</th></tr>
+  <tr><td>Part of a goal that already has an <code>(N) [epic]</code> issue</td><td><code>/map-epic N</code></td></tr>
+  <tr><td>A goal that needs several tickets and has no epic yet, like "users can import data from CSV"</td><td><code>/map-epic</code> plus the goal. It files the epic first</td></tr>
+  <tr><td>One bug or one small feature that stands alone, like "users get logged out when they reload the page"</td><td><code>/new-ticket</code></td></tr>
+  <tr><td>Standalone, but too big for one ticket</td><td><code>/new-ticket</code>. It offers to split it into sub-issues under a parent ticket</td></tr>
+  <tr><td>Not sure it's worth doing at all</td><td><code>/brainstorming</code>. It ends by naming which of these to run</td></tr>
+</table>
+<p class="muted">A quick test: if you can picture three or more tickets that only make sense together, it's an epic. If it ships alone, it's a single ticket.</p>
+
+<p>Once the ticket exists, its label picks the route. <code>map-epic</code> and <code>new-ticket</code> both suggest a label for each task ticket, and you confirm or override it.</p>
+<table class="pick">
+  <tr><th>Label</th><th>Run</th></tr>
+  <tr><td><code>task</code>, the default. The ticket adds or changes a function other code calls, touches a PCR or ADR, or can't be undone with one <code>git revert</code></td><td><code>/architect-ticket</code>, then <code>/implement-ticket</code>, then <code>/refactor-ticket</code></td></tr>
+  <tr><td><code>autopilot</code>. Small refactors, bug fixes, and swaps behind a stable interface, where reading the finished diff is cheaper than settling the design first</td><td><code>/autopilot-ticket</code></td></tr>
+  <tr><td><code>research</code> or <code>prototype</code>. A question to answer or a mock-up to build before the real ticket can be written</td><td>No station. Answer it in its own session and close it. The next <code>/map-epic</code> run picks up the answer</td></tr>
+</table>
+
+<section class="card" id="map-epic">
+  <header><h3>map-epic</h3><span class="tag">station 1</span><span class="tag">GitHub only</span></header>
+  <p>The only skill that writes epics. Turns a big goal into an epic and splits it into tickets. Run it again later when earlier tickets close, and it turns the vague leftovers into real tickets.</p>
+  <dl>
+    <dt>New epic</dt><dd>Interviews you until the goal is one sentence describing what works when the epic is done. Then it files the epic issue, like <code>(3) [epic] CSV import</code>, and offers to move straight on to splitting it.</dd>
+    <dt>It does</dt><dd>Asks questions across the whole epic and sorts every item into one of four piles. A <em>task</em> is ready to build. A <em>research</em> ticket is a question someone must answer first. A <em>prototype</em> ticket needs a quick mock-up first. <em>Fog</em> is something you know is coming but can't describe yet, so it stays as a note in the epic. For each task it suggests <code>task</code> or <code>autopilot</code>.</dd>
+    <dt>Stops for you</dt><dd>Before filing a new epic issue. Then "Publish this batch?" Then once per task ticket, to review its text and label.</dd>
+    <dt>Leaves behind</dt><dd>Sub-issues titled <code>(2.1) [feature] ...</code>, linked to the epic, with "blocked by" links between them. The epic issue gets its notes, decisions and fog filled in.</dd>
+  </dl>
+  <pre><span class="c"># new epic</span>
+/map-epic users can import their data from a CSV file
+<span class="c"># existing epic</span>
+/map-epic 2
+<span class="c"># later, after some of epic 2's tickets have closed</span>
+/map-epic 2
+<span class="c"># pick from a list of epics</span>
+/map-epic</pre>
+</section>
+
+<section class="card" id="new-ticket">
+  <header><h3>new-ticket</h3><span class="tag">beside the board</span><span class="tag">GitHub only</span></header>
+  <p>For one piece of work that no epic covers, like a bug or a small feature. If it belongs to an epic, use <code>map-epic</code> instead.</p>
+  <dl>
+    <dt>It does</dt><dd>First asks "feature or bug?", then interviews you about what the user sees. It refuses to talk about files, function names or tests. That is architect's job. Before publishing it suggests <code>task</code> or <code>autopilot</code>.</dd>
+    <dt>Stops for you</dt><dd>When it suggests splitting into several tickets, and before publishing each one.</dd>
+    <dt>Leaves behind</dt><dd>A GitHub issue with Goal, Expected behaviour, Out of scope, and a branch name.</dd>
+  </dl>
+  <pre>/new-ticket
+/new-ticket users get logged out when they reload the page</pre>
+</section>
+
+<section class="card" id="architect-ticket">
+  <header><h3><span class="dot" style="background:var(--red)"></span> architect-ticket</h3><span class="tag">station 2</span><span class="tag">red commit</span></header>
+  <p>Decides what the code will look like from the outside, then writes failing tests for it. You own this part. Every name and parameter gets agreed with you here.</p>
+  <dl>
+    <dt>It does</dt><dd>Reads the ticket and the code around it, posts a "What I found" summary, then interviews you about each new function: name, parameters, return value, and what errors it raises. Then it creates the branch, writes the stubs and the acceptance file, and runs the tests to check every one fails for the right reason.</dd>
+    <dt>Stops for you</dt><dd>After "What I found", so you can correct it. Then at the staged diff. Nothing is committed until you approve.</dd>
+    <dt>Leaves behind</dt><dd>Branch <code>42-&lt;slug&gt;</code>, one commit <code>Architect #42: ...</code>, and an ADR in <code>docs/adr/</code> for each design choice you argued over.</dd>
+  </dl>
+  <pre><span class="c"># from an up-to-date main</span>
+/architect-ticket 42
+<span class="c"># at the diff gate</span>
+looks good, commit
+<span class="c"># or, to fix something small</span>
+rename refresh_session to renew_session, keep the rest</pre>
+  <p class="muted">If your objection is about the design itself, not a name, say so. It goes back to the interview rather than patching the code.</p>
+</section>
+
+<section class="card" id="implement-ticket">
+  <header><h3><span class="dot" style="background:var(--green)"></span> implement-ticket</h3><span class="tag">station 3</span><span class="tag">green commit</span></header>
+  <p>Writes the code behind the stubs until the acceptance file passes. It may not rename anything or touch a test. Every other choice is its own, so it won't ask you about them.</p>
+  <dl>
+    <dt>It does</dt><dd>Reads the ticket and the architect's diff, then loops: write code, run the acceptance file, read failures. It reports each pass as "pass 3: 2 of 6 still red". It runs only the acceptance file, never the whole suite. Old tests the ticket made out of date are refactor's problem.</dd>
+    <dt>Stops for you</dt><dd>Only when something is wrong that isn't its call: a test that contradicts the ticket, a stub that can't do the job, or no progress after two passes.</dd>
+    <dt>Leaves behind</dt><dd>One commit <code>Implement #42: ...</code> and a comment on the issue listing the passing tests.</dd>
+  </dl>
+  <pre><span class="c"># on the ticket branch, in a fresh session</span>
+/implement-ticket</pre>
+</section>
+
+<section class="card" id="refactor-ticket">
+  <header><h3><span class="dot" style="background:var(--amber)"></span> refactor-ticket</h3><span class="tag">station 4</span><span class="tag">2 or 3 commits</span></header>
+  <p>The last station. Checks the tests actually prove what the ticket asked for, runs the full test suite, cleans up the code against the project's records, and closes the issue.</p>
+  <dl>
+    <dt>It does</dt><dd>
+      Checks each expected behaviour in the ticket against the tests.
+      Runs the whole suite. An old test the ticket contradicts gets rewritten, and anything else red is a bug implement caused, which it fixes in its own commit.
+      Cleans the code against <code>docs/pcr/</code>, <code>docs/adr/</code> and its own code standards.
+      Updates <code>CONTEXT.md</code> and <code>README.md</code> if the branch changed something they describe.
+      Moves the acceptance tests into the normal test files.
+    </dd>
+    <dt>Stops for you</dt><dd>If a test is weaker than the ticket asked for. It asks before strengthening it.</dd>
+    <dt>Leaves behind</dt><dd><code>Refactor: ...</code> and <code>Tests #42: fold acceptance file</code>, plus <code>Fix #42: ...</code> if implement broke something. The issue is closed.</dd>
+  </dl>
+  <pre><span class="c"># on the ticket branch, in a fresh session</span>
+/refactor-ticket</pre>
+  <p class="muted">After this, push the branch and open a PR into <code>main</code>. That step is yours.</p>
+</section>
+
+<section class="card" id="autopilot-ticket">
+  <header><h3><span class="dot" style="background:var(--blue)"></span> autopilot-ticket</h3><span class="tag">instead of stations 2 to 4</span><span class="tag">opens a PR</span></header>
+  <p>For a ticket labelled <code>autopilot</code>. Runs red, green and refactor in one session with no gates, then opens a PR. The review moves from the design, before the code, to the PR, after it.</p>
+  <dl>
+    <dt>It does</dt><dd>Reads the ticket and the code it touches, then checks the label still holds. Turns each Expected behaviour line into one failing test, makes them pass one behaviour at a time, runs the existing tests near the files it changed, and cleans up against the same records as refactor.</dd>
+    <dt>Stops for you</dt><dd>If the ticket turns out to need a decision: a public function changes, a PCR or ADR is in the way, or a behaviour can't be tested. It names the reason and tells you to relabel and run <code>/architect-ticket</code>. Same escalations as implement otherwise.</dd>
+    <dt>Leaves behind</dt><dd>A pushed branch, one <code>Test #42</code> commit, one <code>Implement #42</code> commit per behaviour, a <code>Refactor</code> commit, and a PR that closes the issue on merge.</dd>
+  </dl>
+  <pre><span class="c"># from an up-to-date main</span>
+/autopilot-ticket 42</pre>
+  <p class="muted">The PR body starts with a note that AI wrote it on autopilot. Read the diff before you merge. That's the only review it gets.</p>
+</section>
+
+<hr>
+
+<!-- ============ SIDE ============ -->
+<h2 id="side">Side skills</h2>
+<p>These aren't stations. Use them whenever you need to think something through.</p>
+
+<section class="card">
+  <header><h3>brainstorming</h3></header>
+  <p>For a raw idea you aren't sure about. Claude tries hard to kill it, reshapes it every time it breaks, and ends with "killed" or "holds" plus which skill should take it next.</p>
+  <pre>/brainstorming cache search results per user so repeat searches are faster</pre>
+</section>
+
+<section class="card">
+  <header><h3>grilling</h3></header>
+  <p>The interview engine the other skills use. On its own it stress-tests any plan. It's also the one skill here that starts from plain words, no slash command needed. More on the <a href="agent-configuration.html#grilling">agent configuration page</a>.</p>
+  <p class="muted">Original by Matt Pocock, from <a href="https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md">mattpocock/skills</a>.</p>
+  <pre>/grilling my plan for splitting the API into two services
+grill me on whether we should drop the cache</pre>
+</section>
+
+<section class="card">
+  <header><h3>pro-con</h3></header>
+  <p>Weighs two or more options, tags each point by how much it matters, and commits to one.</p>
+  <pre>/pro-con Postgres vs SQLite for the first release</pre>
+</section>
+
+<section class="card">
+  <header><h3>eli5</h3></header>
+  <p>Explains the thing you just asked about for someone who knows nothing about the field. It invokes <code>talk-to-middleschooler</code> for the wording. Too basic? Say so and it switches to <code>talk-to-highschooler</code>. It lasts for one answer, so type it again for the next.</p>
+  <pre>/eli5 what's a database index</pre>
+</section>
+
+<section class="card">
+  <header><h3>eli10</h3></header>
+  <p>One level up. It assumes algebra and basic programming and defines every term from the field once. It invokes <code>talk-to-highschooler</code>, and drops to <code>talk-to-middleschooler</code> if you say it's still too hard. One answer at a time, like <code>eli5</code>.</p>
+  <pre>/eli10 how does a B-tree index find a row</pre>
+</section>
+
+<section class="card">
+  <header><h3>challenge-pcr</h3></header>
+  <p>PCRs are project-wide rules in <code>docs/pcr/</code>, for example "all HTTP calls go through <code>http_client.py</code>". No other skill may change them. When one is in your way, this skill judges whether it should change. The default answer is no.</p>
+  <pre>/challenge-pcr 0006 we need a second HTTP library for streaming uploads</pre>
+</section>
+
+<hr>
+
+<!-- ============ EXAMPLE ============ -->
+<h2 id="example">Full example</h2>
+<p>A small bug, from idea to merged PR. Everything you type is below.</p>
+<pre><span class="c"># 1. file the ticket</span>
+/new-ticket users get logged out when they reload the page
+<span class="c">#    answer the rounds, confirm the label, approve the preview. Ticket #42 is filed.</span>
+
+<span class="c"># 2. red</span>
+git checkout main &amp;&amp; git pull
+/architect-ticket 42
+<span class="c">#    answer the rounds, review the diff, say "commit"</span>
+
+<span class="c"># 3. green, in a fresh session</span>
+/implement-ticket
+
+<span class="c"># 4. refactor, in a fresh session</span>
+/refactor-ticket
+
+<span class="c"># 5. ship</span>
+git push -u origin 42-fix-expired-session
+gh pr create --base main</pre>
+
+<p>If you labelled #42 <code>autopilot</code> in step 1, steps 2 to 5 shrink to this:</p>
+<pre>git checkout main &amp;&amp; git pull
+/autopilot-ticket 42
+<span class="c">#    read the PR it opens, then merge</span></pre>
+
+<p class="muted">Skill sources live in the <a href="https://github.com/Maxastrand04/Custom-skills">Custom-skills repo</a>. Change them there, and <code>git pull</code> picks the change up everywhere they're installed.</p>
+
+</main>
+<script>
+  // Scroll to #anchors by hand so links also work where fragment navigation is blocked.
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    const href = a && (a.getAttribute('href') || a.getAttribute('xlink:href'));
+    if (!href || !href.startsWith('#')) return;
+    const target = document.getElementById(href.slice(1));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    try { history.replaceState(null, '', href); } catch (_) {}
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom-skills cheat sheets</title>
+<style>
+  :root {
+    --bg: #232323;
+    --panel: #2a2a2a;
+    --line: #3a3a3a;
+    --text: #cfcfcf;
+    --muted: #8c8c8c;
+    --faint: #5c5c5c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 72px 24px 120px; }
+  h1 { font-weight: 500; font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font-weight: 500; font-size: 16px; margin: 0 0 6px; }
+  p { margin: 0; }
+  .lead { color: var(--muted); margin-bottom: 40px; }
+  a { color: var(--text); text-decoration-color: var(--faint); text-underline-offset: 3px; }
+  .card {
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin: 18px 0;
+    background: var(--panel);
+    text-decoration: none;
+  }
+  .card:hover { border-color: var(--muted); }
+  .card p { color: var(--muted); font-size: 15px; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Custom-skills cheat sheets</h1>
+<p class="lead">Pick a sheet. Source is on <a href="https://github.com/Maxastrand04/Custom-skills">GitHub</a>.</p>
+
+<a class="card" href="setup.html">
+  <h2>Setup</h2>
+  <p>Install the skills in Claude Code, step by step. Start here.</p>
+</a>
+
+<a class="card" href="skills-tutorial.html">
+  <h2>Developer skills</h2>
+  <p>The skill board, the git flow and when to reach for each skill.</p>
+</a>
+
+<a class="card" href="agent-configuration.html">
+  <h2>Agent configuration</h2>
+  <p>The behaviour skills and the config that shape how Claude writes and what it loads.</p>
+</a>
+
+</main>
+</body>
+</html>

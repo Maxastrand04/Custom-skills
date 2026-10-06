@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent configuration</title>
+<style>
+  :root {
+    --bg: #232323;
+    --panel: #2a2a2a;
+    --line: #3a3a3a;
+    --text: #cfcfcf;
+    --muted: #8c8c8c;
+    --faint: #5c5c5c;
+    --red: #c98282;
+    --green: #93b893;
+    --amber: #c9b27f;
+    --blue: #8fa8bd;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  }
+  main { max-width: 860px; margin: 0 auto; padding: 72px 24px 120px; }
+  h1 { font-weight: 500; font-size: 28px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font-weight: 500; font-size: 20px; margin: 72px 0 12px; }
+  h3 { font-weight: 500; font-size: 16px; margin: 0 0 6px; }
+  p { margin: 0 0 14px; }
+  .lead { color: var(--muted); margin-bottom: 40px; }
+  .muted { color: var(--muted); }
+  a { color: var(--text); text-decoration-color: var(--faint); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--text); }
+  code, pre {
+    font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+    font-size: 13.5px;
+  }
+  code { color: #e2e2e2; }
+  pre {
+    background: #1c1c1c;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 8px 0 14px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+  pre .c { color: var(--faint); }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--muted); }
+  nav.toc a { color: var(--muted); }
+  figure { margin: 24px 0 8px; }
+  figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  svg { width: 100%; height: auto; display: block; }
+  svg text { font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; }
+  svg .mono { font-family: "SF Mono", Menlo, monospace; }
+  svg a { cursor: pointer; }
+  svg a circle { transition: r .15s; }
+  svg a:hover circle { stroke: var(--text); stroke-width: 2; r: 11; }
+  svg a:hover rect { stroke: var(--text); }
+  svg a:hover text { fill: #ececec; }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 22px 24px 10px;
+    margin: 18px 0;
+    background: var(--panel);
+    scroll-margin-top: 24px;
+  }
+  .card:target { border-color: var(--muted); }
+  .card header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .tag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 1px 9px; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 2px; }
+  dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 16px; margin: 6px 0 14px; font-size: 15px; }
+  dt { color: var(--muted); }
+  dd { margin: 0; }
+  ul { padding-left: 18px; margin: 0 0 14px; }
+  li { margin-bottom: 4px; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 56px 0; }
+  .note { border-left: 2px solid var(--faint); padding: 2px 0 2px 14px; color: var(--muted); margin: 18px 0; }
+  .term { border: 1px solid var(--line); border-radius: 8px; margin: 18px 0; background: #191919; overflow: hidden; }
+  .term-bar { display: flex; align-items: center; gap: 7px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: #222; }
+  .term-bar span { width: 10px; height: 10px; border-radius: 50%; background: #444; }
+  .term-bar em { font-style: normal; font-size: 12px; color: var(--muted); margin-left: auto; margin-right: auto; font-family: "SF Mono", Menlo, monospace; }
+  .term-body { padding: 16px 18px 18px; font-family: "SF Mono", "JetBrains Mono", Menlo, monospace; font-size: 13px; line-height: 1.6; color: var(--text); }
+  .term-body p { margin: 0 0 12px; }
+  .term .opts { margin: 0 0 12px 16px; }
+  .term .opts div { padding-left: 3ch; text-indent: -3ch; }
+  .term-body b { color: #ececec; font-weight: 600; }
+  .term .in { color: #ececec; background: #242424; border-left: 2px solid var(--blue); padding: 6px 10px; margin: 4px 0 14px; }
+  .term .out { display: grid; grid-template-columns: 18px 1fr; margin-bottom: 4px; }
+  .term .bullet { color: var(--muted); }
+  .term .rule { border-top: 1px solid var(--line); margin: 6px 0 14px; }
+  .split { display: grid; grid-template-columns: 340px 1fr; gap: 32px; align-items: center; margin: 24px 0; }
+  @media (max-width: 720px) { .split { grid-template-columns: 1fr; } }
+  table.pick { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 15px; }
+  table.pick th { text-align: left; font-weight: 500; color: var(--muted); font-size: 13px; padding: 0 12px 8px 0; border-bottom: 1px solid var(--line); }
+  table.pick td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.pick td:last-child { width: 38%; }
+  .pair-label { font-size: 13px; color: var(--muted); margin: 28px 0 -8px; }
+  .term-body h4 { font: inherit; color: #ececec; font-weight: 600; margin: 14px 0 6px; }
+  .term-body ul { margin: 0 0 12px; }
+  .term-body li { margin-bottom: 4px; }
+  .hl { background: rgba(201,130,130,.18); border-bottom: 1px solid var(--red); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Agent configuration</h1>
+<p class="lead">How Claude is set up before any skill on the board runs. The behaviour skills shape how it writes and talks, and the config decides what sits in its context window. Part of the <a href="skills-tutorial.html">skills cheat-sheet</a>.</p>
+
+<nav class="toc">
+  <a href="skills-tutorial.html">Back to the board</a>
+  <a href="#demo">Same question, twice</a>
+  <a href="#why">Why behaviour skills</a>
+  <a href="#config">The config folder</a>
+  <a href="#how">Model invocation</a>
+  <a href="#grilling">grilling</a>
+  <a href="#unslop">unslop</a>
+  <a href="#gloss-me">gloss-me</a>
+  <a href="#talk-to-middleschooler">talk-to-middleschooler</a>
+  <a href="#talk-to-highschooler">talk-to-highschooler</a>
+</nav>
+
+<h2 id="demo">Same question, twice</h2>
+<p>A teammate asks Claude why it gets worse in long sessions. First with nothing loaded, no <code>CLAUDE.md</code>, no skills, no hooks. Then with <code>unslop</code> and <code>talk-to-highschooler</code>. Same model, Opus 5.5, both times.</p>
+
+<p class="pair-label">Without instructions. Red marks what <code>unslop</code> would cut.</p>
+<div class="term">
+  <div class="term-bar"><span></span><span></span><span></span><em>no instructions</em></div>
+  <div class="term-body">
+    <div class="in">why does claude get worse the longer a session goes?</div>
+    <p><span class="hl">Great question!</span> Long sessions can lead to a <span class="hl">noticeable decline</span> in performance <span class="hl">&mdash;</span> and understanding why is <span class="hl">crucial</span> for working effectively with AI agents.</p>
+    <h4>Why This Happens</h4>
+    <ul>
+      <li><span class="hl"><b>Context Window Limits:</b></span> Every message, file, and tool output is stored in the context window. As it fills up, the model must attend to more information at once.</li>
+      <li><span class="hl"><b>Attention Dilution:</b></span> Transformer models use attention to weigh tokens. With more tokens, key instructions can get "lost in the middle."</li>
+      <li><span class="hl"><b>Accumulated Noise:</b></span> Failed attempts and abandoned approaches remain in context, <span class="hl">potentially</span> confusing the model.</li>
+    </ul>
+    <h4>What You Can Do</h4>
+    <ul>
+      <li><b>Use /clear</b> between tasks</li>
+      <li><b>Keep tasks focused</b> on a single goal</li>
+      <li><b>Leverage CLAUDE.md</b> for persistent instructions</li>
+    </ul>
+    <p><span class="hl">In summary</span>, managing your context window is key to getting the most out of Claude. <span class="hl">Let me know if you'd like tips on structuring your workflow!</span></p>
+  </div>
+</div>
+
+<p class="pair-label">With <code>unslop</code> and <code>talk-to-highschooler</code></p>
+<div class="term">
+  <div class="term-bar"><span></span><span></span><span></span><em>unslop + talk-to-highschooler</em></div>
+  <div class="term-body">
+    <div class="in">why does claude get worse the longer a session goes?</div>
+    <p>It runs short on attention, not memory.</p>
+    <p>Claude reads in tokens, chunks of text about three quarters of a word long. The whole session sits in its context window, the text it rereads before every reply: your messages, every file it opened, every test run. Nothing drops out until you clear it.</p>
+    <p>Your instruction is maybe 200 tokens. At 10k tokens in, that's 2% of what Claude reads. At 200k it's 0.1%, next to an hour of dead ends and code that's since changed. Attention, the step where the model weighs every token against the rest, has to pick your 200 out of all that. Old wrong guesses still get a vote.</p>
+    <p>Fix: <code>/clear</code> when a task is done, and start the next one from a file, the ticket or the diff, not from the chat.</p>
+    <p>Caveat: there's no cliff. It slides. 150k is where this setup draws the line, not a number Anthropic publishes.</p>
+  </div>
+</div>
+<p class="muted">Both replies are written for this page to show the pattern, not copied from a logged run. The first one isn't wrong. It's padded, formatted like a slide deck, and it uses "attention" and "transformer" without saying what they are. The second gives a number you can check and a thing to do, and a teammate who has never heard of attention can follow it.</p>
+
+<h2 id="why">Why behaviour skills</h2>
+<p>By default Claude writes as if you already know the field. Terms go unexplained, the answer hides under headers and filler, and the reply reads fine to an expert and loses everyone else. That gets worse the further you step outside what you know. Work on a stack or a domain you're new to, and Claude stops being the slow part. The slow part is you, working out what it just told you. <code>unslop</code> strips the padding, and the <code>talk-to-*</code> skills set the level, so the reply is written for the reader you are on this topic. <code>gloss-me</code> remembers which terms you already know, so you only get definitions for the ones you don't.</p>
+
+<h2 id="config">The config folder</h2>
+<p><a href="https://github.com/Maxastrand04/Custom-skills/tree/main/config">config/</a> holds the settings, hooks and instruction file, one folder each for Claude Code and Antigravity. <code>install.sh</code> doesn't touch it, so copy the parts you want into your own settings.</p>
+<p>The goal is fewer tokens. Claude gets the least it needs to do the task, and nothing else. Every tool that's on by default and that we never use gets switched off, because each one puts its description in the context window on every turn, and Claude can still reach for a tool it should never use. Same for the bundled skills and the extra features.</p>
+
+<figure>
+<svg viewBox="0 0 960 442" role="img" aria-label="Tools, features and skills loaded by default versus with this config">
+  <text x="20" y="28" font-size="14" fill="#cfcfcf">Default</text>
+  <text x="20" y="66" font-size="12" fill="#8c8c8c">tools we use</text>
+  <rect x="20" y="74" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="73.0" y="90" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Bash</text>
+  <rect x="132" y="74" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="185.0" y="90" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Read</text>
+  <rect x="244" y="74" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="297.0" y="90" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Edit</text>
+  <rect x="356" y="74" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="409.0" y="90" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Write</text>
+  <rect x="20" y="104" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="73.0" y="120" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Agent</text>
+  <rect x="132" y="104" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="185.0" y="120" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Skill</text>
+  <rect x="244" y="104" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="297.0" y="120" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">WebFetch</text>
+  <rect x="356" y="104" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="409.0" y="120" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">WebSearch</text>
+  <text x="20" y="154" font-size="12" fill="#8c8c8c">tools we never use</text>
+  <rect x="20" y="162" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="73.0" y="178" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">EnterPlanMode</text>
+  <rect x="132" y="162" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="185.0" y="178" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">ExitPlanMode</text>
+  <rect x="244" y="162" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="297.0" y="178" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">AskUserQuestion</text>
+  <rect x="356" y="162" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="409.0" y="178" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">NotebookEdit</text>
+  <rect x="20" y="192" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="73.0" y="208" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">DesignSync</text>
+  <rect x="132" y="192" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="185.0" y="208" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">SendMessage</text>
+  <rect x="244" y="192" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="297.0" y="208" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">PushNotification</text>
+  <rect x="356" y="192" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="409.0" y="208" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">RemoteTrigger</text>
+  <rect x="20" y="222" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="73.0" y="238" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">ReportFindings</text>
+  <rect x="132" y="222" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="185.0" y="238" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">ScheduleWakeup</text>
+  <rect x="244" y="222" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="297.0" y="238" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">CronCreate</text>
+  <rect x="356" y="222" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="409.0" y="238" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">CronDelete</text>
+  <rect x="20" y="252" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="73.0" y="268" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">CronList</text>
+  <text x="20" y="302" font-size="12" fill="#8c8c8c">features</text>
+  <rect x="20" y="310" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="73.0" y="326" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">auto memory</text>
+  <rect x="132" y="310" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="185.0" y="326" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">connectors</text>
+  <rect x="244" y="310" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="297.0" y="326" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">workflows</text>
+  <rect x="356" y="310" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="409.0" y="326" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">artifacts</text>
+  <rect x="20" y="340" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="73.0" y="356" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">remote control</text>
+  <text x="20" y="390" font-size="12" fill="#8c8c8c">skills</text>
+  <rect x="20" y="398" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="73.0" y="414" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">our skills</text>
+  <rect x="132" y="398" width="106" height="24" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="185.0" y="414" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">bundled skills</text>
+  <text x="500" y="28" font-size="14" fill="#cfcfcf">With our config</text>
+  <text x="500" y="66" font-size="12" fill="#8c8c8c">tools we use</text>
+  <rect x="500" y="74" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="553.0" y="90" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Bash</text>
+  <rect x="612" y="74" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="665.0" y="90" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Read</text>
+  <rect x="724" y="74" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="777.0" y="90" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Edit</text>
+  <rect x="836" y="74" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="889.0" y="90" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Write</text>
+  <rect x="500" y="104" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="553.0" y="120" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Agent</text>
+  <rect x="612" y="104" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="665.0" y="120" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">Skill</text>
+  <rect x="724" y="104" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="777.0" y="120" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">WebFetch</text>
+  <rect x="836" y="104" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="889.0" y="120" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">WebSearch</text>
+  <text x="500" y="154" font-size="12" fill="#8c8c8c">tools we never use</text>
+  <rect x="500" y="162" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="553.0" y="178" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">EnterPlanMode</text>
+  <rect x="612" y="162" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="665.0" y="178" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">ExitPlanMode</text>
+  <rect x="724" y="162" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="777.0" y="178" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">AskUserQuestion</text>
+  <rect x="836" y="162" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="889.0" y="178" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">NotebookEdit</text>
+  <rect x="500" y="192" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="553.0" y="208" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">DesignSync</text>
+  <rect x="612" y="192" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="665.0" y="208" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">SendMessage</text>
+  <rect x="724" y="192" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="777.0" y="208" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">PushNotification</text>
+  <rect x="836" y="192" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="889.0" y="208" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">RemoteTrigger</text>
+  <rect x="500" y="222" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="553.0" y="238" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">ReportFindings</text>
+  <rect x="612" y="222" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="665.0" y="238" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">ScheduleWakeup</text>
+  <rect x="724" y="222" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="777.0" y="238" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">CronCreate</text>
+  <rect x="836" y="222" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="889.0" y="238" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">CronDelete</text>
+  <rect x="500" y="252" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="553.0" y="268" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">CronList</text>
+  <text x="500" y="302" font-size="12" fill="#8c8c8c">features</text>
+  <rect x="500" y="310" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="553.0" y="326" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">auto memory</text>
+  <rect x="612" y="310" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="665.0" y="326" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">connectors</text>
+  <rect x="724" y="310" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="777.0" y="326" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">workflows</text>
+  <rect x="836" y="310" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="889.0" y="326" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">artifacts</text>
+  <rect x="500" y="340" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="553.0" y="356" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">remote control</text>
+  <text x="500" y="390" font-size="12" fill="#8c8c8c">skills</text>
+  <rect x="500" y="398" width="106" height="24" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="553.0" y="414" font-size="10.5" fill="#e2e2e2" text-anchor="middle" class="mono">our skills</text>
+  <rect x="612" y="398" width="106" height="24" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="665.0" y="414" font-size="10.5" fill="#4a4a4a" text-anchor="middle" class="mono">bundled skills</text>
+</svg>
+<figcaption>Red is on by default and switched off by our config. The 8 tools and our own skills stay. Everything else is gone.</figcaption>
+</figure>
+
+<h3 style="margin-top:36px">Stateless on purpose</h3>
+<p>Memory notes and compact summaries are Claude's own record of old sessions. You can't tell if they still match the code, and they can pull Claude back toward ideas that were scrapped two iterations ago. So auto memory is off and we <code>/clear</code>. Claude learns the project from the files in git, nothing else.</p>
+<figure>
+<svg viewBox="0 0 960 420" role="img" aria-label="Where context comes from with memory and compact, versus stateless and cleared">
+  <defs><marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8c8c8c"/></marker></defs>
+  <text x="20" y="28" font-size="14" fill="#cfcfcf">Memory on, compacted</text>
+  <text x="280" y="48" font-size="12" fill="#8c8c8c">context window</text>
+  <rect x="280" y="56" width="180" height="290" rx="6" fill="none" stroke="#5c5c5c"/>
+  <rect x="288" y="64" width="164" height="50" rx="3" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="370.0" y="93.0" font-size="11" fill="#e2e2e2" text-anchor="middle">notes from other sessions</text>
+  <rect x="288" y="118" width="164" height="90" rx="3" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="370.0" y="167.0" font-size="11" fill="#e2e2e2" text-anchor="middle">summary of the last chat</text>
+  <rect x="288" y="212" width="164" height="20" rx="3" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="370.0" y="226.0" font-size="11" fill="#e2e2e2" text-anchor="middle">CLAUDE.md</text>
+  <rect x="288" y="236" width="164" height="60" rx="3" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="370.0" y="270.0" font-size="11" fill="#e2e2e2" text-anchor="middle">files</text>
+  <rect x="288" y="300" width="164" height="20" rx="3" fill="#3a3426" stroke="#c9b27f"/>
+  <text x="370.0" y="314.0" font-size="11" fill="#e2e2e2" text-anchor="middle">prompt</text>
+  <rect x="20" y="56" width="190" height="28" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="30" y="74" font-size="11" fill="#e2e2e2" class="mono">memory notes</text>
+  <text x="202" y="74" font-size="10" fill="#8c8c8c" text-anchor="end">saved by Claude</text>
+  <path d="M210,70 C245,70 245,89.0 288,89.0" fill="none" stroke="#c98282" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <rect x="20" y="92" width="190" height="28" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="30" y="110" font-size="11" fill="#e2e2e2" class="mono">compact summary</text>
+  <text x="202" y="110" font-size="10" fill="#8c8c8c" text-anchor="end">old chat</text>
+  <path d="M210,106 C245,106 245,163.0 288,163.0" fill="none" stroke="#c98282" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <rect x="20" y="128" width="190" height="28" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="30" y="146" font-size="11" fill="#e2e2e2" class="mono">CLAUDE.md</text>
+  <path d="M210,142 C245,142 245,222.0 288,222.0" fill="none" stroke="#8fa8bd" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <rect x="20" y="164" width="190" height="28" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="30" y="182" font-size="11" fill="#e2e2e2" class="mono">files it opened</text>
+  <path d="M210,178 C245,178 245,266.0 288,266.0" fill="none" stroke="#8fa8bd" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <rect x="20" y="200" width="190" height="28" rx="4" fill="#3a3426" stroke="#c9b27f"/>
+  <text x="30" y="218" font-size="11" fill="#e2e2e2" class="mono">your prompt</text>
+  <path d="M210,214 C245,214 245,310.0 288,310.0" fill="none" stroke="#c9b27f" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <text x="20" y="372" font-size="12" fill="#8c8c8c">Red is written by Claude. No person reads it.</text>
+  <text x="20" y="390" font-size="12" fill="#8c8c8c">You can't check what it says or where it came from.</text>
+  <text x="500" y="28" font-size="14" fill="#cfcfcf">Stateless, cleared</text>
+  <text x="760" y="48" font-size="12" fill="#8c8c8c">context window</text>
+  <rect x="760" y="56" width="180" height="290" rx="6" fill="none" stroke="#5c5c5c"/>
+  <rect x="768" y="64" width="164" height="20" rx="3" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="850.0" y="78.0" font-size="11" fill="#e2e2e2" text-anchor="middle">CLAUDE.md</text>
+  <rect x="768" y="88" width="164" height="35" rx="3" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="850.0" y="109.5" font-size="11" fill="#e2e2e2" text-anchor="middle">ticket</text>
+  <rect x="768" y="127" width="164" height="55" rx="3" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="850.0" y="158.5" font-size="11" fill="#e2e2e2" text-anchor="middle">diff</text>
+  <rect x="768" y="186" width="164" height="30" rx="3" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="850.0" y="205.0" font-size="11" fill="#e2e2e2" text-anchor="middle">CONTEXT.md</text>
+  <rect x="768" y="220" width="164" height="35" rx="3" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="850.0" y="241.5" font-size="11" fill="#e2e2e2" text-anchor="middle">ADRs, PCRs</text>
+  <rect x="768" y="259" width="164" height="20" rx="3" fill="#3a3426" stroke="#c9b27f"/>
+  <text x="850.0" y="273.0" font-size="11" fill="#e2e2e2" text-anchor="middle">prompt</text>
+  <rect x="500" y="56" width="190" height="28" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="510" y="74" font-size="11" fill="#5c5c5c">memory notes</text>
+  <text x="682" y="74" font-size="11" fill="#5c5c5c" text-anchor="end">off</text>
+  <rect x="500" y="92" width="190" height="28" rx="4" fill="none" stroke="#3a3a3a" stroke-dasharray="3 3"/>
+  <text x="510" y="110" font-size="11" fill="#5c5c5c">compact summary</text>
+  <text x="682" y="110" font-size="11" fill="#5c5c5c" text-anchor="end">cleared</text>
+  <rect x="500" y="128" width="190" height="28" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="510" y="146" font-size="11" fill="#e2e2e2" class="mono">CLAUDE.md</text>
+  <path d="M690,142 C725,142 725,74.0 768,74.0" fill="none" stroke="#8fa8bd" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <rect x="500" y="164" width="190" height="28" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="510" y="182" font-size="11" fill="#e2e2e2" class="mono">gh issue view 42</text>
+  <text x="682" y="182" font-size="10" fill="#8c8c8c" text-anchor="end">ticket</text>
+  <path d="M690,178 C725,178 725,105.5 768,105.5" fill="none" stroke="#8fa8bd" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <rect x="500" y="200" width="190" height="28" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="510" y="218" font-size="11" fill="#e2e2e2" class="mono">git diff</text>
+  <text x="682" y="218" font-size="10" fill="#8c8c8c" text-anchor="end">branch</text>
+  <path d="M690,214 C725,214 725,154.5 768,154.5" fill="none" stroke="#8fa8bd" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <rect x="500" y="236" width="190" height="28" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="510" y="254" font-size="11" fill="#e2e2e2" class="mono">CONTEXT.md</text>
+  <text x="682" y="254" font-size="10" fill="#8c8c8c" text-anchor="end">terms</text>
+  <path d="M690,250 C725,250 725,201.0 768,201.0" fill="none" stroke="#8fa8bd" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <rect x="500" y="272" width="190" height="28" rx="4" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="510" y="290" font-size="11" fill="#e2e2e2" class="mono">docs/adr, docs/pcr</text>
+  <text x="682" y="290" font-size="10" fill="#8c8c8c" text-anchor="end">records</text>
+  <path d="M690,286 C725,286 725,237.5 768,237.5" fill="none" stroke="#8fa8bd" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <rect x="500" y="308" width="190" height="28" rx="4" fill="#3a3426" stroke="#c9b27f"/>
+  <text x="510" y="326" font-size="11" fill="#e2e2e2" class="mono">your prompt</text>
+  <path d="M690,322 C725,322 725,269.0 768,269.0" fill="none" stroke="#c9b27f" stroke-opacity=".6" marker-end="url(#ah)"/>
+  <text x="500" y="372" font-size="12" fill="#8c8c8c">Every block is a file in git.</text>
+  <text x="500" y="390" font-size="12" fill="#8c8c8c">Anyone can open it, and it's the same on every machine.</text>
+</svg>
+<figcaption>Left, part of what Claude reads before your prompt is its own old writing. Right, it reads the project, the same files you'd read.</figcaption>
+</figure>
+<h3 style="margin-top:36px">Predictable on purpose</h3>
+<p>The same question should get the same answer. It's an AI, so the wording changes every time, but the route shouldn't. With nothing carried over, a prompt goes through the steps we expect, and the window only holds what we chose to put in it.</p>
+<p class="muted">Reasons for each setting are in <a href="https://github.com/Maxastrand04/Custom-skills/blob/main/config/README.md">config/README.md</a>.</p>
+
+<h2 id="how">Model invocation</h2>
+<p>Every skill outside behaviour waits for you to type its name. Behaviour skills are model-invoked, meaning Claude loads them itself. Each one's short description sits in Claude's context window on every turn. When the conversation matches it, Claude loads the full skill. The kanban skills borrow them mid-run too, like <code>architect-ticket</code> using <code>grilling</code> for its interview.</p>
+<p>That description costs tokens every turn, so only skills that shape work already running get one. You can still call them by name, or ask in plain words. "Explain it simply" is enough to pull in <code>talk-to-middleschooler</code>.</p>
+
+<section class="card" id="grilling">
+  <header><h3>grilling</h3><span class="tag">interviews</span></header>
+  <p class="muted">Original by Matt Pocock, from <a href="https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md">mattpocock/skills</a>.</p>
+  <p>The interview loop behind most of the board. Claude maps your plan as a tree of decisions and asks every question it can answer now in one numbered round, each with its recommended answer. Questions that depend on an open answer wait for a later round. It looks up facts in the code itself instead of asking you, and it stops when no branch is left unvisited.</p>
+  <dl>
+    <dt>You call it</dt><dd><code>/grilling</code>, or say "grill me".</dd>
+    <dt>Starts when</dt><dd>You say "grill me", ask it to stress-test a plan, or a board skill reaches its interview.</dd>
+    <dt>You do</dt><dd>Answer by question number. A letter picks an option, "agree" takes the recommendation, and anything else is a tweak. See <a href="skills-tutorial.html#grill">a grilling round</a>.</dd>
+  </dl>
+  <pre>/grilling my plan for moving auth to a separate service
+grill me on whether we need a cache at all</pre>
+</section>
+
+<section class="card" id="unslop">
+  <header><h3>unslop</h3><span class="tag">all writing</span></header>
+  <p class="muted">Original by poteto, from <a href="https://github.com/cursor/plugins/blob/main/pstack/skills/unslop/SKILL.md">pstack</a> in cursor/plugins.</p>
+  <p>Cuts the patterns that make text read as machine-written. That means em dashes, puffed-up words like "pivotal" or "seamless", filler like "in order to", bold labels on every list item, passive voice, and chatbot sign-offs. It applies to chat replies, commit messages, docs and ticket bodies alike.</p>
+  <dl>
+    <dt>You call it</dt><dd><code>/unslop</code>, or say "unslop this".</dd>
+    <dt>Starts when</dt><dd>Always, in principle. In practice a rule read once at the start of a session fades after a dozen turns.</dd>
+    <dt>To make it stick</dt><dd>Add the two hooks from <a href="https://github.com/Maxastrand04/Custom-skills/tree/main/config/claude">config/claude</a> to your own settings. One loads the full rule set when a session starts, and one restates the worst offenders before every reply. The installer doesn't do this for you, because it never touches your settings.</dd>
+  </dl>
+  <pre>unslop this README section</pre>
+</section>
+
+<section class="card" id="gloss-me">
+  <header><h3>gloss-me</h3><span class="tag">terms</span></header>
+  <p>Keeps a list of the terms you already know in <code>~/.claude/glossary.md</code>, one file for every project. Any term from the field that isn't on the list gets a one-line definition in a short "New terms" block, placed right before the paragraph that first uses it. Algebra and basic programming count as known without being listed. A term defined in the project's own docs still gets a definition, because those docs say what the project means, not what you know.</p>
+  <p>A reply that defined anything ends with one line asking which new terms you're comfortable with. Name them and they go on the list, so you never see those definitions again. Say a term didn't land and Claude offers synonyms, a simpler definition, or a rewrite without the term, then picks up where it stopped. Say nothing and nothing is added.</p>
+  <dl>
+    <dt>You call it</dt><dd><code>/gloss-me</code> with nothing else going on fills the list one field at a time. Claude shows 30 to 50 common terms and you name the ones you don't know.</dd>
+    <dt>Starts when</dt><dd>Any reply written for you to read. <code>grilling</code>, <code>pro-con</code> and both <code>talk-to-*</code> skills borrow it.</dd>
+    <dt>To make it stick</dt><dd>Add the <code>gloss-me</code> line from <a href="https://github.com/Maxastrand04/Custom-skills/tree/main/config/claude">config/claude</a>'s <code>CLAUDE.md</code> to your own. Without it, a plain question that no skill started won't get definitions.</dd>
+  </dl>
+  <pre>/gloss-me
+gloss-me, I didn't get "idempotent"</pre>
+</section>
+
+<section class="card" id="talk-to-middleschooler">
+  <header><h3>talk-to-middleschooler</h3><span class="tag">wording</span></header>
+  <p>Words the answer for someone who knows nothing about the subject. Every term gets a plain definition the first time it appears, with the real name kept in brackets so you can search it later. Short sentences, an everyday analogy for anything you can't see, and no equations.</p>
+  <dl>
+    <dt>You call it</dt><dd><code>/eli5</code>, <code>/talk-to-middleschooler</code>, or ask for it "simply".</dd>
+    <dt>Starts when</dt><dd>You ask for a simple or plain-English explanation, or say you don't know the area.</dd>
+  </dl>
+  <pre>explain database indexes simply, I've never worked with them</pre>
+</section>
+
+<section class="card" id="talk-to-highschooler">
+  <header><h3>talk-to-highschooler</h3><span class="tag">wording</span></header>
+  <p>One level up. It assumes algebra and basic programming, like variables, functions and loops, but nothing from the subject itself. Terms get defined once and then used freely. Equations and pseudocode are fine, with every symbol named the first time.</p>
+  <dl>
+    <dt>You call it</dt><dd><code>/eli10</code>, <code>/talk-to-highschooler</code>, or say the last answer was too simple.</dd>
+    <dt>Starts when</dt><dd>You want more than the beginner version, or say the plain-English answer was too simple.</dd>
+  </dl>
+  <pre>that was too basic, explain index lookups again with the actual algorithm</pre>
+</section>
+
+
+</main>
+</body>
+</html>

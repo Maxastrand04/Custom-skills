@@ -1,16 +1,12 @@
 # developer-tools
 
-Coding skills that aren't stations on the kanban board. Reach for these whenever they're useful. There is no ordering, and no artifacts passed between them.
-
-All of them are user-invoked, so each one starts only when I type its name.
+Skills to reach for when they're useful. No ordering between them.
 
 | Skill | What it does |
 |-------|--------------|
-| `challenge-pcr` | The only door into an existing PCR, the project-wide conventions in `docs/pcr/`. Tests whether a convention still stands, and amends or retires it only on a case that beats it. No skill can open that door for me. |
-| `generate-framework-tests` | Real runnable tests (pytest / vitest / jest / go test / cargo test / JUnit), with fast-exit and drift-diff via a sidecar manifest. |
-| `project-planning` | Once per project. Grills problem, user, success criteria, scope, domain language, and project conventions, then writes `CONTEXT.md`, seeds `docs/pcr/`, and files one `(N) [epic]` skeleton issue per epic. Where the kanban board picks up. |
-| `brainstorming` | The front door. Grills an idea trying to kill it; what survives gets a verdict and a route onto the board. |
-| `pro-con` | Weigh a decision and commit to a recommendation. |
-| `prune-skill` | Prunes a skill against its leading words and a fixed list of smells: no-ops, duplication, sediment, sprawl, named models or users. Reports first, cuts after approval. |
-
-The interview loop these lean on lives in `../behaviour/grilling`.
+| `brainstorming` | Grills an idea trying to kill it, then either drops it or describes what survives and names the skill to take it next. |
+| `pro-con` | Weighs a decision and commits to a recommendation. |
+| `challenge-pcr` | Tests whether a project convention in `docs/pcr/` still holds, then amends, retires, or keeps it. The only skill that edits `docs/pcr/`. |
+| `eli5` | Explains one thing for a reader who knows nothing about the subject, using `talk-to-middleschooler`. |
+| `eli10` | Explains one thing for a reader with algebra and basic programming, using `talk-to-highschooler`. |
+| `prune-skill` | Reads a skill against a list of smells, reports what to cut, and cuts it once you approve. Not in the plugin. |
