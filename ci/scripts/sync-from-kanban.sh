@@ -21,8 +21,9 @@ RULE_FILES=(
     "kanban/refactor-ticket/code-standards.md:ci/skills/refactor-ticket/code-standards.md"
     "kanban/architect-ticket/RECORD-FORMAT.md:ci/skills/refactor-ticket/RECORD-FORMAT.md"
     "kanban/unit-test-ticket/test-standards.md:ci/skills/unit-test-ticket/test-standards.md"
+    "kanban/pr-ticket/pr-shape.md:ci/skills/pr-ticket/pr-shape.md"
 )
-SKILLS=(implement-ticket refactor-ticket unit-test-ticket)
+SKILLS=(implement-ticket refactor-ticket unit-test-ticket pr-ticket)
 
 marker() { grep -oE 'synced-from kanban/[^ ]+ blob [0-9a-f]{40}' "ci/skills/$1/SKILL.md" | awk '{print $4}'; }
 

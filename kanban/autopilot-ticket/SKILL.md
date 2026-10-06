@@ -108,25 +108,27 @@ Update `CONTEXT.md` if the branch shifted a domain term and the file exists, and
 
 ```
 git push -u origin <branch>
-gh pr create --base <base> --title "<ticket title>" --body "$(cat ...rendered...)"
+gh pr create --base <base> --title "<ticket title>" --body-file <file>
 ```
 
-PR body, exactly this shape:
+PR body, this shape:
 
 ```
 > *This was implemented by AI on autopilot. Review the diff before merging.*
 
 Closes #<N>
 
-## Behaviours
+## Summary
+...
 
-- <behaviour, in the ticket's words> `<test name>`
-- ...
+## Evidence
+...
 
-## Refactor
-
-<one line per finding fixed, or "none">
+## Merge danger
+...
 ```
+
+Write Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`, read from that skill's directory, never searched for in the repo. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
 
 Do not close the issue. `Closes #<N>` closes it on merge, and merging is the review.
 

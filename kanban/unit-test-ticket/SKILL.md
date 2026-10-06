@@ -74,10 +74,11 @@ Two tables.
 | `src/cart.ts:12` | design worsened for testability | report only |
 | `src/tax.ts:31` | negative total accepted | bug, test deleted, on issue |
 
-Close with three lines. Nothing follows them except `gloss-me`'s footer. A new term in a table gets its gloss in a `gloss-me` block before that table.
+Close with four lines. Nothing follows them except `gloss-me`'s footer. A new term in a table gets its gloss in a `gloss-me` block before that table.
 
 ```
 Commits  tests e3f4a5b
 Tests    suite green, acceptance folded into tests/test_order.py, 2 dropped
 Issue    commented #42, 1 item for the reviewer
+Next     /pr-ticket pushes and opens the PR
 ```

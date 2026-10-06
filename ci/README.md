@@ -11,7 +11,7 @@ The back half of the kanban board, run by GitHub Actions instead of by me. I arc
 3. The nightly run, or `gh workflow run kanban-ci --ref <branch>`, starts the loop in `scripts/run-chain.sh`.
 4. The loop runs whichever station `HEAD`'s `Handoff-To` trailer names. After each one it pushes, runs the whole suite once, and passes the result to the next station in its prompt.
 5. Stations hand off forward, back a station, or early to `review`. Two backward moves per ticket at most. A third ends the chain.
-6. The loop opens a PR that closes the issue on merge. It's a draft if the chain halted. Every station's `For the reviewer` items are collected into the PR body.
+6. The loop opens a PR that closes the issue on merge. On a finished chain, `pr-ticket` first writes the body's Summary, Evidence and Merge danger sections from the commits. A halted chain skips it and gets a draft with a plain body. Every station's `For the reviewer` items are collected into the PR body either way.
 7. `/kanban-ci:review-ticket <PR>` on my laptop goes through those items with me, applies the fixes I approve, and writes the issue comment. My own test workflow checks the PR, and I merge.
 
 Commit bodies are written for the next agent. The issue comment is written for a human, and only the review session writes it.
@@ -45,17 +45,17 @@ When a run hits the usage limit, the ticket stays queued and no PR opens. The ne
 
 ## Models and limits
 
-`refactor-ticket` runs on Opus, `implement-ticket` and `unit-test-ticket` on Sonnet, which suits the Pro plan. Turn limits per station and the 330-minute job timeout are inputs on the reusable workflow, `.github/workflows/kanban-ci.yml`, for tuning after the first real runs.
+`refactor-ticket` runs on Opus, `implement-ticket`, `unit-test-ticket` and `pr-ticket` on Sonnet, which suits the Pro plan. Turn limits per station and the 330-minute job timeout are inputs on the reusable workflow, `.github/workflows/kanban-ci.yml`, for tuning after the first real runs.
 
 Permission prompts are skipped on the runner. It's a throwaway machine, and the job's GitHub permissions limit it to this repo's code, PRs and issues.
 
 ## Keeping in step with kanban
 
-The three station skills are full forks of their `kanban/` originals, rewritten to run with nobody to ask. Each records its source as a line at the top, `synced-from kanban/<skill>/SKILL.md blob <hash>`.
+The four station skills are full forks of their `kanban/` originals, rewritten to run with nobody to ask. Each records its source as a line at the top, `synced-from kanban/<skill>/SKILL.md blob <hash>`.
 
 ```
 ci/scripts/sync-from-kanban.sh                         # copy rule files, show skill drift
 ci/scripts/sync-from-kanban.sh --mark refactor-ticket  # after porting by hand
 ```
 
-The rule files, `code-standards.md`, `test-standards.md` and `RECORD-FORMAT.md`, are copied byte for byte. For skills it prints what changed in kanban since the fork, and porting is a choice made by hand. Changes only flow from kanban to ci, never back.
+The rule files, `code-standards.md`, `test-standards.md`, `RECORD-FORMAT.md` and `pr-shape.md`, are copied byte for byte. For skills it prints what changed in kanban since the fork, and porting is a choice made by hand. Changes only flow from kanban to ci, never back.

@@ -26,11 +26,15 @@ The **refactor** leg's first session. First it gates the diff true-to-spec, aski
 
 ### `unit-test-ticket`
 
-The refactor leg's second session, and the last station. It is split from `refactor-ticket` only so the test pass starts with a clean context. It checks the branch has a `Refactor:` commit, still carries its acceptance file, and is green. Then it tidies the changed modules' tests against its own `test-standards.md`, drops tautological and structure-sensitive tests from the acceptance file, folds the rest into the module test files, and deletes it. It never edits code. A new test that fails on the code is a bug for the reviewer, so it comes off the branch and goes into the issue comment. It never closes the issue; merging the branch does.
+The refactor leg's second session, and the last one of the TDD cycle. It is split from `refactor-ticket` only so the test pass starts with a clean context. It checks the branch has a `Refactor:` commit, still carries its acceptance file, and is green. Then it tidies the changed modules' tests against its own `test-standards.md`, drops tautological and structure-sensitive tests from the acceptance file, folds the rest into the module test files, and deletes it. It never edits code. A new test that fails on the code is a bug for the reviewer, so it comes off the branch and goes into the issue comment. It never closes the issue; merging the branch does.
+
+### `pr-ticket`
+
+The last station, after the fold commit. Checks the branch is committed and green, reads the ticket, commits and diff, and writes a PR body for a reviewer reading it cold: Summary, Evidence and Merge danger per `pr-ticket/pr-shape.md`, plus every `For the reviewer` item from the issue. Feature work gets a Mermaid sequence diagram. The evidence is the acceptance tests, failing at the architect commit and passing at `HEAD`. It shows me the body, and only on my approval pushes and opens the PR. `kanban-ci` runs a headless copy that reads the same `pr-shape.md`.
 
 ### `autopilot-ticket`
 
-The three legs in one unattended session, for a ticket labelled `autopilot` at filing. The label means settling the contract up front would cost more than reading the finished diff, which is true of small refactors, bug fixes, and implementation swaps behind a stable interface. The criteria live in `new-ticket/ticket-shapes.md`, and the station re-checks them against the code before writing anything. It writes the tests from Expected behaviour, takes them green one commit per behaviour, refactors under the same records and baseline as `refactor-ticket`, pushes, and opens a PR that closes the issue on merge. The review that `architect-ticket` does before the code moves to the PR after it.
+The three legs in one unattended session, for a ticket labelled `autopilot` at filing. The label means settling the contract up front would cost more than reading the finished diff, which is true of small refactors, bug fixes, and implementation swaps behind a stable interface. The criteria live in `new-ticket/ticket-shapes.md`, and the station re-checks them against the code before writing anything. It writes the tests from Expected behaviour, takes them green one commit per behaviour, refactors under the same records and baseline as `refactor-ticket`, pushes, and opens a PR that closes the issue on merge, with its body shaped by `pr-ticket/pr-shape.md`. The review that `architect-ticket` does before the code moves to the PR after it.
 
 ### `new-ticket`
 
@@ -38,7 +42,7 @@ Sits beside the chain rather than on it. Files a standalone ticket for work no e
 
 ## TDD, red-green-refactor
 
-The last four stations are one TDD cycle on one ticket and one branch, split across four sessions instead of phases of one. The refactor leg takes two of them, `refactor-ticket` for the code and `unit-test-ticket` for the tests, so neither runs out of context. The other names say which leg they are.
+`architect-ticket` through `unit-test-ticket` are one TDD cycle on one ticket and one branch, split across four sessions instead of phases of one. The refactor leg takes two of them, `refactor-ticket` for the code and `unit-test-ticket` for the tests, so neither runs out of context. The other names say which leg they are.
 
 **Red.** `architect-ticket` leaves the branch red: stubs in the real source files, one acceptance file written against them, every test in it observed failing, committed. That commit is the entire handoff. A signature in a source file and a failing test carry the contract exactly where a plan file could only describe it, which is why there is no plan file.
 

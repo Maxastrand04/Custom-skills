@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # The kanban-ci loop. Runs the station named in HEAD's Handoff-To trailer,
 # pushes, runs the whole suite, and repeats until a station hands off to
-# review or a halt fires. Then opens the PR, as a draft when halted.
+# review or a halt fires. Then opens the PR. A finished chain gets a body
+# written by pr-ticket; a halted one gets a plain body and a draft.
 #
 # Called by .github/workflows/kanban-ci.yml from inside the project checkout.
 #
@@ -10,7 +11,7 @@
 #   BRANCH            one ticket branch to run; empty or BASE runs the queue
 #   TEST_COMMAND      runs the whole suite, exit 0 means green
 #   PLUGIN_DIR        path to the kanban-ci plugin
-#   MAX_TURNS_IMPLEMENT, MAX_TURNS_REFACTOR, MAX_TURNS_UNIT_TEST
+#   MAX_TURNS_IMPLEMENT, MAX_TURNS_REFACTOR, MAX_TURNS_UNIT_TEST, MAX_TURNS_PR
 #   LOG_DIR           where station and suite output goes, default /tmp
 set -uo pipefail
 
@@ -47,6 +48,7 @@ max_turns_for() {
         implement-ticket) echo "${MAX_TURNS_IMPLEMENT:-150}" ;;
         refactor-ticket)  echo "${MAX_TURNS_REFACTOR:-200}" ;;
         unit-test-ticket) echo "${MAX_TURNS_UNIT_TEST:-150}" ;;
+        pr-ticket)        echo "${MAX_TURNS_PR:-40}" ;;
     esac
 }
 
@@ -109,9 +111,28 @@ reviewer_items() {
     done
 }
 
+# Has pr-ticket write the Summary, Evidence and Merge danger sections to
+# $LOG_DIR/pr-summary.md. Leaves no file when the suite is red or the station
+# fails, and open_pr falls back to the plain body.
+write_summary() {
+    local out="$LOG_DIR/pr-summary.md" before
+    rm -f "$out"
+    # A chain resumed straight at review never ran the suite this run.
+    [[ -z "${SUITE_SUMMARY:-}" ]] && run_suite
+    [[ $SUITE_GREEN -eq 1 ]] || return 0
+    before=$(git rev-parse HEAD)
+    run_station pr-ticket "Write the body to $out.
+
+$SUITE_SUMMARY" || log "pr-ticket failed, using the plain body"
+    # pr-ticket never commits. Drop anything it left so the PR is the chain's work.
+    git reset --hard -q "$before"
+}
+
 # Opens or updates the PR. $1 is empty when finished, else the halt reason.
 open_pr() {
-    local halt="$1" body="$LOG_DIR/pr-body.md" title pr status items
+    local halt="$1" body="$LOG_DIR/pr-body.md" summary="$LOG_DIR/pr-summary.md" title pr status items
+    rm -f "$summary"
+    [[ -z "$halt" ]] && write_summary
     title=$(gh issue view "$ISSUE" --json title --jq .title)
     if [[ -z "$halt" ]]; then status="Finished."; else status="Halted: $halt"; fi
     items=$(reviewer_items)
@@ -120,6 +141,7 @@ open_pr() {
         printf 'Closes #%s\n\n' "$ISSUE"
         printf '**Status** %s\n\n' "$status"
         printf '**Route** %s\n\n' "${ROUTE[*]:-none}"
+        if [[ -s "$summary" ]]; then cat "$summary"; printf '\n'; fi
         printf '## For the reviewer\n\n'
         if [[ -n "$items" ]]; then printf '%s\n' "$items"; else printf 'none\n\n'; fi
         if [[ -n "$halt" ]]; then
@@ -146,6 +168,7 @@ run_ticket() {
     TICKET_BRANCH="$1"
     ISSUE="${TICKET_BRANCH%%-*}"
     ROUTE=()
+    SUITE_SUMMARY="" SUITE_GREEN=0
     log "ticket #$ISSUE on $TICKET_BRANCH"
 
     git fetch -q origin "$TICKET_BRANCH" "$BASE" || { log "can't fetch $TICKET_BRANCH"; return 1; }

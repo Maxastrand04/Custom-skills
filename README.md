@@ -83,7 +83,7 @@ The whole repo is opinionated. It encodes how I work, not a general-purpose kit,
 The core of the repo is one chain that runs from "I have an idea" to "the diff is reviewed and pushed". Each step writes an artifact the next step reads, so nothing is re-derived from memory.
 
 ```
-map-epic  →  architect-ticket  →  implement-ticket  →  refactor-ticket  →  unit-test-ticket
+map-epic  →  architect-ticket  →  implement-ticket  →  refactor-ticket  →  unit-test-ticket  →  pr-ticket
 (N.M) tasks     stubs + failing      bodies filled,     shape fixed against
 under the epic  tests, committed     suite green        the records
                      ↑                    ↑                  ↑
@@ -92,7 +92,7 @@ under the epic  tests, committed     suite green        the records
 
 The board starts from the `(N) [epic]` issues `project-planning` files. That skill lives in `developer-tools/` because it runs once per project rather than once per unit of work.
 
-**The last four stations are one TDD cycle split across four sessions**, on one ticket and one branch. Each of the first three names says which leg it is, and `unit-test-ticket` is the refactor leg's second session.
+**Stations 2 to 5 are one TDD cycle split across four sessions**, on one ticket and one branch. Each of the first three names says which leg it is, and `unit-test-ticket` is the refactor leg's second session.
 
 **1. `map-epic`**, once per epic. Slices one epic goal into `(N.M)` tickets filed as native sub-issues of the epic, wired with native blocking, and fills in the epic issue's notes, decisions, and fog. Research and prototype tickets are first-class here, so unknowns get charted rather than guessed at.
 
@@ -105,6 +105,8 @@ There is no plan file. The commit is the handoff, because a signature in a sourc
 **4. `refactor-ticket`**, **refactors** under the green suite. First it gates the diff **true-to-spec**, asking whether the acceptance tests genuinely cover the ticket's expected behaviour and whether the code meets it, because green only means the tests pass, not that they were the right tests. A finding halts the session rather than papering over it. Then it edits the code into line with the PCRs in `docs/pcr/`, the ADRs in `docs/adr/`, and the code-smell baseline, re-runs the affected tests, and commits the refactor separately. Behaviour never changes here. An edit that takes the suite back to red was never a refactor and gets reverted.
 
 **5. `unit-test-ticket`**, the refactor leg's second session, run fresh so the test pass gets a clean context. It never edits code. It tidies the changed modules' test files and folds the acceptance file into them, leaving out any test that can't fail or that breaks when internals move. A new test that exposes a bug is left off the branch and noted on the issue for the reviewer. It never closes the issue; merging does.
+
+**6. `pr-ticket`**, the last station. Pushes the branch and opens the PR. It writes the body from the commits for a reviewer who never read the ticket: a summary with a sequence diagram for feature work, the acceptance tests as before-and-after evidence, and how hard a merge would be to walk back. Nothing is pushed until I approve the body.
 
 ---
 

@@ -3,7 +3,7 @@ name: unit-test-ticket
 description: Headless refactor leg, second session, for kanban-ci. Folds the acceptance file into the unit suite and tidies the changed modules' tests, then hands off to review in a commit.
 disable-model-invocation: true
 ---
-<!-- synced-from kanban/unit-test-ticket/SKILL.md blob 86693d72fb62debd263fd050e148d4914731104a -->
+<!-- synced-from kanban/unit-test-ticket/SKILL.md blob 350d76e3a5574ae18f46c35535b972763666ac9e -->
 
 # unit-test-ticket, headless
 
