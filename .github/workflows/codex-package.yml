@@ -1,0 +1,90 @@
+name: Build and check Codex package
+
+on:
+  # Every commit to main rebuilds. A path filter here could skip the run that
+  # should pick up a build an earlier run gave up on when main moved ahead.
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'kanban/**'
+      - 'developer-tools/**'
+      - 'behaviour/**'
+      - 'schoolwork/**'
+      - '.claude-plugin/marketplace.json'
+      - 'plugins/max/**'
+      - '.agents/plugins/**'
+      - 'scripts/build-codex.py'
+      - 'install.sh'
+      - 'tests/**'
+      - '.github/workflows/codex-package.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: codex-package-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - run: python3 scripts/build-codex.py
+      - run: python3 scripts/build-codex.py --check
+      - run: python3 -m unittest discover -s tests -v
+      - run: bash -n install.sh
+
+  publish:
+    needs: check
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.ref_type == 'branch' &&
+      github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The version step needs history to find the last version change.
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - run: python3 scripts/build-codex.py
+      - name: Raise the plugin version when the skills changed
+        run: |
+          # Compare against the commit that last set the version, so skills
+          # rebuilt locally and committed by hand also get a new version.
+          git add -- plugins/max/skills
+          last=$(git log -1 --format=%H -- plugins/max/plugin.json)
+          if [ -n "$last" ] && ! git diff --cached --quiet "$last" -- plugins/max/skills; then
+            python3 scripts/build-codex.py --bump-version
+          fi
+      - name: Commit generated marketplace skills
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          git add -- plugins/max/skills plugins/max/plugin.json
+          if git diff --cached --quiet; then
+            echo "Codex marketplace skills are already current."
+            exit 0
+          fi
+
+          git fetch origin "$BRANCH_NAME"
+          if [ "$(git rev-parse FETCH_HEAD)" != "$EXPECTED_SHA" ]; then
+            echo "The branch has newer commits. Its workflow run will rebuild the package."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Build Codex marketplace skills"
+          git push origin "HEAD:$BRANCH_NAME"

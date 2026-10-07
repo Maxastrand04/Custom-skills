@@ -19,6 +19,8 @@
         "./kanban/architect-ticket",
         "./kanban/implement-ticket",
         "./kanban/refactor-ticket",
+        "./kanban/unit-test-ticket",
+        "./kanban/pr-ticket",
         "./kanban/autopilot-ticket",
         "./developer-tools/brainstorming",
         "./developer-tools/challenge-pcr",

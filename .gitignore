@@ -10,3 +10,7 @@ implementation_plans/
 
 # Local scratch files, may hold env dumps
 scratch/
+
+# Generated personal Codex skills. Marketplace output is tracked under plugins/.
+.codex-build/
+__pycache__/

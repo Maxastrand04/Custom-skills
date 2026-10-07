@@ -1,6 +1,54 @@
 # Custom-skills
 
-My skills for Claude Code and Antigravity (agy). What each skill does and how they fit together is on the [tutorial page](https://maxastrand04.github.io/Custom-skills/). This file only covers setup. For a click-through version to send around, use the [setup page](https://maxastrand04.github.io/Custom-skills/setup.html).
+My skills for Claude Code, Antigravity, and Codex. What each skill does and how they fit together is on the [tutorial page](https://maxastrand04.github.io/Custom-skills/). This file covers setup. The [setup page](https://maxastrand04.github.io/Custom-skills/setup.html) covers Claude Code and Antigravity.
+
+## Codex, from your clone
+
+Use `install.sh` for your personal selection. It offers every live skill, including schoolwork:
+
+```bash
+./install.sh --codex
+```
+
+Pick skills in the menu, review the plan, and apply it. To add specific skills without the menu:
+
+```bash
+./install.sh --codex grilling unslop gloss-me
+```
+
+Codex reads the links in `~/.agents/skills/`. Those links point to Codex copies generated inside this clone. The copies use Codex's invocation settings and `$skill-name` mentions, and put the skill folders beside one another so shared-file links resolve. Source files remain in their category folders. Python 3.9 or newer is required.
+
+After editing a source skill or pulling updates, run `./install.sh --codex` again to refresh the copies. Codex detects changes automatically. Restart it if a skill does not appear. Use `/skills` or mention a skill as `$grilling` in Codex CLI and the editor extension. [Official skill documentation](https://learn.chatgpt.com/docs/build-skills)
+
+The existing default still targets Claude Code and Antigravity. Use `--codex` to select Codex, or combine target flags. `CUSTOM_SKILLS_CODEX_DIR` can override the Codex destination.
+
+## Codex, from the marketplace
+
+The Codex marketplace ships the same skills as the Claude marketplace. That covers the full ticket chain, the shared developer tools, and the writing and interview rules. Schoolwork, `prune-skill`, `show-me`, and `kanban-ci` are excluded.
+
+Once these files are pushed to GitHub:
+
+```bash
+codex plugin marketplace add Maxastrand04/Custom-skills
+codex plugin add max@custom-skills-codex
+```
+
+For local testing before pushing, replace the first command with `codex plugin marketplace add /absolute/path/to/Custom-skills`.
+
+Marketplace skills have the `max:` prefix. Mention `$max:grilling`, for example, or select the skill in Codex's skill picker.
+
+Install one Codex route per machine to avoid duplicate skills. Marketplace installs are cached copies. After a release, run `codex plugin marketplace upgrade custom-skills-codex`, then `codex plugin add max@custom-skills-codex` to refresh the installed package. [Official plugin documentation](https://developers.openai.com/plugins/build/plugins)
+
+Both marketplaces read one list, the `skills` array of the `max` plugin in [.claude-plugin/marketplace.json](.claude-plugin/marketplace.json). To change it, edit that array, then run:
+
+```bash
+python3 scripts/build-codex.py
+python3 scripts/build-codex.py --check
+```
+
+GitHub Actions rebuilds the package when the list or skill sources change. It validates pull requests and, on the default branch, commits updated `plugins/max/skills/` files automatically. You can still build and commit them locally. When the built skills differ from the last release, the same run raises the last number of the version in `plugins/max/plugin.json`, so Codex installs a fresh copy. Set a bigger version by hand when you want one, and CI counts on from there. The personal installer always offers every live skill, independently of this list.
+
+Packaging details and remaining proposed skill edits are in [codex/README.md](codex/README.md).
 
 ## Claude Code, from the marketplace (recommended)
 
