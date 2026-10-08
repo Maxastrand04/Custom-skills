@@ -117,6 +117,7 @@
   <a href="skills-tutorial.html">Back to the board</a>
   <a href="#demo">Same question, twice</a>
   <a href="#why">Why behaviour skills</a>
+  <a href="#glossary">How gloss-me works</a>
   <a href="#config">The config folder</a>
   <a href="#how">Model invocation</a>
   <a href="#grilling">grilling</a>
@@ -167,6 +168,82 @@
 
 <h2 id="why">Why behaviour skills</h2>
 <p>By default Claude writes as if you already know the field. Terms go unexplained, the answer hides under headers and filler, and the reply reads fine to an expert and loses everyone else. That gets worse the further you step outside what you know. Work on a stack or a domain you're new to, and Claude stops being the slow part. The slow part is you, working out what it just told you. <code>unslop</code> strips the padding, and the <code>talk-to-*</code> skills set the level, so the reply is written for the reader you are on this topic. <code>gloss-me</code> remembers which terms you already know, so you only get definitions for the ones you don't.</p>
+
+<h2 id="glossary">How gloss-me works</h2>
+<p>By default a model writes in dense, technical language. It picks the precise term from the field every time, whether you know it or not. The bottleneck is then you, working out what you just read.</p>
+<p>The glossary is the only thing Claude remembers about you between sessions, and that's on purpose. Everything about the project comes from the files in git, as <a href="#config">the config folder</a> explains. The one thing the files can't tell Claude is which words you know. With your list in context, Claude defines the words you don't know and leans toward the ones you do, so the reply reads easily the first time.</p>
+<figure>
+<svg viewBox="0 0 960 560" role="img" aria-label="Sequence diagram: Claude looks up the terms in the glossary, finds none, and sends a New terms block before its answer">
+  <defs><marker id="sq" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8c8c8c"/></marker></defs>
+  <rect x="55" y="16" width="190" height="34" rx="5" fill="#3a3426" stroke="#c9b27f"/>
+  <text x="150" y="38" font-size="12.5" fill="#e2e2e2" text-anchor="middle">You</text>
+  <line x1="150" y1="50" x2="150" y2="546" stroke="#3a3a3a" stroke-dasharray="4 4"/>
+  <rect x="385" y="16" width="190" height="34" rx="5" fill="#2b3640" stroke="#8fa8bd"/>
+  <text x="480" y="38" font-size="12.5" fill="#e2e2e2" text-anchor="middle">Claude</text>
+  <line x1="480" y1="50" x2="480" y2="546" stroke="#3a3a3a" stroke-dasharray="4 4"/>
+  <rect x="715" y="16" width="190" height="34" rx="5" fill="#2a3a2a" stroke="#93b893"/>
+  <text x="810" y="38" font-size="12.5" fill="#e2e2e2" text-anchor="middle" class="mono">~/.claude/glossary.md</text>
+  <line x1="810" y1="50" x2="810" y2="546" stroke="#3a3a3a" stroke-dasharray="4 4"/>
+  <line x1="150" y1="95" x2="472" y2="95" stroke="#c9b27f" marker-end="url(#sq)"/>
+  <text x="315.0" y="87" font-size="11.5" fill="#cfcfcf" text-anchor="middle" class="mono">why is the orders page so slow?</text>
+  <line x1="480" y1="150" x2="802" y2="150" stroke="#8fa8bd" marker-end="url(#sq)"/>
+  <text x="645.0" y="142" font-size="11.5" fill="#cfcfcf" text-anchor="middle" class="mono">look up: query, N+1 query, eager loading</text>
+  <text x="645.0" y="168" font-size="10.5" fill="#8c8c8c" text-anchor="middle">read once per conversation</text>
+  <line x1="810" y1="210" x2="488" y2="210" stroke="#c98282" stroke-dasharray="5 4" marker-end="url(#sq)"/>
+  <text x="645.0" y="202" font-size="11.5" fill="#c98282" text-anchor="middle" class="mono">not found: query, N+1 query, eager loading</text>
+  <rect x="360" y="232" width="240" height="40" rx="4" fill="#3a2a2a" stroke="#c98282"/>
+  <text x="480" y="249" font-size="11.5" fill="#e2e2e2" text-anchor="middle">3 unknown terms</text>
+  <text x="480" y="264" font-size="11" fill="#8c8c8c" text-anchor="middle">define them before the answer</text>
+  <line x1="480" y1="305" x2="158" y2="305" stroke="#8fa8bd" stroke-dasharray="5 4" marker-end="url(#sq)"/>
+  <text x="315.0" y="297" font-size="11.5" fill="#cfcfcf" text-anchor="middle">sends a New terms block, then the answer</text>
+  <rect x="172" y="318" width="286" height="96" rx="4" fill="#191919" stroke="#3a3a3a"/>
+  <text x="184" y="337" font-size="10.5" fill="#e2e2e2" class="mono">New terms</text>
+  <text x="184" y="354" font-size="10.5" fill="#cfcfcf" class="mono">• query, a request to the database</text>
+  <text x="184" y="371" font-size="10.5" fill="#cfcfcf" class="mono">• N+1 query, one query per item</text>
+  <text x="184" y="388" font-size="10.5" fill="#cfcfcf" class="mono">• eager loading, fetch all at once</text>
+  <text x="184" y="405" font-size="10.5" fill="#8c8c8c" class="mono">Which are you comfortable with?</text>
+  <line x1="150" y1="455" x2="472" y2="455" stroke="#c9b27f" marker-end="url(#sq)"/>
+  <text x="315.0" y="447" font-size="11.5" fill="#cfcfcf" text-anchor="middle" class="mono">query and eager loading are fine</text>
+  <line x1="480" y1="500" x2="802" y2="500" stroke="#93b893" marker-end="url(#sq)"/>
+  <text x="645.0" y="492" font-size="11.5" fill="#cfcfcf" text-anchor="middle">add query, eager loading</text>
+  <text x="810" y="528" font-size="11" fill="#8c8c8c" text-anchor="middle">found next time, never defined again</text>
+</svg>
+<figcaption>Claude looks up every term in your list before it writes. Red is a miss, so the term gets defined. Terms you confirm go on the list, in every project.</figcaption>
+</figure>
+
+<p class="pair-label">Turn one</p>
+<div class="term">
+  <div class="term-bar"><span></span><span></span><span></span><em>gloss-me</em></div>
+  <div class="term-body">
+    <div class="in">why is the orders page so slow?</div>
+    <p>New terms</p>
+    <ul>
+      <li><b>query</b>, a request the app sends to the database for some data.</li>
+      <li><b>N+1 query</b>, loading a list with one query, then running one more query per item in it.</li>
+      <li><b>eager loading</b>, fetching the related rows for the whole list up front in one extra query.</li>
+    </ul>
+    <p>It's an N+1 query. <code>Order.all</code> loads 200 orders in one query, then the template calls <code>order.customer</code> on each, which fetches every customer on its own. That's 201 trips to the database for one page.</p>
+    <p>Fix it with eager loading. <code>Order.includes(:customer)</code> fetches all 200 customers in a second query, so the page makes 2 trips.</p>
+    <p>New terms this turn: query, N+1 query, eager loading. Which are you comfortable with?</p>
+  </div>
+</div>
+
+<p class="pair-label">Turn two</p>
+<div class="term">
+  <div class="term-bar"><span></span><span></span><span></span><em>gloss-me</em></div>
+  <div class="term-body">
+    <div class="in">query and eager loading are fine, N+1 didn't land</div>
+    <p>Added to glossary: query, eager loading.</p>
+    <p>Pick one:</p>
+    <div class="opts">
+      <div>1. Synonyms: "one query per row", "per-item lookups".</div>
+      <div>2. A new definition, one level simpler or with an example.</div>
+      <div>3. I re-explain the paragraph without the term.</div>
+    </div>
+    <div class="in">1, "one query per row" makes sense</div>
+    <p>Added to glossary: N+1 query ("one query per row").</p>
+  </div>
+</div>
 
 <h2 id="config">The config folder</h2>
 <p><a href="https://github.com/Maxastrand04/Custom-skills/tree/main/config">config/</a> holds the settings, hooks and instruction file, one folder each for Claude Code and Antigravity. <code>install.sh</code> doesn't touch it, so copy the parts you want into your own settings.</p>
@@ -427,6 +504,7 @@ grill me on whether we need a cache at all</pre>
     <dt>Starts when</dt><dd>Any reply written for you to read. <code>grilling</code>, <code>pro-con</code> and both <code>talk-to-*</code> skills borrow it.</dd>
     <dt>To make it stick</dt><dd>Add the <code>gloss-me</code> line from <a href="https://github.com/Maxastrand04/Custom-skills/tree/main/config/claude">config/claude</a>'s <code>CLAUDE.md</code> to your own. Without it, a plain question that no skill started won't get definitions.</dd>
   </dl>
+  <p class="muted">Walkthrough in <a href="#glossary">How gloss-me works</a>.</p>
   <pre>/gloss-me
 gloss-me, I didn't get "idempotent"</pre>
 </section>
