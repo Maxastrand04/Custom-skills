@@ -55,7 +55,7 @@ Only if it holds. Name one route and state the reason, so the user can override 
 | Is one change with one test suite and no architecture question | Implement inline, in this session, once the user says go |
 | Is one coherent behaviour, and no epic covers it | `$max:new-ticket` |
 | Is a goal that has to be sliced into several tickets | `$max:map-epic`, which files the epic first if none covers it |
-| Is a whole new product, or the repo has no `CONTEXT.md` yet | `/grill-with-docs` to seed `CONTEXT.md`, then `$max:map-epic` per epic |
+| Is a whole new product, or the repo has no `CONTEXT.md` yet | `$max:grill-docs` to seed `CONTEXT.md`, then `$max:map-epic` per epic |
 
 Route to the smallest thing that fits. "This is one file and one test, no ticket earns its keep here" is a complete justification.
 

@@ -12,7 +12,7 @@ This is the only way a PCR in `docs/pcr/` changes or retires, and it takes a who
 
 **The burden is on the challenge, and it is heavy.** A PCR binds every file in the project, so moving one is a project adaption, not an edit: swapping a stack for a better fit, a comment convention that has proven unreadable, a naming rule the whole team trips on. "This is inconvenient", "the current code doesn't do this", and "I'd have chosen differently" are not arguments, they are the friction the PCR was written to create. Overturning one takes a case that the whole project gets better and that the ripple is worth paying. Anything else and the PCR stands.
 
-ADRs are not challenged here. `architect-ticket` and `refactor-ticket` amend those in-session when the work gives them a reason.
+ADRs are not challenged here. `architect-ticket`, `refactor-ticket`, and `grill-docs` amend those in-session when the work gives them a reason.
 
 ---
 

@@ -121,6 +121,7 @@
   <a href="#which">Where to start</a>
   <a href="#map-epic">map-epic</a>
   <a href="#new-ticket">new-ticket</a>
+  <a href="#grill-docs">grill-docs</a>
   <a href="#architect-ticket">architect-ticket</a>
   <a href="#implement-ticket">implement-ticket</a>
   <a href="#refactor-ticket">refactor-ticket</a>
@@ -545,9 +546,9 @@
 
 <table class="pick">
   <tr><th>Where</th><th>Holds</th><th>Written by</th><th>Read by</th></tr>
-  <tr><td><code>CONTEXT.md</code></td><td>Domain terms and the words to avoid</td><td><code>/grill-with-docs</code> seeds it. refactor and autopilot update terms</td><td>map-epic, architect, refactor, autopilot, brainstorming</td></tr>
-  <tr><td><code>docs/adr/</code></td><td>One decision per file. A module's shape, a dependency direction, an interface that beat a real alternative</td><td>architect, one per design argument. refactor, when new code sets a pattern others will copy</td><td>All four code stations</td></tr>
-  <tr><td><code>docs/pcr/</code></td><td>One convention per file. Stack, allowed libraries, naming, test runner</td><td>architect adds one when its ticket settles something project-wide. Only <code>/challenge-pcr</code> changes one</td><td>All four code stations</td></tr>
+  <tr><td><code>CONTEXT.md</code></td><td>Domain terms and the words to avoid</td><td><code>/grill-docs</code>, whenever a grill settles a term. refactor and autopilot update terms</td><td>map-epic, architect, refactor, autopilot, brainstorming</td></tr>
+  <tr><td><code>docs/adr/</code></td><td>One decision per file. A module's shape, a dependency direction, an interface that beat a real alternative</td><td>architect and grill-docs, one per design argument. refactor, when new code sets a pattern others will copy</td><td>All four code stations</td></tr>
+  <tr><td><code>docs/pcr/</code></td><td>One convention per file. Stack, allowed libraries, naming, test runner</td><td>architect or grill-docs adds one when its session settles something project-wide. Only <code>/challenge-pcr</code> changes one</td><td>All four code stations</td></tr>
   <tr><td><code>README.md</code></td><td>How to run and configure</td><td>You. refactor and autopilot, when a run step changes</td><td>architect, refactor, autopilot</td></tr>
   <tr><td>Acceptance file</td><td>This ticket's tests</td><td>architect</td><td>implement, refactor. unit-test folds it into module tests and deletes it</td></tr>
   <tr><td>GitHub issues</td><td>Epics, tickets, decisions so far, fog</td><td>map-epic, new-ticket</td><td>Every station</td></tr>
@@ -825,6 +826,18 @@
   </dl>
   <pre>/new-ticket
 /new-ticket users get logged out when they reload the page</pre>
+</section>
+
+<section class="card" id="grill-docs">
+  <header><h3>grill-docs</h3><span class="tag">beside the board</span></header>
+  <p>For when you don't want the whole chain but still want the docs to look the way the chain leaves them. Bring a plan, an idea, or a ticket. What you do after the interview is up to you.</p>
+  <dl>
+    <dt>It does</dt><dd>Reads <code>CONTEXT.md</code>, <code>docs/adr/</code>, <code>docs/pcr/</code> and the code around your topic, then interviews you. It points out when you use a word differently from <code>CONTEXT.md</code> or when the plan breaks a record. As each decision settles it adds the term to <code>CONTEXT.md</code> and writes or amends an ADR, or writes a new PCR. It never changes an existing PCR. That still takes <code>/challenge-pcr</code>.</dd>
+    <dt>Stops for you</dt><dd>After "What I found", and at every interview round.</dd>
+    <dt>Leaves behind</dt><dd>Updated <code>CONTEXT.md</code> and records, uncommitted, plus a list of what changed.</dd>
+  </dl>
+  <pre>/grill-docs I want to add refunds to the order flow
+/grill-docs 42</pre>
 </section>
 
 <section class="card" id="architect-ticket">
