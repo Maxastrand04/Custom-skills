@@ -58,7 +58,7 @@ Closes #<N>
 
 Write Summary, Evidence and Merge danger per `pr-shape.md`. Leave `For the reviewer` out when there are no items.
 
-Show the user the title and the rendered body. **Do not push or open anything until the user approves.** Apply their edits and show it again until they do.
+**Don't wait for approval.** Once the body passes `unslop`, go straight to step 4. The user reads the body on the PR, and the PR is the review.
 
 ## 4. Push and open
 

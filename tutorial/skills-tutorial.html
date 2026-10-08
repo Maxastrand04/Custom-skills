@@ -900,7 +900,7 @@ rename refresh_session to renew_session, keep the rest</pre>
       Writes three sections. Summary says what changed, with a diagram for new features. Evidence lists the tests that failed at the architect commit and pass now. Merge danger says whether a revert can undo the merge and how far a bad merge reaches.
       Copies every "for the reviewer" item the earlier stations left on the issue.
     </dd>
-    <dt>Stops for you</dt><dd>Once, to show you the title and body before it pushes. Before that it refuses if the tests aren't folded, there are uncommitted changes, the suite is red, or a PR already exists.</dd>
+    <dt>Stops for you</dt><dd>Only if the branch isn't ready: the tests aren't folded, there are uncommitted changes, the suite is red, or a PR already exists. Otherwise it pushes and opens the PR without asking. You read the body on the PR.</dd>
     <dt>Leaves behind</dt><dd>A pushed branch and a PR with <code>Closes #42</code>, so the issue closes when you merge.</dd>
   </dl>
   <pre><span class="c"># on the ticket branch, in a fresh session</span>
@@ -989,7 +989,7 @@ git checkout main &amp;&amp; git pull
 
 <span class="c"># 6. ship, in a fresh session</span>
 /pr-ticket
-<span class="c">#    approve the PR body. Review the PR, then merge</span></pre>
+<span class="c">#    review the PR it opens, then merge</span></pre>
 
 <p>If you labelled #42 <code>autopilot</code> in step 1, steps 2 to 6 shrink to this:</p>
 <pre>git checkout main &amp;&amp; git pull
