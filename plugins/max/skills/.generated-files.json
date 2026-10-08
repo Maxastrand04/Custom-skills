@@ -13,6 +13,7 @@
   "eli5/SKILL.md",
   "eli5/agents/openai.yaml",
   "gloss-me/SKILL.md",
+  "grilling/LICENSE",
   "grilling/SKILL.md",
   "implement-ticket/SKILL.md",
   "implement-ticket/agents/openai.yaml",
@@ -39,5 +40,6 @@
   "unit-test-ticket/SKILL.md",
   "unit-test-ticket/agents/openai.yaml",
   "unit-test-ticket/test-standards.md",
+  "unslop/LICENSE",
   "unslop/SKILL.md"
 ]
