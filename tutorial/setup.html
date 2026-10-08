@@ -78,12 +78,13 @@
 
 <p class="muted"><a href="index.html">Cheat sheets</a></p>
 <h1>Setup</h1>
-<p class="lead">Get the skills into Claude Code in about two minutes. Pick a route, then follow its steps.</p>
+<p class="lead">Get the skills into Claude Code or Codex in about two minutes. Pick a route, then follow its steps.</p>
 
 <nav class="toc">
   <a href="#which">Which route</a>
   <a href="#before">Before you start</a>
-  <a href="#marketplace">Marketplace install</a>
+  <a href="#marketplace">Claude Code marketplace</a>
+  <a href="#codex">Codex marketplace</a>
   <a href="#updating">Updating and removing</a>
   <a href="#install-sh">install.sh and making your own</a>
 </nav>
@@ -92,19 +93,21 @@
 <h2 id="which">Which route - Pick ONE</h2>
 <table class="pick">
   <tr><th>You want to</th><th>Use</th></tr>
-  <tr><td>Use the skills as they are, in Claude Code</td><td><a href="#marketplace">The marketplace</a><span class="tag">Recommended</span></td></tr>
+  <tr><td>Use the skills as they are, in Claude Code</td><td><a href="#marketplace">The Claude Code marketplace</a><span class="tag">Recommended</span></td></tr>
+  <tr><td>Use the skills as they are, in Codex</td><td><a href="#codex">The Codex marketplace</a><span class="tag">Recommended</span></td></tr>
   <tr><td>Change the skills, add your own, or use Antigravity</td><td><a href="#install-sh">install.sh on a fork</a></td></tr>
 </table>
+<p class="muted">Using both Claude Code and Codex? Install each marketplace in its own tool. They ship the same 18 skills and don't clash.</p>
 
 <!-- ============ BEFORE ============ -->
 <h2 id="before">Before you start</h2>
 <ul>
-  <li><a href="https://code.claude.com/docs/en/setup">Claude Code</a> installed and logged in.</li>
+  <li><a href="https://code.claude.com/docs/en/setup">Claude Code</a> or <a href="https://developers.openai.com/codex/cli">Codex</a> installed and logged in.</li>
   <li>The <a href="https://cli.github.com/"><code>gh</code> command line tool</a>, logged in with <code>gh auth login</code>. The kanban skills (<code>map-epic</code>, <code>new-ticket</code>, and the four <code>*-ticket</code> workflow skills) file tickets as GitHub issues and stop without it. The other skills don't need it.</li>
 </ul>
 
 <!-- ============ MARKETPLACE ============ -->
-<h2 id="marketplace">Marketplace install<span class="tag">Recommended</span></h2>
+<h2 id="marketplace">Claude Code marketplace<span class="tag">Recommended</span></h2>
 
 <div class="step">
   <div class="num">1</div>
@@ -138,7 +141,7 @@
   <div class="num">4</div>
   <div>
     <h3>Check it worked</h3>
-    <p>Type <code>/max:</code> and the list should show 16 skills. Try one:</p>
+    <p>Type <code>/max:</code> and the list should show 18 skills. Try one:</p>
     <pre>/max:brainstorming a CLI that renames photos by the date they were taken</pre>
     <p class="muted">Every skill from the plugin starts with <code>max:</code>. The other sheets write them without it, so <code>/map-epic</code> there means <code>/max:map-epic</code> for you.</p>
   </div>
@@ -150,24 +153,67 @@ claude plugin install max@custom-skills</pre>
 
 <p>You get the kanban skills, the developer tools, and the behaviour skills. The <a href="skills-tutorial.html">developer skills sheet</a> covers what each one does and where to start.</p>
 
+<!-- ============ CODEX ============ -->
+<h2 id="codex">Codex marketplace<span class="tag">Recommended</span></h2>
+<p>Same 18 skills as the Claude Code marketplace, built for Codex.</p>
+
+<div class="step">
+  <div class="num">1</div>
+  <div>
+    <h3>Add the marketplace</h3>
+    <p>In a terminal, run:</p>
+    <pre>codex plugin marketplace add Maxastrand04/Custom-skills</pre>
+    <p class="muted">This tells Codex where the skills live. It installs nothing yet.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="num">2</div>
+  <div>
+    <h3>Install the plugin</h3>
+    <pre>codex plugin add max@custom-skills-codex</pre>
+    <p class="muted">The marketplace is called <code>custom-skills-codex</code>, not <code>custom-skills</code> like the Claude Code one.</p>
+  </div>
+</div>
+
+<div class="step">
+  <div class="num">3</div>
+  <div>
+    <h3>Check it worked</h3>
+    <p>Start Codex and type <code>/skills</code>. The <code>max:</code> skills should be in the list. Try one:</p>
+    <pre>$max:brainstorming a CLI that renames photos by the date they were taken</pre>
+    <p class="muted">Codex calls skills with <code>$</code>, not <code>/</code>. The other sheets write <code>/map-epic</code>, which means <code>$max:map-epic</code> for you. Restart Codex if the skills don't show up.</p>
+  </div>
+</div>
+
 <!-- ============ UPDATING ============ -->
 <h2 id="updating">Updating and removing</h2>
+<h3>Claude Code</h3>
 <p>Pull the latest skills:</p>
 <pre>/plugin marketplace update custom-skills</pre>
 <p>Remove them:</p>
 <pre>/plugin uninstall max@custom-skills</pre>
 
+<h3>Codex</h3>
+<p>Pull the latest skills. The first command fetches the new version, the second installs it:</p>
+<pre>codex plugin marketplace upgrade custom-skills-codex
+codex plugin add max@custom-skills-codex</pre>
+<p>Remove them:</p>
+<pre>codex plugin remove max@custom-skills-codex</pre>
+
 <!-- ============ INSTALL.SH ============ -->
 <h2 id="install-sh">install.sh and making your own</h2>
-<p>The marketplace gives you a copy you can't edit. If you want to change a skill, write new ones, or treat this repo as the base for your own set, fork it and use <code>install.sh</code> instead.</p>
-<p>The script links each skill folder into <code>~/.claude/skills/</code> (or Antigravity's skills folder), so Claude Code reads straight from your clone. Edit a <code>SKILL.md</code> and the next run of that skill uses the new version. Nothing to reinstall. Skills installed this way have no prefix, so it's <code>/grilling</code>, not <code>/max:grilling</code>.</p>
+<p>The marketplaces give you a copy you can't edit. If you want to change a skill, write new ones, or treat this repo as the base for your own set, fork it and use <code>install.sh</code> instead. It also offers the schoolwork skills, which the marketplaces leave out.</p>
 <p>The short version:</p>
 <pre><span class="c"># fork Maxastrand04/Custom-skills on GitHub first, then</span>
 git clone https://github.com/&lt;you&gt;/Custom-skills.git ~/GitHub/Custom-skills
 cd ~/GitHub/Custom-skills
-./install.sh</pre>
+./install.sh            <span class="c"># menu, pick Claude Code, Antigravity, or Codex</span></pre>
+<p>For Claude Code and Antigravity, the script links each skill folder into <code>~/.claude/skills/</code> (or Antigravity's skills folder), so they read straight from your clone. Edit a <code>SKILL.md</code> and the next run of that skill uses the new version. Nothing to reinstall.</p>
+<p>Codex works differently. The script builds Codex copies of the skills inside your clone and links those into <code>~/.agents/skills/</code>. After you edit a skill or pull changes, run <code>./install.sh --codex</code> again to rebuild the copies. It needs Python 3.9 or newer.</p>
+<p>Skills installed this way have no prefix, so it's <code>/grilling</code> in Claude Code and <code>$grilling</code> in Codex, not <code>/max:grilling</code>.</p>
 <p>The <a href="https://github.com/Maxastrand04/Custom-skills#installsh-step-by-step">README walks through it step by step</a>: the menu, adding your own skills, and pulling in my changes later.</p>
-<p class="note">Already installed from the marketplace? Run <code>/plugin uninstall max@custom-skills</code> first, so you don't end up with two copies of every skill.</p>
+<p class="note">Already installed from a marketplace? Remove it first with <code>/plugin uninstall max@custom-skills</code> or <code>codex plugin remove max@custom-skills-codex</code>, so you don't end up with two copies of every skill.</p>
 
 </main>
 </body>

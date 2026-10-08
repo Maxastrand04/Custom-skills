@@ -1,6 +1,6 @@
 # Custom-skills
 
-My skills for Claude Code, Antigravity, and Codex. What each skill does and how they fit together is on the [tutorial page](https://maxastrand04.github.io/Custom-skills/). This file covers setup. The [setup page](https://maxastrand04.github.io/Custom-skills/setup.html) covers Claude Code and Antigravity.
+My skills for Claude Code, Antigravity, and Codex. What each skill does and how they fit together is on the [tutorial page](https://maxastrand04.github.io/Custom-skills/). This file covers setup. The [setup page](https://maxastrand04.github.io/Custom-skills/setup.html) is a click-through version for Claude Code, Codex, and Antigravity.
 
 ## Codex, from your clone
 
@@ -20,7 +20,7 @@ Codex reads the links in `~/.agents/skills/`. Those links point to Codex copies 
 
 After editing a source skill or pulling updates, run `./install.sh --codex` again to refresh the copies. Codex detects changes automatically. Restart it if a skill does not appear. Use `/skills` or mention a skill as `$grilling` in Codex CLI and the editor extension. [Official skill documentation](https://learn.chatgpt.com/docs/build-skills)
 
-The existing default still targets Claude Code and Antigravity. Use `--codex` to select Codex, or combine target flags. `CUSTOM_SKILLS_CODEX_DIR` can override the Codex destination.
+Without a target flag, the script installs to Claude Code. Use `--codex` to select Codex, or combine target flags. `CUSTOM_SKILLS_CODEX_DIR` can override the Codex destination.
 
 ## Codex, from the marketplace
 
@@ -99,8 +99,10 @@ It asks which agent first:
 Which agent?
   1) Claude Code    (~/.claude/skills)
   2) Antigravity    (~/.gemini/config/skills)
-  3) Both
+  3) Codex          (~/.agents/skills)
 ```
+
+Pick one agent per run. Run the script again to set up another.
 
 Then it lists every skill by category, with installed ones ticked. Type a number or a category name to toggle, `all` or `none` to set everything, and press enter to apply. With `fzf` on your PATH you get a picker instead, where tab toggles and enter applies. The list has a few more skills than the plugin, the `schoolwork/` ones among them.
 
@@ -120,7 +122,7 @@ Unticked skills get unlinked. The script only ever removes links that point into
 
 ### Without the menu
 
-Skill names on the command line skip the menu and only add, never remove. `--claude` and `--agy` pick one agent; without them it installs to both.
+Skill names on the command line skip the menu and only add, never remove. `--claude`, `--agy`, and `--codex` pick the agent. Without a flag it installs to Claude Code only.
 
 ```bash
 ./install.sh grilling unslop

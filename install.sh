@@ -30,7 +30,7 @@ Targets:
   --codex         Codex            (~/.agents/skills, requires Python 3.9+)
   -h, --help      Show this help
 
-With no target flag, Claude Code and Antigravity are used.
+With no target flag, Claude Code is used.
 Codex links to generated copies. Re-run the installer after source edits.
 
 Interactive (no SKILL arguments, running in a terminal):
@@ -48,7 +48,7 @@ Skills are bare names ('grilling') or category-qualified ('behaviour/grilling').
 Examples:
   ./install.sh                             # menu (or install-all without a tty)
   ./install.sh --agy                       # menu for Antigravity only
-  ./install.sh grilling unslop             # add two skills to both agents
+  ./install.sh grilling unslop             # add two skills to Claude Code
   ./install.sh --claude kanban/map-epic    # add one skill to Claude Code
   ./install.sh --codex                     # menu for Codex only
 EOF
@@ -283,19 +283,15 @@ pick_agent() {
     echo "Which agent?"
     echo "  1) Claude Code    ($CLAUDE_SKILLS_DIR)"
     echo "  2) Antigravity    ($AGY_SKILLS_DIR)"
-    echo "  3) Both"
-    echo "  4) Codex          ($CODEX_SKILLS_DIR)"
-    echo "  5) All three"
+    echo "  3) Codex          ($CODEX_SKILLS_DIR)"
     local choice
     while true; do
         read -r -p "> " choice
         case "$choice" in
-            1) target_claude=1; return ;;
+            1|"") target_claude=1; return ;;
             2) target_agy=1; return ;;
-            3|"") target_claude=1; target_agy=1; return ;;
-            4) target_codex=1; return ;;
-            5) target_claude=1; target_agy=1; target_codex=1; return ;;
-            *) echo "  1, 2, 3, 4 or 5" ;;
+            3) target_codex=1; return ;;
+            *) echo "  1, 2 or 3" ;;
         esac
     done
 }
@@ -513,7 +509,7 @@ if [[ $interactive -eq 1 ]]; then
     fi
 else
     if [[ $target_claude -eq 0 && $target_agy -eq 0 && $target_codex -eq 0 ]]; then
-        target_claude=1; target_agy=1
+        target_claude=1
     fi
 
     declare -a to_install=()
