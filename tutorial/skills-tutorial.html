@@ -124,6 +124,8 @@
   <a href="#architect-ticket">architect-ticket</a>
   <a href="#implement-ticket">implement-ticket</a>
   <a href="#refactor-ticket">refactor-ticket</a>
+  <a href="#unit-test-ticket">unit-test-ticket</a>
+  <a href="#pr-ticket">pr-ticket</a>
   <a href="#autopilot-ticket">autopilot-ticket</a>
   <a href="#side">Side skills</a>
   <a href="#example">Full example</a>
@@ -171,10 +173,10 @@
 <div>
   <p><strong>Red.</strong> <code>architect-ticket</code> writes the tests and checks that every one fails for the right reason. Done is now decided, before any real code exists.</p>
   <p><strong>Green.</strong> <code>implement-ticket</code> writes code until those tests pass. It may not edit the tests, so it can't make the work easier by lowering the bar.</p>
-  <p><strong>Refactor.</strong> <code>refactor-ticket</code> improves the code's shape without changing what it does. The tests prove nothing broke.</p>
+  <p><strong>Refactor.</strong> <code>refactor-ticket</code> improves the code's shape without changing what it does. The tests prove nothing broke. Then <code>unit-test-ticket</code> moves the new tests into the normal test files and tidies them, without touching the code.</p>
 </div>
 </div>
-<p class="muted">Textbook TDD goes around this loop every few minutes, one test at a time. We go around once per ticket, with all its tests at once, and each step is its own skill, its own session and its own commit. It's slower per lap, but each commit is a clean checkpoint you can review on its own. <code>autopilot-ticket</code> runs the same loop in one session for small tickets.</p>
+<p class="muted">Textbook TDD goes around this loop every few minutes, one test at a time. We go around once per ticket, with all its tests at once, and each step is its own skill, its own session and its own commit. Refactor takes two sessions, one for the code and one for the tests. It's slower per lap, but each commit is a clean checkpoint you can review on its own. <code>autopilot-ticket</code> runs the same loop in one session for small tickets.</p>
 
 <h3 style="margin-top:44px">Who decides what</h3>
 <p>Decisions belong to people. Typing belongs to Claude. The skills that settle what to build and what the code looks like from outside need you in the chat. The ones that only carry out a settled plan run on their own.</p>
@@ -195,9 +197,9 @@
   <text x="36" y="53" fill="#cfcfcf" font-size="13" letter-spacing="1">YOU</text>
 
   <!-- split -->
-  <line x1="590" y1="92" x2="590" y2="370" stroke="#3a3a3a" stroke-dasharray="3 4"/>
+  <line x1="522" y1="92" x2="522" y2="370" stroke="#3a3a3a" stroke-dasharray="3 4"/>
   <text x="30" y="370" fill="#8c8c8c" font-size="12" letter-spacing="1">HUMAN IN THE LOOP</text>
-  <text x="610" y="370" fill="#8c8c8c" font-size="12" letter-spacing="1">HEADLESS</text>
+  <text x="540" y="370" fill="#8c8c8c" font-size="12" letter-spacing="1">HEADLESS</text>
 
   <!-- human stations -->
   <rect x="30" y="160" width="300" height="50" rx="6" fill="#2a2a2a" stroke="#4a4a4a"/>
@@ -209,61 +211,77 @@
   <a href="#new-ticket"><rect x="190" y="160" width="140" height="50" fill="transparent"/>
     <text x="255" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">new-ticket</text></a>
   <a href="#architect-ticket">
-    <rect x="450" y="160" width="125" height="50" rx="6" fill="#2a2a2a" stroke="#c98282"/>
-    <text x="512" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">architect-ticket</text>
+    <rect x="380" y="160" width="125" height="50" rx="6" fill="#2a2a2a" stroke="#c98282"/>
+    <text x="442" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">architect-ticket</text>
   </a>
-  <line x1="330" y1="185" x2="446" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+  <line x1="330" y1="185" x2="376" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
 
   <!-- two-way arrows -->
   <g stroke="#8fa8bd" stroke-width="1.5" fill="none">
     <line x1="172" y1="80" x2="172" y2="155" marker-end="url(#arr3)"/>
     <line x1="188" y1="157" x2="188" y2="82" marker-end="url(#arr3)"/>
-    <line x1="504" y1="80" x2="504" y2="155" marker-end="url(#arr3)"/>
-    <line x1="520" y1="157" x2="520" y2="82" marker-end="url(#arr3)"/>
+    <line x1="434" y1="80" x2="434" y2="155" marker-end="url(#arr3)"/>
+    <line x1="450" y1="157" x2="450" y2="82" marker-end="url(#arr3)"/>
   </g>
   <text x="165" y="122" fill="#8c8c8c" font-size="11" text-anchor="end">answers</text>
   <text x="195" y="122" fill="#8c8c8c" font-size="11">questions</text>
 
   <text x="180" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">you approve each ticket before it publishes</text>
-  <text x="512" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">you approve the diff</text>
+  <text x="442" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">you approve the diff</text>
 
   <!-- headless stations -->
   <a href="#implement-ticket">
-    <rect x="620" y="160" width="135" height="50" rx="6" fill="#2a2a2a" stroke="#93b893"/>
-    <text x="687" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">implement-ticket</text>
+    <rect x="540" y="160" width="88" height="50" rx="6" fill="#2a2a2a" stroke="#93b893"/>
+    <text x="584" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">implement</text>
   </a>
   <a href="#refactor-ticket">
-    <rect x="795" y="160" width="135" height="50" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
-    <text x="862" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">refactor-ticket</text>
+    <rect x="644" y="160" width="88" height="50" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
+    <text x="688" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">refactor</text>
   </a>
-  <line x1="575" y1="185" x2="616" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
-  <line x1="755" y1="185" x2="791" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+  <a href="#unit-test-ticket">
+    <rect x="748" y="160" width="88" height="50" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
+    <text x="792" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">unit-test</text>
+  </a>
+  <a href="#pr-ticket">
+    <rect x="852" y="160" width="88" height="50" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="896" y="190" fill="#cfcfcf" font-size="13" text-anchor="middle">pr</text>
+  </a>
+  <line x1="505" y1="185" x2="536" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+  <line x1="628" y1="185" x2="640" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+  <line x1="732" y1="185" x2="744" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+  <line x1="836" y1="185" x2="848" y2="185" stroke="#6a6a6a" marker-end="url(#arr4)"/>
 
-  <text x="687" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">loops until green</text>
-  <text x="862" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">cleans up, closes ticket</text>
+  <text x="584" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">loops until green</text>
+  <text x="688" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">cleans up code</text>
+  <text x="792" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">folds the tests</text>
+  <text x="896" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">opens the PR</text>
 
   <!-- autopilot -->
-  <path d="M180,242 C180,285 260,300 616,300" fill="none" stroke="#6a6a6a" stroke-dasharray="2 3" marker-end="url(#arr4)"/>
-  <text x="400" y="292" fill="#8c8c8c" font-size="11">autopilot label</text>
+  <path d="M180,242 C180,285 260,300 536,300" fill="none" stroke="#6a6a6a" stroke-dasharray="2 3" marker-end="url(#arr4)"/>
+  <text x="330" y="292" fill="#8c8c8c" font-size="11">autopilot label</text>
   <a href="#autopilot-ticket">
-    <rect x="620" y="275" width="310" height="50" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
-    <text x="775" y="305" fill="#cfcfcf" font-size="13" text-anchor="middle">autopilot-ticket</text>
+    <rect x="540" y="275" width="400" height="50" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="740" y="305" fill="#cfcfcf" font-size="13" text-anchor="middle">autopilot-ticket</text>
   </a>
-  <text x="775" y="345" fill="#5c5c5c" font-size="11" text-anchor="middle">red, green, refactor in one go, then you review the PR</text>
+  <text x="740" y="345" fill="#5c5c5c" font-size="11" text-anchor="middle">red, green, refactor in one go, then you review the PR</text>
 
   <!-- escalation arrows -->
   <g stroke="#6a6a6a" stroke-width="1.5" fill="none" stroke-dasharray="4 4">
-    <line x1="687" y1="157" x2="687" y2="82" marker-end="url(#arr4)"/>
-    <line x1="862" y1="157" x2="862" y2="82" marker-end="url(#arr4)"/>
+    <line x1="584" y1="157" x2="584" y2="82" marker-end="url(#arr4)"/>
+    <line x1="688" y1="157" x2="688" y2="82" marker-end="url(#arr4)"/>
+    <line x1="792" y1="157" x2="792" y2="82" marker-end="url(#arr4)"/>
+    <line x1="896" y1="157" x2="896" y2="82" marker-end="url(#arr4)"/>
   </g>
-  <text x="695" y="122" fill="#8c8c8c" font-size="11">escalates</text>
-  <text x="870" y="122" fill="#8c8c8c" font-size="11">escalates</text>
+  <text x="592" y="122" fill="#8c8c8c" font-size="11">escalates</text>
+  <text x="696" y="122" fill="#8c8c8c" font-size="11">escalates</text>
+  <text x="800" y="122" fill="#8c8c8c" font-size="11">escalates</text>
+  <text x="904" y="122" fill="#8c8c8c" font-size="11">escalates</text>
 </svg>
 <figcaption>Solid blue arrows run back and forth all session. Dashed arrows only fire when something needs you. <code>autopilot-ticket</code> escalates the same way.</figcaption>
 </figure>
 
 <div class="note">
-  <code>implement-ticket</code>, <code>refactor-ticket</code> and <code>autopilot-ticket</code> don't ask for permission, but they don't guess either. They come back to you when:
+  <code>implement-ticket</code>, <code>refactor-ticket</code>, <code>unit-test-ticket</code>, <code>pr-ticket</code> and <code>autopilot-ticket</code> don't ask for permission, but they don't guess either. They come back to you when:
   <ul style="margin:8px 0 0">
     <li>a test contradicts the ticket, or a stub can't do what its docstring promises</li>
     <li>the same test fails the same way two passes in a row</li>
@@ -531,7 +549,7 @@
   <tr><td><code>docs/adr/</code></td><td>One decision per file. A module's shape, a dependency direction, an interface that beat a real alternative</td><td>architect, one per design argument. refactor, when new code sets a pattern others will copy</td><td>All four code stations</td></tr>
   <tr><td><code>docs/pcr/</code></td><td>One convention per file. Stack, allowed libraries, naming, test runner</td><td>architect adds one when its ticket settles something project-wide. Only <code>/challenge-pcr</code> changes one</td><td>All four code stations</td></tr>
   <tr><td><code>README.md</code></td><td>How to run and configure</td><td>You. refactor and autopilot, when a run step changes</td><td>architect, refactor, autopilot</td></tr>
-  <tr><td>Acceptance file</td><td>This ticket's tests</td><td>architect</td><td>implement. refactor folds it into module tests and deletes it</td></tr>
+  <tr><td>Acceptance file</td><td>This ticket's tests</td><td>architect</td><td>implement, refactor. unit-test folds it into module tests and deletes it</td></tr>
   <tr><td>GitHub issues</td><td>Epics, tickets, decisions so far, fog</td><td>map-epic, new-ticket</td><td>Every station</td></tr>
 </table>
 <p class="muted">Records share one format: Decision, Reason, Consequence, Date, file named <code>NNNN-slug.md</code>. A record blocks the work? The skill names it and stops. It never codes around it.</p>
@@ -547,7 +565,7 @@
 
 <!-- ============ BOARD ============ -->
 <h2 id="board">The board</h2>
-<p>The skills form a kanban board. Each skill is a station, and a piece of work moves left to right through them. Work starts as a ticket, a GitHub issue filed by either <code>map-epic</code> or <code>new-ticket</code>, never both. From there it takes one of two routes onto a branch. A <code>task</code> ticket goes through the three code stations. An <code>autopilot</code> ticket goes through <code>autopilot-ticket</code> alone.</p>
+<p>The skills form a kanban board. Each skill is a station, and a piece of work moves left to right through them. Work starts as a ticket, a GitHub issue filed by either <code>map-epic</code> or <code>new-ticket</code>, never both. From there it takes one of two routes onto a branch. A <code>task</code> ticket goes through the five code stations. An <code>autopilot</code> ticket goes through <code>autopilot-ticket</code> alone.</p>
 
 <figure>
 <svg viewBox="0 0 960 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kanban board of skills">
@@ -591,36 +609,48 @@
 
   <!-- code stations -->
   <a href="#architect-ticket">
-    <rect x="550" y="96" width="120" height="54" rx="6" fill="#2a2a2a" stroke="#c98282"/>
-    <text x="610" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">architect</text>
-    <text x="610" y="138" fill="#c98282" font-size="11" text-anchor="middle">red</text>
+    <rect x="520" y="96" width="74" height="54" rx="6" fill="#2a2a2a" stroke="#c98282"/>
+    <text x="557" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">architect</text>
+    <text x="557" y="138" fill="#c98282" font-size="11" text-anchor="middle">red</text>
   </a>
   <a href="#implement-ticket">
-    <rect x="690" y="96" width="120" height="54" rx="6" fill="#2a2a2a" stroke="#93b893"/>
-    <text x="750" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">implement</text>
-    <text x="750" y="138" fill="#93b893" font-size="11" text-anchor="middle">green</text>
+    <rect x="609" y="96" width="74" height="54" rx="6" fill="#2a2a2a" stroke="#93b893"/>
+    <text x="646" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">implement</text>
+    <text x="646" y="138" fill="#93b893" font-size="11" text-anchor="middle">green</text>
   </a>
   <a href="#refactor-ticket">
-    <rect x="830" y="96" width="120" height="54" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
-    <text x="890" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">refactor</text>
-    <text x="890" y="138" fill="#c9b27f" font-size="11" text-anchor="middle">clean, close</text>
+    <rect x="698" y="96" width="74" height="54" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
+    <text x="735" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">refactor</text>
+    <text x="735" y="138" fill="#c9b27f" font-size="11" text-anchor="middle">clean</text>
+  </a>
+  <a href="#unit-test-ticket">
+    <rect x="787" y="96" width="74" height="54" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
+    <text x="824" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">unit-test</text>
+    <text x="824" y="138" fill="#c9b27f" font-size="11" text-anchor="middle">fold</text>
+  </a>
+  <a href="#pr-ticket">
+    <rect x="876" y="96" width="74" height="54" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="913" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">pr</text>
+    <text x="913" y="138" fill="#8fa8bd" font-size="11" text-anchor="middle">open PR</text>
   </a>
   <a href="#autopilot-ticket">
-    <rect x="550" y="180" width="400" height="54" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
-    <text x="750" y="204" fill="#cfcfcf" font-size="13" text-anchor="middle">autopilot</text>
-    <text x="750" y="222" fill="#8c8c8c" font-size="11" text-anchor="middle">all three legs in one session, opens a PR</text>
+    <rect x="520" y="180" width="430" height="54" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="735" y="204" fill="#cfcfcf" font-size="13" text-anchor="middle">autopilot</text>
+    <text x="735" y="222" fill="#8c8c8c" font-size="11" text-anchor="middle">all three legs in one session, opens a PR</text>
   </a>
 
   <!-- arrows -->
   <line x1="160" y1="71" x2="186" y2="71" stroke="#6a6a6a" marker-end="url(#arr)"/>
   <line x1="160" y1="177" x2="186" y2="177" stroke="#6a6a6a" marker-end="url(#arr)"/>
   <line x1="320" y1="123" x2="346" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
-  <line x1="470" y1="123" x2="546" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
-  <path d="M440,148 C460,207 500,207 546,207" fill="none" stroke="#6a6a6a" marker-end="url(#arr)"/>
-  <line x1="670" y1="123" x2="686" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
-  <line x1="810" y1="123" x2="826" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
-  <text x="508" y="114" fill="#8c8c8c" font-size="11" text-anchor="middle">task</text>
-  <text x="488" y="226" fill="#8c8c8c" font-size="11" text-anchor="middle">autopilot</text>
+  <line x1="470" y1="123" x2="516" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <path d="M440,148 C455,207 480,207 516,207" fill="none" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="594" y1="123" x2="605" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="683" y1="123" x2="694" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="772" y1="123" x2="783" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="861" y1="123" x2="872" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <text x="493" y="114" fill="#8c8c8c" font-size="11" text-anchor="middle">task</text>
+  <text x="470" y="226" fill="#8c8c8c" font-size="11" text-anchor="middle">autopilot</text>
 
   <!-- side skills -->
   <line x1="20" y1="272" x2="950" y2="272" stroke="#3a3a3a"/>
@@ -638,7 +668,7 @@
 
 <!-- ============ GIT ============ -->
 <h2 id="git">The git flow</h2>
-<p>A ticket gets its own branch, cut from <code>main</code> and named <code>&lt;issue-number&gt;-&lt;slug&gt;</code>. Each code station leaves its own commit on that branch, so you can read the history and see exactly what each station did. The three-station route never pushes or merges. Opening the pull request and merging it back is your job.</p>
+<p>A ticket gets its own branch, cut from <code>main</code> and named <code>&lt;issue-number&gt;-&lt;slug&gt;</code>. Each code station leaves its own commit on that branch, so you can read the history and see exactly what each station did. The last station, <code>pr-ticket</code>, pushes the branch and opens the pull request. Merging it is your job, and the merge closes the issue.</p>
 
 <figure>
 <svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Git graph of a ticket branch">
@@ -660,32 +690,44 @@
 
   <!-- commits -->
   <a href="#architect-ticket">
-    <circle cx="270" cy="170" r="9" fill="#c98282"/>
-    <text x="270" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">architect-ticket</text>
-    <text x="270" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Architect #42</text>
-    <text x="270" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">stubs + failing tests</text>
+    <circle cx="230" cy="170" r="9" fill="#c98282"/>
+    <text x="230" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">architect-ticket</text>
+    <text x="230" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Architect #42</text>
+    <text x="230" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">stubs + failing tests</text>
   </a>
   <a href="#implement-ticket">
-    <circle cx="440" cy="170" r="9" fill="#93b893"/>
-    <text x="440" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">implement-ticket</text>
-    <text x="440" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Implement #42</text>
-    <text x="440" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">tests pass</text>
+    <circle cx="350" cy="170" r="9" fill="#93b893"/>
+    <text x="350" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">implement-ticket</text>
+    <text x="350" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Implement #42</text>
+    <text x="350" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">tests pass</text>
   </a>
   <a href="#refactor-ticket">
-    <circle cx="610" cy="170" r="9" fill="#c9b27f"/>
-    <text x="610" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">refactor-ticket</text>
-    <text x="610" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Refactor #42</text>
-    <text x="610" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">clean code, close issue</text>
+    <circle cx="470" cy="170" r="9" fill="#c9b27f"/>
+    <text x="470" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">refactor-ticket</text>
+    <text x="470" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Refactor</text>
+    <text x="470" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">clean code</text>
+  </a>
+  <a href="#unit-test-ticket">
+    <circle cx="590" cy="170" r="9" fill="#c9b27f"/>
+    <text x="590" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">unit-test-ticket</text>
+    <text x="590" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle" class="mono">Tests #42</text>
+    <text x="590" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">fold the tests</text>
+  </a>
+  <a href="#pr-ticket">
+    <circle cx="710" cy="170" r="7" fill="#232323" stroke="#8fa8bd" stroke-width="2"/>
+    <text x="710" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">pr-ticket</text>
+    <text x="710" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle">pushes,</text>
+    <text x="710" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">opens the PR</text>
   </a>
 
-  <text x="818" y="128" fill="#8c8c8c" font-size="11" text-anchor="middle">you push,</text>
-  <text x="818" y="142" fill="#8c8c8c" font-size="11" text-anchor="middle">open a PR</text>
+  <text x="818" y="128" fill="#8c8c8c" font-size="11" text-anchor="middle">you</text>
+  <text x="818" y="142" fill="#8c8c8c" font-size="11" text-anchor="middle">merge</text>
 
   <!-- issue lane -->
   <line x1="70" y1="270" x2="840" y2="270" stroke="#3a3a3a" stroke-dasharray="2 4"/>
   <text x="20" y="274" fill="#5c5c5c" font-size="12" class="mono">#42</text>
   <text x="110" y="290" fill="#5c5c5c" font-size="11" text-anchor="middle">issue open</text>
-  <text x="610" y="290" fill="#5c5c5c" font-size="11" text-anchor="middle">issue closed</text>
+  <text x="790" y="290" fill="#5c5c5c" font-size="11" text-anchor="middle">issue closed</text>
 </svg>
 <figcaption>Red, green, refactor. Click a commit to read about the skill that made it.</figcaption>
 </figure>
@@ -697,7 +739,7 @@
 <p>Two terms the diagram leans on:</p>
 <ul>
   <li><strong>Stub.</strong> A function with its final name, parameters and docstring, whose body only raises "not implemented". It pins down what the function looks like before anyone writes it.</li>
-  <li><strong>Acceptance file.</strong> One test file at the root of the test tree, named in the project's style, like <code>tests/test_acceptance.py</code> or <code>tests/acceptance.test.ts</code>. It holds this ticket's tests and nothing else, and it is the finish line for implement. Refactor moves its tests into the normal test files and deletes it, so <code>main</code> never carries one.</li>
+  <li><strong>Acceptance file.</strong> One test file at the root of the test tree, named in the project's style, like <code>tests/test_acceptance.py</code> or <code>tests/acceptance.test.ts</code>. It holds this ticket's tests and nothing else, and it is the finish line for implement. <code>unit-test-ticket</code> moves its tests into the normal test files and deletes it, so <code>main</code> never carries one.</li>
 </ul>
 <p class="muted">An autopilot branch looks different. It has one <code>Test #42</code> commit, one <code>Implement #42</code> commit per behaviour, and a <code>Refactor</code> commit. Then the skill pushes and opens the PR itself. The issue closes when you merge.</p>
 
@@ -815,26 +857,58 @@ rename refresh_session to renew_session, keep the rest</pre>
 </section>
 
 <section class="card" id="refactor-ticket">
-  <header><h3><span class="dot" style="background:var(--amber)"></span> refactor-ticket</h3><span class="tag">station 4</span><span class="tag">2 or 3 commits</span></header>
-  <p>The last station. Checks the tests actually prove what the ticket asked for, runs the full test suite, cleans up the code against the project's records, and closes the issue.</p>
+  <header><h3><span class="dot" style="background:var(--amber)"></span> refactor-ticket</h3><span class="tag">station 4</span><span class="tag">1 to 3 commits</span></header>
+  <p>The first half of the refactor leg. Checks the tests actually prove what the ticket asked for, runs the full test suite, and cleans up the code against the project's records. It leaves the tests where they are for <code>unit-test-ticket</code>.</p>
   <dl>
     <dt>It does</dt><dd>
       Checks each expected behaviour in the ticket against the tests.
       Runs the whole suite. An old test the ticket contradicts gets rewritten, and anything else red is a bug implement caused, which it fixes in its own commit.
+      Asks you, in one table, which functions count as public and what to do with tests that reach into private ones.
       Cleans the code against <code>docs/pcr/</code>, <code>docs/adr/</code> and its own code standards.
       Updates <code>CONTEXT.md</code> and <code>README.md</code> if the branch changed something they describe.
-      Moves the acceptance tests into the normal test files.
     </dd>
-    <dt>Stops for you</dt><dd>If a test is weaker than the ticket asked for. It asks before strengthening it.</dd>
-    <dt>Leaves behind</dt><dd><code>Refactor: ...</code> and <code>Tests #42: fold acceptance file</code>, plus <code>Fix #42: ...</code> if implement broke something. The issue is closed.</dd>
+    <dt>Stops for you</dt><dd>If a test is weaker than the ticket asked for, it asks before strengthening it. If a function's public or private status is unclear, or a test reaches into private code, it asks once, all together, before any code moves.</dd>
+    <dt>Leaves behind</dt><dd><code>Refactor: ...</code>, plus <code>Fix #42: ...</code> if implement broke something and <code>Tests #42: module halt</code> if it asked you about tests. The issue stays open.</dd>
   </dl>
   <pre><span class="c"># on the ticket branch, in a fresh session</span>
 /refactor-ticket</pre>
-  <p class="muted">After this, push the branch and open a PR into <code>main</code>. That step is yours.</p>
+</section>
+
+<section class="card" id="unit-test-ticket">
+  <header><h3><span class="dot" style="background:var(--amber)"></span> unit-test-ticket</h3><span class="tag">station 5</span><span class="tag">1 commit</span></header>
+  <p>The second half of the refactor leg. Moves the acceptance file's tests into the normal test files and tidies the tests of every module the branch touched. It never edits code.</p>
+  <dl>
+    <dt>It does</dt><dd>
+      Drops acceptance tests that can't fail and rewrites ones tied to private code through the public interface.
+      Moves each surviving test into its module's test file and deletes the acceptance file.
+      Tidies the touched modules' tests against its own test standards, and checks every test it writes can go red.
+      Comments on the issue with where each acceptance test ended up.
+    </dd>
+    <dt>Stops for you</dt><dd>Only if the branch isn't ready: no <code>Refactor:</code> commit yet, the acceptance file already folded, or a red suite. A new test that fails on the untouched code has found a bug. It deletes that test and lists it for the reviewer instead of fixing the code.</dd>
+    <dt>Leaves behind</dt><dd>One commit <code>Tests #42: tidy and fold</code>, and no acceptance file.</dd>
+  </dl>
+  <pre><span class="c"># on the ticket branch, in a fresh session</span>
+/unit-test-ticket</pre>
+</section>
+
+<section class="card" id="pr-ticket">
+  <header><h3><span class="dot" style="background:var(--blue)"></span> pr-ticket</h3><span class="tag">station 6</span><span class="tag">opens a PR</span></header>
+  <p>The last station. Pushes the finished branch and opens a PR whose body a reviewer can read without having seen the ticket. It never edits code or tests.</p>
+  <dl>
+    <dt>It does</dt><dd>
+      Reads the ticket, the commits and the full diff.
+      Writes three sections. Summary says what changed, with a diagram for new features. Evidence lists the tests that failed at the architect commit and pass now. Merge danger says whether a revert can undo the merge and how far a bad merge reaches.
+      Copies every "for the reviewer" item the earlier stations left on the issue.
+    </dd>
+    <dt>Stops for you</dt><dd>Once, to show you the title and body before it pushes. Before that it refuses if the tests aren't folded, there are uncommitted changes, the suite is red, or a PR already exists.</dd>
+    <dt>Leaves behind</dt><dd>A pushed branch and a PR with <code>Closes #42</code>, so the issue closes when you merge.</dd>
+  </dl>
+  <pre><span class="c"># on the ticket branch, in a fresh session</span>
+/pr-ticket</pre>
 </section>
 
 <section class="card" id="autopilot-ticket">
-  <header><h3><span class="dot" style="background:var(--blue)"></span> autopilot-ticket</h3><span class="tag">instead of stations 2 to 4</span><span class="tag">opens a PR</span></header>
+  <header><h3><span class="dot" style="background:var(--blue)"></span> autopilot-ticket</h3><span class="tag">instead of stations 2 to 6</span><span class="tag">opens a PR</span></header>
   <p>For a ticket labelled <code>autopilot</code>. Runs red, green and refactor in one session with no gates, then opens a PR. The review moves from the design, before the code, to the PR, after it.</p>
   <dl>
     <dt>It does</dt><dd>Reads the ticket and the code it touches, then checks the label still holds. Turns each Expected behaviour line into one failing test, makes them pass one behaviour at a time, runs the existing tests near the files it changed, and cleans up against the same records as refactor.</dd>
@@ -910,11 +984,14 @@ git checkout main &amp;&amp; git pull
 <span class="c"># 4. refactor, in a fresh session</span>
 /refactor-ticket
 
-<span class="c"># 5. ship</span>
-git push -u origin 42-fix-expired-session
-gh pr create --base main</pre>
+<span class="c"># 5. fold the tests, in a fresh session</span>
+/unit-test-ticket
 
-<p>If you labelled #42 <code>autopilot</code> in step 1, steps 2 to 5 shrink to this:</p>
+<span class="c"># 6. ship, in a fresh session</span>
+/pr-ticket
+<span class="c">#    approve the PR body. Review the PR, then merge</span></pre>
+
+<p>If you labelled #42 <code>autopilot</code> in step 1, steps 2 to 6 shrink to this:</p>
 <pre>git checkout main &amp;&amp; git pull
 /autopilot-ticket 42
 <span class="c">#    read the PR it opens, then merge</span></pre>
