@@ -1,0 +1,30 @@
+# Copy to .github/workflows/kanban-ci.yml in the project, on the default branch.
+# Fill in the three SET-ME values. See ci/README.md in Custom-skills.
+name: kanban-ci
+
+on:
+  workflow_dispatch:
+  schedule:
+    # SET-ME. Every repo using kanban-ci draws from the same Claude usage
+    # window, so give each repo its own hour, a few hours apart. Times are
+    # UTC. Example: "0 1 * * *" is 01:00 UTC every night. Until this is a
+    # real cron time GitHub rejects the file, manual runs included.
+    - cron: "SET-ME"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  chain:
+    uses: Maxastrand04/Custom-skills/.github/workflows/kanban-ci.yml@main
+    with:
+      # SET-ME. Installs dependencies on a fresh Ubuntu runner, e.g. "pipx install uv && uv sync".
+      setup-command: "SET-ME"
+      # SET-ME. Runs the whole suite. Exit 0 means green, e.g. "uv run pytest".
+      test-command: "SET-ME"
+      # A manual run from a ticket branch runs that ticket. From the default branch, or on the schedule, it runs the queue.
+      branch: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || '' }}
+      base: ${{ github.event.repository.default_branch }}
+    secrets: inherit

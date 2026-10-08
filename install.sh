@@ -4,6 +4,8 @@ set -euo pipefail
 REPO_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 CLAUDE_SKILLS_DIR="${HOME}/.claude/skills"
 AGY_SKILLS_DIR="${HOME}/.gemini/config/skills"
+CODEX_SKILLS_DIR="${CUSTOM_SKILLS_CODEX_DIR:-${HOME}/.agents/skills}"
+CODEX_BUILD_DIR="$REPO_DIR/.codex-build/skills"
 
 # Every "is this link ours" check is a string compare against REPO_DIR. macOS
 # ignores case on disk, so `cd ~/github/custom-skills` would otherwise make the
@@ -18,16 +20,18 @@ failure=0
 
 show_help() {
     cat <<EOF
-Usage: ./install.sh [--claude] [--agy] [SKILL ...]
+Usage: ./install.sh [--claude] [--agy] [--codex] [SKILL ...]
 
-Symlink skills from this repo into Claude Code and/or Antigravity (agy).
+Install skills for Claude Code, Antigravity (agy), or Codex.
 
 Targets:
   --claude        Claude Code      (~/.claude/skills)
   --agy           Antigravity      (~/.gemini/config/skills)
+  --codex         Codex            (~/.agents/skills, requires Python 3.9+)
   -h, --help      Show this help
 
-With no target flag, both are used.
+With no target flag, Claude Code is used.
+Codex links to generated copies. Re-run the installer after source edits.
 
 Interactive (no SKILL arguments, running in a terminal):
   Opens a menu. Pick the agent, then toggle skills. Installed skills are
@@ -44,8 +48,9 @@ Skills are bare names ('grilling') or category-qualified ('behaviour/grilling').
 Examples:
   ./install.sh                             # menu (or install-all without a tty)
   ./install.sh --agy                       # menu for Antigravity only
-  ./install.sh grilling unslop             # add two skills to both agents
+  ./install.sh grilling unslop             # add two skills to Claude Code
   ./install.sh --claude kanban/map-epic    # add one skill to Claude Code
+  ./install.sh --codex                     # menu for Codex only
 EOF
 }
 
@@ -53,12 +58,14 @@ EOF
 
 target_claude=0
 target_agy=0
+target_codex=0
 declare -a POSITIONAL_ARGS=()
 
 for arg in "$@"; do
     case "$arg" in
         --claude) target_claude=1 ;;
         --agy)    target_agy=1 ;;
+        --codex)  target_codex=1 ;;
         -h|--help) show_help; exit 0 ;;
         --*) echo "✗ unknown flag: $arg" >&2; show_help >&2; exit 1 ;;
         *) POSITIONAL_ARGS+=("$arg") ;;
@@ -183,6 +190,9 @@ link_skill() {
     local rel="$1" target_dir="$2" label="$3"
     local skill_dir="$REPO_DIR/$rel"
     local name="${rel#*/}"
+    if [[ "$label" == "codex" ]]; then
+        skill_dir="$CODEX_BUILD_DIR/$name"
+    fi
     local target="$target_dir/$name"
 
     mkdir -p "$target_dir"
@@ -273,14 +283,14 @@ pick_agent() {
     echo "Which agent?"
     echo "  1) Claude Code    ($CLAUDE_SKILLS_DIR)"
     echo "  2) Antigravity    ($AGY_SKILLS_DIR)"
-    echo "  3) Both"
+    echo "  3) Codex          ($CODEX_SKILLS_DIR)"
     local choice
     while true; do
         read -r -p "> " choice
         case "$choice" in
-            1) target_claude=1; return ;;
+            1|"") target_claude=1; return ;;
             2) target_agy=1; return ;;
-            3|"") target_claude=1; target_agy=1; return ;;
+            3) target_codex=1; return ;;
             *) echo "  1, 2 or 3" ;;
         esac
     done
@@ -406,6 +416,7 @@ pick_skills_plain() {
     for i in "${!LIVE_SKILLS[@]}"; do
         [[ ${state[$i]} -eq 1 ]] && SELECTED+=("${LIVE_SKILLS[$i]}")
     done
+    return 0
 }
 
 # Menu, plan, confirm, apply. One target at a time so a removal is always one
@@ -477,15 +488,28 @@ add_to_target() {
 
 collect_live_skills
 
+prepare_codex() {
+    command -v python3 >/dev/null 2>&1 || { echo "Codex setup requires Python 3.9+." >&2; exit 1; }
+    python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' || {
+        echo "Codex setup requires Python 3.9+." >&2
+        exit 1
+    }
+    python3 "$REPO_DIR/scripts/build-codex.py" --local
+}
+
 if [[ $interactive -eq 1 ]]; then
-    if [[ $target_claude -eq 0 && $target_agy -eq 0 ]]; then
+    if [[ $target_claude -eq 0 && $target_agy -eq 0 && $target_codex -eq 0 ]]; then
         pick_agent
     fi
     [[ $target_claude -eq 1 ]] && sync_target "$CLAUDE_SKILLS_DIR" "claude"
     [[ $target_agy -eq 1 ]]    && sync_target "$AGY_SKILLS_DIR" "agy"
+    if [[ $target_codex -eq 1 ]]; then
+        prepare_codex
+        sync_target "$CODEX_SKILLS_DIR" "codex"
+    fi
 else
-    if [[ $target_claude -eq 0 && $target_agy -eq 0 ]]; then
-        target_claude=1; target_agy=1
+    if [[ $target_claude -eq 0 && $target_agy -eq 0 && $target_codex -eq 0 ]]; then
+        target_claude=1
     fi
 
     declare -a to_install=()
@@ -514,6 +538,10 @@ else
     if [[ ${#to_install[@]} -gt 0 ]]; then
         [[ $target_claude -eq 1 ]] && add_to_target "$CLAUDE_SKILLS_DIR" "claude" "${to_install[@]}"
         [[ $target_agy -eq 1 ]]    && add_to_target "$AGY_SKILLS_DIR" "agy" "${to_install[@]}"
+        if [[ $target_codex -eq 1 ]]; then
+            prepare_codex
+            add_to_target "$CODEX_SKILLS_DIR" "codex" "${to_install[@]}"
+        fi
     fi
 fi
 
