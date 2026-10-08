@@ -51,7 +51,7 @@ Keep each skill's existing scope and completion checks.
 
 ### External skill handoffs
 
-`brainstorming` and `map-epic` mention `grill-with-docs`; `map-epic` also mentions `prototype`. Those skills are not supplied by this repo. Describe the work to do when the named skill is unavailable, or make that optional dependency clear. Packaging does not silently add external skills.
+`map-epic` mentions `prototype`, which this repo does not supply. Describe the work to do when the named skill is unavailable, or make that optional dependency clear. Packaging does not silently add external skills.
 
 ### Formula output
 

@@ -16,6 +16,7 @@
       "skills": [
         "./kanban/map-epic",
         "./kanban/new-ticket",
+        "./kanban/grill-docs",
         "./kanban/architect-ticket",
         "./kanban/implement-ticket",
         "./kanban/refactor-ticket",

@@ -64,11 +64,11 @@ The filename slug is the decision's shorthand. Pick it so the directory reads as
 
 ## Who writes, who changes
 
-**ADRs.** `architect-ticket` writes them at its diff gate, one per argument the grill had. `refactor-ticket` writes one when the diff introduces a shape neighbouring code will copy. No other skill writes one; a station that finds itself weighing an ADR-worthy call is a station that was handed an incomplete contract, and it halts.
+**ADRs.** `architect-ticket` writes them at its diff gate, one per argument the grill had. `refactor-ticket` writes one when the diff introduces a shape neighbouring code will copy. `grill-docs` writes one per argument its grill had, with or without a ticket. No other skill writes one; a station that finds itself weighing an ADR-worthy call is a station that was handed an incomplete contract, and it halts.
 
-Either of those two stations may **amend** an existing ADR when the work in front of it has a reason the record did not anticipate. Keep the number, rewrite Decision, Reason, and Consequence together so the file reads as one current decision, and bump the Date. **The reasoning for the change does not go in the file.** State it to the user in the session and put it in the commit message. The ADR stays a clean statement of what binds now. **Retire** an ADR the same way, by setting `Status: retired` and bumping the Date, when the code it governed is gone. Never delete one.
+Any of those three skills may **amend** an existing ADR when the work in front of it has a reason the record did not anticipate. Keep the number, rewrite Decision, Reason, and Consequence together so the file reads as one current decision, and bump the Date. **The reasoning for the change does not go in the file.** State it to the user in the session and put it in the commit message, or hand it to the user for theirs when the skill doesn't commit. The ADR stays a clean statement of what binds now. **Retire** an ADR the same way, by setting `Status: retired` and bumping the Date, when the code it governed is gone. Never delete one.
 
-**PCRs.** `architect-ticket` writes a new one when its ticket is the first to settle a project-wide convention, for example the first ticket that picks a test runner. Nothing else writes one.
+**PCRs.** `architect-ticket` writes a new one when its ticket is the first to settle a project-wide convention, for example the first ticket that picks a test runner. `grill-docs` writes one when its session is the first to settle one. Nothing else writes one.
 
 **Changing or retiring a PCR takes a full `$max:challenge-pcr` session, and there is no other route.** No skill edits a file in `docs/pcr/` in passing, not to fix drift, not to reword, not to retire, and no skill deletes one. So when a PCR blocks the work in front of you:
 

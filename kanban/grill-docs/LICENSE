@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Max Åstrand
+Copyright (c) 2026 Matt Pocock
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,22 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Third-party code
-
-The skills below are adapted from other MIT-licensed projects. Each is used
-under the MIT License text above, with the original copyright notice kept here.
-
-behaviour/grilling
-  From mattpocock/skills, https://github.com/mattpocock/skills
-  Copyright (c) 2026 Matt Pocock
-
-kanban/grill-docs
-  Adapted from grill-with-docs in mattpocock/skills, https://github.com/mattpocock/skills
-  Copyright (c) 2026 Matt Pocock
-
-behaviour/unslop
-  From pstack in cursor/plugins, https://github.com/cursor/plugins/tree/main/pstack
-  Copyright (c) 2026 Lauren Tan

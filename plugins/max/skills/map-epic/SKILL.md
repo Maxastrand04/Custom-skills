@@ -61,7 +61,7 @@ gh api repos/{owner}/{repo}/issues/<epic-issue-number>/sub_issues --jq 'length'
 
 ### Step 4: Grill the epic goal
 
-If no `CONTEXT.md` exists at the project root, say once that `/grill-with-docs` can seed one, then carry on. It is not a precondition.
+If no `CONTEXT.md` exists at the project root, say once that `$max:grill-docs` can seed one, then carry on. It is not a precondition.
 
 Read `CONTEXT.md` if it exists, and the Destination line of every open epic, so the new goal neither overlaps one nor redefines a term. Grill the user, via the `grilling` skill, until the **epic goal** is one sentence stating the observable outcome when the epic is done.
 
