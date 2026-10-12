@@ -110,7 +110,7 @@ Update `CONTEXT.md` if the branch shifted a domain term and the file exists, and
 
 ```
 git push -u origin <branch>
-gh pr create --base <base> --title "<ticket title>" --body-file <file>
+gh pr create --base <base> --title "<PR title>" --body-file <file>
 ```
 
 PR body, this shape:
@@ -130,7 +130,7 @@ Closes #<N>
 ...
 ```
 
-Write Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`, read from that skill's directory, never searched for in the repo. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
+Write the title, Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`, read from that skill's directory, never searched for in the repo. Settle the title after Merge danger, since the breaking call reads Blast radius. Run the squash merge check from the same file for the report. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
 
 Do not close the issue. `Closes #<N>` closes it on merge, and merging is the review.
 
@@ -142,5 +142,7 @@ Close with these lines and nothing after them:
 Branch    42-fix-expired-session
 Tests     3 added green, 5 neighbouring green
 Commits   5
+Title     fix: Expire sessions after idle timeout
 PR        https://github.com/owner/repo/pull/57
+Merge     squash with PR title
 ```

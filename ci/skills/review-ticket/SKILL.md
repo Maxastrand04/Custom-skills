@@ -66,6 +66,7 @@ Leave out any heading with nothing under it. Post it with `gh issue comment <N>`
 
 ## 6. Close out
 
+- Check the PR title against the Title section of `../pr-ticket/pr-shape.md`, read from that skill's directory. A halted run never made the breaking call, and review commits can change it. Propose the fixed title and run `gh pr edit <pr> --title` once the user approves.
 - If the PR is a draft and the user says it's ready, `gh pr ready <pr>`.
 - Remove `ci:queued` from the issue if it is still there.
 - Never merge. That is the user's call, after the test workflow passes.

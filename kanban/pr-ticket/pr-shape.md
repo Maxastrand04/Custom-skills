@@ -1,6 +1,42 @@
 # PR shape
 
-The three sections of a PR body, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `autopilot-ticket` both write them. The header lines and `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
+The title and the three sections of a PR body, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `autopilot-ticket` both write them. The header lines and `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
+
+## Title
+
+```text
+<type>: <id> <short title>
+```
+
+Build it from the ticket title. The id is the `(N.M)` an epic task carries, and a standalone ticket has none. Drop the `[feature]` or `[bug]` tag, since the type replaces it. `(3.2) [feature] Add OAuth login` becomes `feat: (3.2) Add OAuth login`.
+
+- `feat` for a `[feature]` ticket, `fix` for a `[bug]` ticket.
+- `!` after the type for a breaking change, as in `feat!:` or `fix!:`.
+
+The prefix follows Conventional Commits. A PR merges into main as one squash commit whose subject is the PR title, and release tooling reads the type from that subject to pick the next version. `fix` raises the patch number, `feat` the minor, and `!` the major.
+
+Write Merge danger first, because the breaking call reads its Blast radius lines.
+
+### Breaking change
+
+A change is breaking when code outside this repo, calling its public interface, stops working or behaves differently after the merge. The public interface is whatever outside code reaches, such as a published API, a library's exported names, a CLI's flags and output, or a file format another program reads. Both kinds of Blast radius line count when the thing changed is public:
+
+- **Signature.** A public name, parameter, return type or thrown error changed.
+- **Behaviour.** A public name kept its signature but changed what callers see, such as a default, an error format or an output shape.
+
+Internal changes never count, however large. A renamed private function or a reshaped module isn't breaking, and a repo that publishes nothing has no breaking changes. When you can't tell whether a name is public, mark it breaking and name it in Blast radius. A wrong `!` costs a major bump. A missing one ships a break as a minor update.
+
+### Squash merge
+
+The prefix only reaches main if the repo squash-merges with the PR title as the subject. Check it with:
+
+```
+gh api repos/{owner}/{repo} --jq '[.allow_merge_commit, .allow_rebase_merge, .squash_merge_commit_title]'
+```
+
+Anything but `[false,false,"PR_TITLE"]` lets a merge reach main without the prefix. Say so in the station's report, and never change the repo settings yourself.
+
+## Body
 
 ```markdown
 ## Summary
