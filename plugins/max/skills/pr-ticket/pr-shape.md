@@ -1,6 +1,42 @@
 # PR shape
 
-The three sections of a PR body, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `autopilot-ticket` both write them. The header lines and `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
+The title and the three sections of a PR body, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `autopilot-ticket` both write them. The header lines and `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
+
+## Title
+
+```text
+<type>: <id> <short title>
+```
+
+Build it from the ticket title. The id is the `(N.M)` an epic task carries, and a standalone ticket has none. Drop the `[feature]` or `[bug]` tag, since the type replaces it. `(3.2) [feature] Add OAuth login` becomes `feat: (3.2) Add OAuth login`.
+
+- `feat` for a `[feature]` ticket, `fix` for a `[bug]` ticket.
+- `!` after the type for a breaking change, as in `feat!:` or `fix!:`.
+
+The prefix follows Conventional Commits. A PR merges into main as one squash commit whose subject is the PR title, and release tooling reads the type from that subject to pick the next version. `fix` raises the patch number, `feat` the minor, and `!` the major.
+
+Write Merge danger first, because the breaking call reads its Blast radius lines.
+
+### Breaking change
+
+A change is breaking when code outside this repo, calling its public interface, stops working or behaves differently after the merge. The public interface is whatever outside code reaches, such as a published API, a library's exported names, a CLI's flags and output, or a file format another program reads. Both kinds of Blast radius line count when the thing changed is public:
+
+- **Signature.** A public name, parameter, return type or thrown error changed.
+- **Behaviour.** A public name kept its signature but changed what callers see, such as a default, an error format or an output shape.
+
+Internal changes never count, however large. A renamed private function or a reshaped module isn't breaking, and a repo that publishes nothing has no breaking changes. When you can't tell whether a name is public, mark it breaking and name it in Blast radius. A wrong `!` costs a major bump. A missing one ships a break as a minor update.
+
+### Squash merge
+
+The prefix only reaches main if the repo squash-merges with the PR title as the subject. Check it with:
+
+```
+gh api repos/{owner}/{repo} --jq '[.allow_merge_commit, .allow_rebase_merge, .squash_merge_commit_title]'
+```
+
+Anything but `[false,false,"PR_TITLE"]` lets a merge reach main without the prefix. Say so in the station's report, and never change the repo settings yourself.
+
+## Body
 
 ```markdown
 ## Summary
@@ -18,9 +54,16 @@ The three sections of a PR body, for a reviewer who hasn't read the ticket or th
 
 ## Merge danger
 
-**Door** <one-way or two-way>. <optional, one line on why>
+### Door
+<One-way or two-way>. <optional, one line on why>
 
-**Blast radius** <one word>. <optional, what a merge could break>
+### Blast radius (Hyrum's law)
+<One word>.
+- Signature: <changed public signature>. <who breaks>
+- Behaviour: <observable change behind an unchanged signature>. <who relied on it>
+
+### Untested behaviour (Beyoncé rule)
+- <behaviour the diff adds or changes>. No test asserts it.
 ```
 
 Skip preambles and keep prose short. Use the project's terms as `CONTEXT.md` defines them, when the file exists. A reviewer reads the body cold, so never coin a term the code or `CONTEXT.md` doesn't use. Check every line against `unslop`.
@@ -165,6 +208,27 @@ List one line per test: the behaviour in the ticket's words, then the test's fil
 
 ## Merge danger
 
-**Door.** A two-way door can be walked back by reverting the merge. A one-way door can't: a data migration, a deleted column, a published API or file format, a message sent to users. Say which, and for a one-way door, name what can't be undone.
+Three parts, each under its own `###` heading exactly as named below, law names included, so a reviewer can spot each one. A part with nothing to flag says `none` rather than being left out, so the reviewer knows the check ran. You flag and never fix. A missing test or a risky change goes in the body, not into a commit.
 
-**Blast radius.** One word for how far a bad merge reaches, such as `module`, `service`, `consumers` or `users`. Then a line on what could break: callers of a changed signature, stored data, layout on small screens, a config other repos read. Think past the diff to what reads its output.
+### Door
+
+A two-way door can be walked back by reverting the merge. A one-way door can't: a data migration, a deleted column, a published API or file format, a message sent to users. Say which, and for a one-way door, name what can't be undone.
+
+### Blast radius (Hyrum's law)
+
+One word for how far a bad merge reaches, such as `module`, `service`, `consumers` or `users`. Then one line per thing a caller could notice, in two kinds:
+
+- **Signature.** A public name, parameter, return type or thrown error changed. Name who calls it and breaks.
+- **Behaviour.** The signature stayed the same, but something a caller can observe changed: the order of a returned list, an error message's text, a default value, timing, a file or output format, stored data. With enough callers, someone depends on every observable behaviour, whether or not anyone promised it. These are the ones a reviewer can't spot from the signatures, so look hardest for them.
+
+Think past the diff to what reads its output, such as a config another repo reads or layout on small screens.
+
+### Untested behaviour (Beyoncé rule)
+
+Behaviour with no test is unprotected, and the next change can break it without the suite noticing. List every behaviour the diff adds or changes that no test asserts, one line each.
+
+- **Scope is the diff.** Only code the diff touches. Old gaps elsewhere aren't this PR's to flag.
+- **Use the coverage tool if the project has one.** Run it over the suite and list changed lines no test executed, each named as the behaviour it carries.
+- **Otherwise read.** For each changed path, such as a branch, an error case or a new return value, find a test that asserts it. Executing the line isn't enough. A test has to check the result.
+
+The ticket's own Behaviour lines are already covered by the evidence tests, so what turns up here is usually an extra error path, a guard, or old behaviour the diff changed that never had a test.

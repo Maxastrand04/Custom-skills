@@ -7,7 +7,7 @@ description: Runs an autopilot ticket unattended, red-green-refactor in one sess
 
 One session, one ticket, all three legs of **red-green-refactor**, no gates. The ticket was labelled `autopilot` at filing because the planning would cost more than reading the finished diff, so the review moves from the contract to the PR.
 
-**The ticket is the spec.** Expected behaviour lines are the acceptance criteria, and you turn each into a test before you write any implementation. "AC met" means those tests are green, never your own reading of the code.
+**The ticket is the spec.** Its Behaviour lines are the acceptance criteria, and you cover each with a test before you write any implementation. "AC met" means those tests are green, never your own reading of the code.
 
 ---
 
@@ -15,7 +15,7 @@ One session, one ticket, all three legs of **red-green-refactor**, no gates. The
 
 Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHub issue URL. No argument means ask which issue, and stop until told. Never take a ticket from conversation.
 
-`gh issue view <number> --json title,body,labels`. Read Goal, Expected behaviour, Out of scope, and Branch.
+`gh issue view <number> --json title,body,labels`. Read Goal, Spec, Out of scope, and Branch. Spec's Interface lines tell you which pieces to build, and you name them in the project's style.
 
 **Precondition.** The labels must carry `ticket:autopilot` or `epic:autopilot`. Otherwise halt:
 
@@ -24,7 +24,7 @@ Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHu
 Settle two things, and confirm both to the user in one line before touching code:
 
 - **Branch.** `<issue-number>-<slug>`, slug from the ticket's `## Branch` section, or derived from the title when absent: 2 to 4 words, kebab-case, no articles.
-- **Base.** `main`, unless the user named one at invocation or the ticket is a sub-issue of an epic that has its own branch.
+- **Base.** `main`, unless the user named one at invocation.
 
 Then `git checkout -b <branch>` from the base. Surface unrelated uncommitted changes before switching. Never drag them across.
 
@@ -44,7 +44,7 @@ The same halt applies at any later step where a criterion turns out to fail. Lea
 
 ## 3. Red
 
-Convert each Expected behaviour line into one named test, in the project's naming style, in the file the surrounding tests live in. One behaviour per test, docstring stating the behaviour in one sentence. A `[bug]` ticket gets its standing test, the reproduction steps no longer produce the symptom.
+Cover every Behaviour line with at least one named test, in the project's naming style, in the file the surrounding tests live in. A flow step that only sets up the next one is covered by that next step's test. Interface lines get no tests. One behaviour per test, docstring stating the behaviour in one sentence. A `[bug]` ticket gets its standing test, the reproduction steps no longer produce the symptom.
 
 Run them. Every one must fail because the behaviour doesn't exist yet. A test that passes asserts nothing or covers something already shipped, so sharpen it. A test that errors is broken, not red, so fix the typo or halt on a missing dependency.
 
@@ -59,7 +59,7 @@ Red.
 Issue: #<N>
 ```
 
-**Completion criterion:** every Expected behaviour line has one test, every test observed failing for the right reason, one commit.
+**Completion criterion:** every Behaviour line covered by a test, every test observed failing for the right reason, one commit.
 
 ## 4. Green
 
@@ -85,11 +85,11 @@ Each of these stops the session before push. Describe the failure in plain Engli
 
 - **No progress.** The same test fails with the same evidence two passes running.
 - **The ticket contradicts itself.** Two behaviours can't both be true.
-- **A record blocks it, or a decision is needed.** A PCR or ADR the only workable implementation would breach, or a call a future reader could undo by accident. Name it. Never code around it, never edit a record, and never write one; the ticket was mislabelled, so relabel and run `$max:architect-ticket <N>`.
+- **A record blocks it, or a decision is needed.** A PCR or ADR the only workable implementation would breach, or a call a future reader could undo by accident. Name it. Never code around it, never edit a record, and never write one other than a found ADR; the ticket was mislabelled, so relabel and run `$max:architect-ticket <N>`.
 
 ## 5. Refactor
 
-Shape only, never behaviour. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`, read from that skill's directory, never searched for in the repo. A record overrides the baseline. Tests are exempt. This station writes no records and amends none; a diff that needs one is the halt above.
+Shape only, never behaviour. Behaviour includes what callers can observe behind an unchanged signature, such as the order of a returned list, an error message's text, a default value, or timing. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`, read from that skill's directory, never searched for in the repo. A record overrides the baseline. Tests are exempt. This station writes no argued records and amends none; a diff that needs one is the halt above. The one record it writes is a found ADR, per `../architect-ticket/RECORD-FORMAT.md`, for each fence comment the comment smell moves out of the code. Delete the comment in the same commit.
 
 Re-run the tests from step 3 plus the neighbouring tests. Back to red means the edit changed behaviour, so revert it. Then commit once:
 
@@ -99,6 +99,8 @@ Refactor: <ticket title>
 Issue: #<N>
 ```
 
+A found ADR adds `Comment in <file> moved to ADR-NNNN` to the body.
+
 Update `CONTEXT.md` if the branch shifted a domain term and the file exists, and `README.md` only if a contributor now needs to run or configure something new. Fold either into the refactor commit.
 
 **Completion criterion:** every changed non-test file read against `docs/pcr/`, `docs/adr/`, and the baseline, each finding fixed, affected tests green, one commit.
@@ -107,7 +109,7 @@ Update `CONTEXT.md` if the branch shifted a domain term and the file exists, and
 
 ```
 git push -u origin <branch>
-gh pr create --base <base> --title "<ticket title>" --body-file <file>
+gh pr create --base <base> --title "<PR title>" --body-file <file>
 ```
 
 PR body, this shape:
@@ -127,7 +129,7 @@ Closes #<N>
 ...
 ```
 
-Write Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`, read from that skill's directory, never searched for in the repo. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
+Write the title, Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`, read from that skill's directory, never searched for in the repo. Settle the title after Merge danger, since the breaking call reads Blast radius. Run the squash merge check from the same file for the report. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
 
 Do not close the issue. `Closes #<N>` closes it on merge, and merging is the review.
 
@@ -139,5 +141,7 @@ Close with these lines and nothing after them:
 Branch    42-fix-expired-session
 Tests     3 added green, 5 neighbouring green
 Commits   5
+Title     fix: Expire sessions after idle timeout
 PR        https://github.com/owner/repo/pull/57
+Merge     squash with PR title
 ```

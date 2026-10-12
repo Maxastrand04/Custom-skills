@@ -36,9 +36,33 @@ A PCR is identical with the `PCR-` prefix. Four fields, every one required.
 
 Add only when they earn their place:
 
-- **Scope:** the paths, layers, or contexts an ADR covers, when it isn't the whole repo. A PCR never has one; a convention with a scope is an ADR.
+- **Scope:** the paths, layers, or contexts an ADR covers, when it isn't the whole repo. Name a file plus the function or class, never a line number, since line numbers go stale with any edit above them. A PCR never has one; a convention with a scope is an ADR.
 - **Exceptions:** narrow, named carve-outs. A decision riddled with exceptions is really two decisions, or none.
-- **Status:** `retired`, when the code the decision governed no longer exists. Retired records stay on disk so old review comments and branches still resolve the number. Absent means live.
+- **Status:** `retired`, when the code the decision governed no longer exists. Retired records stay on disk so old review comments and branches still resolve the number. `found`, for a found ADR, below. Absent means live.
+
+## Found ADRs
+
+A comment that forbids or limits a change, such as `# don't batch these, the API rate-limits`, records a decision. Someone chose that the code must stay this way. A comment is the wrong home for it, because a batch edit can rewrite it and no reviewer notices, while a change under `docs/adr/` shows in every diff. So when a refactor moves a fence comment out of the code, it becomes a found ADR:
+
+```md
+# ADR-NNNN: {imperative title}
+
+**Decision:** {the comment's rule, rewritten as MUST or MUST NOT}.
+
+**Reason:** Unknown. Found as a comment in `{file}`, quoted:
+
+> {the comment, verbatim}
+
+**Consequence:** {what the comment says breaks, or what the rule forces on changes to that code}.
+
+**Scope:** `{file}`, `{function or class}`
+
+**Status:** found
+
+**Date:** {YYYY-MM-DD}
+```
+
+A found ADR binds like any other. It is exempt from the arguable test and the spine test while its status is `found`, since nobody alive argued it. Finding out why it exists belongs to a separate session, by a human or an agent, and never to the session that found it. Whoever learns the reason amends the record and drops the status line.
 
 ## What earns an ADR
 
@@ -64,11 +88,11 @@ The filename slug is the decision's shorthand. Pick it so the directory reads as
 
 ## Who writes, who changes
 
-**ADRs.** `architect-ticket` writes them at its diff gate, one per argument the grill had. `refactor-ticket` writes one when the diff introduces a shape neighbouring code will copy. No other skill writes one; a station that finds itself weighing an ADR-worthy call is a station that was handed an incomplete contract, and it halts.
+**ADRs.** `architect-ticket` writes them at its diff gate, one per argument the grill had. `refactor-ticket` writes one when the diff introduces a shape neighbouring code will copy, and a found ADR for each fence comment it moves out of the code. `autopilot-ticket` writes found ADRs and no other kind. `grill-docs` writes one per argument its grill had, with or without a ticket. No other skill writes one; a station that finds itself weighing an ADR-worthy call is a station that was handed an incomplete contract, and it halts.
 
-Either of those two stations may **amend** an existing ADR when the work in front of it has a reason the record did not anticipate. Keep the number, rewrite Decision, Reason, and Consequence together so the file reads as one current decision, and bump the Date. **The reasoning for the change does not go in the file.** State it to the user in the session and put it in the commit message. The ADR stays a clean statement of what binds now. **Retire** an ADR the same way, by setting `Status: retired` and bumping the Date, when the code it governed is gone. Never delete one.
+`architect-ticket`, `refactor-ticket`, and `grill-docs` may **amend** an existing ADR when the work in front of it has a reason the record did not anticipate. Keep the number, rewrite Decision, Reason, and Consequence together so the file reads as one current decision, and bump the Date. **The reasoning for the change does not go in the file.** State it to the user in the session and put it in the commit message, or hand it to the user for theirs when the skill doesn't commit. The ADR stays a clean statement of what binds now. **Retire** an ADR the same way, by setting `Status: retired` and bumping the Date, when the code it governed is gone. Never delete one.
 
-**PCRs.** `architect-ticket` writes a new one when its ticket is the first to settle a project-wide convention, for example the first ticket that picks a test runner. Nothing else writes one.
+**PCRs.** `architect-ticket` writes a new one when its ticket is the first to settle a project-wide convention, for example the first ticket that picks a test runner. `grill-docs` writes one when its session is the first to settle one. Nothing else writes one.
 
 **Changing or retiring a PCR takes a full `/challenge-pcr` session, and there is no other route.** No skill edits a file in `docs/pcr/` in passing, not to fix drift, not to reword, not to retire, and no skill deletes one. So when a PCR blocks the work in front of you:
 

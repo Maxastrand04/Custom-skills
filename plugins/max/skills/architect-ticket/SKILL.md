@@ -11,7 +11,7 @@ That commit is the whole handoff. `implement-ticket` takes it **green** and `ref
 
 **The user owns the contract; the implementer owns everything behind it.** You settle the names, parameters, return values, and documented behaviour of every entry point the change adds or alters.
 
-**The tests are the acceptance criteria.** There is no separate list. The ticket holds user-visible expected behaviour; you convert it into named test functions, and each test's name and docstring is the criterion it enforces. Never write an AC list beside the tests it duplicates.
+**The tests are the acceptance criteria.** There is no separate list. The ticket's Behaviour lines are the bar; you convert them into named test functions, and each test's name and docstring is the criterion it enforces. Never write an AC list beside the tests it duplicates.
 
 **They all land in one acceptance file.** One new file at the root of the test tree, named in the project's style, `tests/test_acceptance.py` or `tests/acceptance.test.ts`, holding this ticket's tests and nothing else. It lives only on this branch; `unit-test-ticket` folds it into the module test files before the branch merges.
 
@@ -31,7 +31,7 @@ This skill starts from a ticket. Resolve one of:
 2. **A ticket published in this session** by `new-ticket` or `map-epic`. Confirm with the user before adopting it.
 3. **Neither.** Ask which issue this is, and point at `$max:new-ticket` if none exists. Do not architect from a conversation.
 
-Then read the body in full with `gh issue view <ref> --json title,body,labels`. Take **Goal**, **Expected behaviour**, and **Out of scope** as given. They are the user-visible WHAT and were settled when the ticket was filed.
+Then read the body in full with `gh issue view <ref> --json title,body,labels`. Take **Goal**, **Spec**, and **Out of scope** as given. They are the WHAT and were settled when the ticket was filed. Spec's **Interface** lines name the pieces without naming them in code, and its **Behaviour** lines trace the flow between them. Naming those pieces, and everything else in this phase, is yours.
 
 Settle the **branch name**, which is `<issue-number>-<slug>`. Take the slug from the ticket's `## Branch` section when it has one. Otherwise derive it from the title: 2 to 4 words, kebab-case, no articles, no issue number. This skill owns the branch name, so a ticket filed by anyone can be architected.
 
@@ -58,7 +58,8 @@ Rules for this block:
 
 - **Nothing is settled while any of the four is open.** A parameter with no type, a return described only as "the result", an error path nobody named. Each is an unresolved branch. Keep going.
 - **Grill the interface, not the implementation.** "One function or a class with three methods?" is the contract, so grill it. "A dict or an LRU cache for the tokens?" sits behind the boundary, so don't spend the user's attention on it.
-- **Cover every expected behaviour in the ticket.** Each one has to be reachable through something on this list. A behaviour no signature can reach means the contract is incomplete, so surface the gap and resolve it.
+- **Cover the whole Spec.** Every Interface line maps to at least one entry point on this list, and every Behaviour line has to be reachable through one. A piece with no entry point, or a step no signature can reach, means the contract is incomplete, so surface the gap and resolve it.
+- **Keep the ticket true.** When the code shows a Spec line is wrong, settle the change with the user and edit the issue with `gh issue edit` before going on. Never depart from the ticket silently.
 - **Stay inside `docs/pcr/`.** If the natural interface would breach a project convention, that is not yours to override. Name the PCR and take it to the user, who either accepts a different interface or stops to run `$max:challenge-pcr` as its own session. Do not design against a convention you expect to fall.
 - **An ADR in the way is yours to argue.** Name it, say what the ticket needs that the record did not anticipate, and settle with the user whether the interface bends to the ADR or the ADR is amended. An amendment is settled here and written in Phase 2. Until it is settled the ADR binds.
 - **Mark every argument.** When a question resolves *against* a named alternative, note it in one line as a **record candidate**. These are what Phase 2 writes. A question the user answered without a contest is not a candidate.
@@ -67,14 +68,14 @@ Draft from Exploration first. Propose the interface that fits what already exist
 
 ### The acceptance tests
 
-Now convert the ticket's expected behaviour into named tests.
+Now convert the ticket's Behaviour lines into named tests. Interface lines become stubs, never tests.
 
-For each behaviour in the ticket, settle:
+Every Behaviour line is covered by at least one test. A flow step that only sets up the next one, such as "the player clicks", is covered by the test of the step it leads to. For each test, settle:
 
 - **The test function name**, in the project's naming style.
 - **What it asserts**, in one sentence, phrased as an observable outcome through the public interface.
 
-Then sweep for what the ticket didn't say, because a ticket carries user-visible behaviour and stops there:
+Then sweep for what the ticket didn't say, because a ticket stops short of the contract's detail:
 
 - **Edge cases and failure modes** the contract names. Every error in a docstring earns a test.
 - **Boundaries.** Empty, missing, zero, duplicate, and conflicting inputs.
@@ -86,7 +87,7 @@ Then sweep for what the ticket didn't say, because a ticket carries user-visible
 
 ### Leaving Phase 1
 
-The phase ends when every entry point is settled on all four counts and every behaviour in the ticket has a named test.
+The phase ends when every entry point is settled on all four counts and every Behaviour line in the ticket is covered by a named test.
 
 **Never write the contract back as fenced stubs or a test table.** That is the diff's job, and doing it here makes the user review the same material twice. If drafting the tests surfaces a gap in the interface, close it in conversation and carry on.
 

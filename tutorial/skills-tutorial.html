@@ -822,7 +822,7 @@
   <dl>
     <dt>It does</dt><dd>First asks "feature or bug?", then interviews you about what the user sees. It refuses to talk about files, function names or tests. That is architect's job. Before publishing it suggests <code>task</code> or <code>autopilot</code>.</dd>
     <dt>Stops for you</dt><dd>When it suggests splitting into several tickets, and before publishing each one.</dd>
-    <dt>Leaves behind</dt><dd>A GitHub issue with Goal, Expected behaviour, Out of scope, and a branch name.</dd>
+    <dt>Leaves behind</dt><dd>A GitHub issue with a one-sentence Goal, a Spec (the pieces and the flow between them, nothing named), Out of scope, and a branch name.</dd>
   </dl>
   <pre>/new-ticket
 /new-ticket users get logged out when they reload the page</pre>
@@ -874,7 +874,7 @@ rename refresh_session to renew_session, keep the rest</pre>
   <p>The first half of the refactor leg. Checks the tests actually prove what the ticket asked for, runs the full test suite, and cleans up the code against the project's records. It leaves the tests where they are for <code>unit-test-ticket</code>.</p>
   <dl>
     <dt>It does</dt><dd>
-      Checks each expected behaviour in the ticket against the tests.
+      Checks each Spec line in the ticket against the stubs and tests.
       Runs the whole suite. An old test the ticket contradicts gets rewritten, and anything else red is a bug implement caused, which it fixes in its own commit.
       Asks you, in one table, which functions count as public and what to do with tests that reach into private ones.
       Cleans the code against <code>docs/pcr/</code>, <code>docs/adr/</code> and its own code standards.
@@ -910,7 +910,7 @@ rename refresh_session to renew_session, keep the rest</pre>
   <dl>
     <dt>It does</dt><dd>
       Reads the ticket, the commits and the full diff.
-      Writes three sections. Summary says what changed, with a diagram for new features. Evidence lists the tests that failed at the architect commit and pass now. Merge danger says whether a revert can undo the merge and how far a bad merge reaches.
+      Writes three sections. Summary says what changed, with a diagram for new features. Evidence lists the tests that failed at the architect commit and pass now. Merge danger says whether a revert can undo the merge, how far a bad merge reaches including behaviour callers may rely on, and which changed behaviour no test protects.
       Copies every "for the reviewer" item the earlier stations left on the issue.
     </dd>
     <dt>Stops for you</dt><dd>Only if the branch isn't ready: the tests aren't folded, there are uncommitted changes, the suite is red, or a PR already exists. Otherwise it pushes and opens the PR without asking. You read the body on the PR.</dd>
@@ -924,7 +924,7 @@ rename refresh_session to renew_session, keep the rest</pre>
   <header><h3><span class="dot" style="background:var(--blue)"></span> autopilot-ticket</h3><span class="tag">instead of stations 2 to 6</span><span class="tag">opens a PR</span></header>
   <p>For a ticket labelled <code>autopilot</code>. Runs red, green and refactor in one session with no gates, then opens a PR. The review moves from the design, before the code, to the PR, after it.</p>
   <dl>
-    <dt>It does</dt><dd>Reads the ticket and the code it touches, then checks the label still holds. Turns each Expected behaviour line into one failing test, makes them pass one behaviour at a time, runs the existing tests near the files it changed, and cleans up against the same records as refactor.</dd>
+    <dt>It does</dt><dd>Reads the ticket and the code it touches, then checks the label still holds. Covers each Behaviour line with a failing test, makes them pass one behaviour at a time, runs the existing tests near the files it changed, and cleans up against the same records as refactor.</dd>
     <dt>Stops for you</dt><dd>If the ticket turns out to need a decision: a public function changes, a PCR or ADR is in the way, or a behaviour can't be tested. It names the reason and tells you to relabel and run <code>/architect-ticket</code>. Same escalations as implement otherwise.</dd>
     <dt>Leaves behind</dt><dd>A pushed branch, one <code>Test #42</code> commit, one <code>Implement #42</code> commit per behaviour, a <code>Refactor</code> commit, and a PR that closes the issue on merge.</dd>
   </dl>

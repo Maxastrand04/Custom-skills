@@ -100,7 +100,7 @@ Grill the user, via the `grilling` skill, across the **whole epic scope at once*
 
 For each item that surfaces, classify it:
 
-- **`task`.** A deliverable, ready to be spec'd now, meaning its goal and expected behaviour are already clear enough to state.
+- **`task`.** A deliverable, ready to be spec'd now, meaning its goal and Spec are already clear enough to state.
 - **`research`.** An open question blocking a later task, such as an unknown API, a library choice, or an unclear fact, that a separate session should resolve.
 - **`prototype`.** Needs a cheap concrete artifact, such as a UI sketch or a behaviour stub, before it can be spec'd, via a separate `/prototype` session.
 - **fog.** You can sense it's coming but can't state it precisely yet. Don't force it into a ticket. Write a loose one-line sketch instead.
@@ -144,8 +144,8 @@ Epic tickets take the `epic:` label scope.
 
 **Task tickets** use the task ticket shape and are processed **one at a time**, sequentially. For each:
 
-1. Draft the Goal, the Expected behaviour, the Out of scope, and the Branch slug from what the breadth-first grill already surfaced.
-2. Run the publish loop's preview, edit, and approve steps. Spend the discussion on expected behaviour, and keep it user-visible per `ticket-shapes.md`.
+1. Draft the Goal, the Spec, the Out of scope, and the Branch slug from what the breadth-first grill already surfaced.
+2. Run the publish loop's preview, edit, and approve steps. Spend the discussion on the Spec, and keep it free of names per `ticket-shapes.md`.
 3. Assign the `(N.M)` id by taking `max(M) + 1` over the `(N.M)` ids already in the epic issue's sub-issue titles, starting at 1 if none exist. This is append-only. Never renumber or delete an existing ticket.
 4. Judge it against `ticket-shapes.md`'s **autopilot criteria** and state the label, `epic:task` or `epic:autopilot`, with one line of reasoning. The user confirms or overrides.
 5. Publish with the title `(N.M) [feature] <short title>`. Every task defaults to feature-shaped, so do not ask feature vs bug here.

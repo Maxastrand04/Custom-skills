@@ -3,7 +3,7 @@ name: implement-ticket
 description: Headless green leg for kanban-ci. Fills in the stub bodies on a red branch until the acceptance file passes, then hands off to refactor-ticket in a commit.
 disable-model-invocation: true
 ---
-<!-- synced-from kanban/implement-ticket/SKILL.md blob 87eb7a517ae10f5784c3f4bb5c2e85b9f7d4e10a -->
+<!-- synced-from kanban/implement-ticket/SKILL.md blob 75eac30f4e3cbe85bd487beb6a8b928a4723bf65 -->
 
 # implement-ticket, headless
 
@@ -30,7 +30,7 @@ The kanban-ci loop starts you with `claude -p`. Nobody reads this session and no
 ## Pin the work
 
 1. **The branch.** The current branch. Its name carries the issue number, as in `42-oauth-admin-login`. If the invocation's number and the branch's number disagree, hand off to `review` and name both.
-2. **The ticket.** `gh issue view <number> --json title,body`. Read Goal, Expected behaviour, and Out of scope. It tells you whether a green test actually shipped the feature.
+2. **The ticket.** `gh issue view <number> --json title,body`. Read Goal, Spec, and Out of scope. It tells you whether a green test actually shipped the feature.
 3. **The diff.** `git diff <base>...HEAD`, three-dot, against the merge-base.
 
 ### Precondition

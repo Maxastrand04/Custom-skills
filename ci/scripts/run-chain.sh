@@ -115,25 +115,37 @@ reviewer_items() {
 # $LOG_DIR/pr-summary.md. Leaves no file when the suite is red or the station
 # fails, and open_pr falls back to the plain body.
 write_summary() {
-    local out="$LOG_DIR/pr-summary.md" before
-    rm -f "$out"
+    local out="$LOG_DIR/pr-summary.md" title_out="$LOG_DIR/pr-title.txt" before
+    rm -f "$out" "$title_out"
     # A chain resumed straight at review never ran the suite this run.
     [[ -z "${SUITE_SUMMARY:-}" ]] && run_suite
     [[ $SUITE_GREEN -eq 1 ]] || return 0
     before=$(git rev-parse HEAD)
-    run_station pr-ticket "Write the body to $out.
+    run_station pr-ticket "Write the body to $out and the title to $title_out.
 
 $SUITE_SUMMARY" || log "pr-ticket failed, using the plain body"
     # pr-ticket never commits. Drop anything it left so the PR is the chain's work.
     git reset --hard -q "$before"
 }
 
+# Turns a ticket title like "(3.2) [bug] Fix X" into "fix: (3.2) Fix X".
+# Only pr-ticket can tell a breaking change, so this never adds the "!".
+plain_title() {
+    local raw type=feat
+    raw=$(gh issue view "$ISSUE" --json title --jq .title)
+    [[ "$raw" == *"[bug]"* ]] && type=fix
+    raw=$(sed -E 's/ *\[(feature|bug)\] */ /; s/^ +//' <<<"$raw")
+    printf '%s: %s' "$type" "$raw"
+}
+
 # Opens or updates the PR. $1 is empty when finished, else the halt reason.
 open_pr() {
-    local halt="$1" body="$LOG_DIR/pr-body.md" summary="$LOG_DIR/pr-summary.md" title pr status items
-    rm -f "$summary"
+    local halt="$1" body="$LOG_DIR/pr-body.md" summary="$LOG_DIR/pr-summary.md" title_file="$LOG_DIR/pr-title.txt" title pr status items
+    rm -f "$summary" "$title_file"
     [[ -z "$halt" ]] && write_summary
-    title=$(gh issue view "$ISSUE" --json title --jq .title)
+    title=""
+    [[ -s "$title_file" ]] && title=$(head -n 1 "$title_file")
+    [[ "$title" =~ ^(feat|fix)!?:\ . ]] || title=$(plain_title)
     if [[ -z "$halt" ]]; then status="Finished."; else status="Halted: $halt"; fi
     items=$(reviewer_items)
     {
@@ -151,7 +163,7 @@ open_pr() {
 
     pr=$(gh pr list --head "$TICKET_BRANCH" --state open --json number --jq '.[0].number // empty')
     if [[ -n "$pr" ]]; then
-        gh pr edit "$pr" --body-file "$body" >/dev/null
+        gh pr edit "$pr" --title "$title" --body-file "$body" >/dev/null
         if [[ -n "$halt" ]]; then gh pr ready "$pr" --undo >/dev/null 2>&1; else gh pr ready "$pr" >/dev/null 2>&1; fi
     else
         local draft=""

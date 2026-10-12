@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 # new-ticket
 
-Grill the user into a single, well-scoped GitHub ticket covering **WHAT** changes, meaning user-visible behaviour and scope, and never **HOW**, meaning architecture, files, code, and tests. Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/architect-ticket` for the HOW, or to `/autopilot-ticket` when the ticket qualifies.
+Grill the user into a single, well-scoped GitHub ticket covering **WHAT** changes, meaning the pieces of the solution, how control flows between them, and scope, and never **HOW**, meaning names, files, signatures, and tests. Publish via `gh`. Optionally split into vertical-slice sub-issues. Hand off to `/architect-ticket` for the HOW, or to `/autopilot-ticket` when the ticket qualifies.
 
-The published body is deliberately thin. The grill is not. Everything the grill surfaces must land as **expected behaviour** or be consciously dropped.
+The published body is deliberately thin. The grill is not. Everything the grill surfaces must land as a **Spec** line, an Out-of-scope line, or be consciously dropped.
 
 Read the bundled files at runtime. Do not assume their contents from this document:
 
@@ -49,10 +49,11 @@ You are a developer grilling a product owner about product requirements. Invoke 
 1. Problem and motivation: the user-visible problem, and why now.
 2. Target user or actor: who triggers or benefits.
 3. Trigger or entry point: how the user reaches the behaviour.
-4. Expected behaviour: the happy path end-to-end, from the user's side.
-5. Edge cases and failure modes: missing, invalid, or conflicting inputs, and operations that can't complete.
-6. Dependencies on existing functionality: behaviours this relies on or disturbs.
-7. Out of scope: what might look related but isn't.
+4. Pieces: what parts the solution adds or alters, and what each one carries.
+5. Flow: the happy path step by step, from the trigger to the result, naming which piece acts at each step.
+6. Edge cases and failure modes: missing, invalid, or conflicting inputs, and operations that can't complete.
+7. Dependencies on existing functionality: behaviours this relies on or disturbs.
+8. Out of scope: what might look related but isn't.
 
 **Bug agenda:**
 
@@ -63,11 +64,14 @@ You are a developer grilling a product owner about product requirements. Invoke 
 5. Conditions: user state, surface, and inputs under which it reproduces.
 6. First seen or regression: always broken, or a regression from a known-good state.
 7. Workarounds known: what users can do today, or "none known".
-8. Out of scope: related bugs or refactors this fix won't touch.
+8. Corrected flow: which piece goes wrong, and the steps as they should run.
+9. Out of scope: related bugs or refactors this fix won't touch.
 
-**Drive every topic to an outcome.** For each answer, ask *"what can someone do, or stop having to do, once this ships?"* and write that. A topic that leaves neither an expected-behaviour line nor an Out-of-scope line has left nothing in the ticket, so say so and resolve it before moving on. Every bug ticket carries one standing line: the reproduction steps no longer produce the symptom.
+**Drive every topic to an outcome.** For each answer, ask *"which piece does what, and what happens next?"* and write that as one terse line. A topic that leaves no Interface, Behaviour, or Out-of-scope line has left nothing in the ticket, so say so and resolve it before moving on. Every bug ticket carries one standing Behaviour line: the reproduction steps no longer produce the symptom.
 
-**Stay outside the code when you write it down.** "Expired sessions send the user back to login" belongs here. "`refresh_token` raises `AuthError` on an expired token" does not, however true it turns out to be. If you catch yourself reaching for a symbol name to say it precisely, the precision belongs to `architect-ticket`.
+**The Spec is the user's picture of the solution.** They read it and check it mirrors how they expect the goal to be reached. Write it like pseudocode: concrete enough to trace through the code, short enough to read at a glance.
+
+**Describe pieces, never name them.** "A session check runs before each page load" and "Expired sessions send the user back to login" belong here. "`refresh_token` raises `AuthError` on an expired token" does not, however true it turns out to be. If you catch yourself reaching for a symbol name to say it precisely, the precision belongs to `architect-ticket`.
 
 **Never settled in this ticket.** These are HOW topics, and they defer to `architect-ticket`:
 
@@ -85,7 +89,7 @@ You are a developer grilling a product owner about product requirements. Invoke 
 
 When the full WHAT-grill is complete, **you** decide whether this is one ticket or several. Do **not** ask the user upfront which it will be.
 
-**Split** when the expected behaviour spans separable user-visible concerns and each slice is independently demoable end-to-end. **Keep as one** when the behaviours interlock, so no slice ships without the others.
+**Split** when the Spec spans separable user-visible concerns and each slice is independently demoable end-to-end. **Keep as one** when the behaviours interlock, so no slice ships without the others.
 
 State your recommendation with brief reasoning, either "one ticket, no split" or "N sub-issues". Then **wait for confirmation or pushback** before moving on. If the user pushes back, iterate until they confirm. The sub-issue list itself is proposed under Publishing, once the parent is filed.
 

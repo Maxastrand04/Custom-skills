@@ -9,7 +9,7 @@ The last station on the board. `unit-test-ticket` committed the fold, so the bra
 
 **You never edit code or tests.** A problem you find goes in `For the reviewer`, not into a commit.
 
-The body's three sections follow `pr-shape.md`, the file beside this `SKILL.md`. Read it from this skill's directory, never from the repo. Word every halt and report to the user per the `gloss-me` skill, and check the body against `unslop`. The body itself carries no gloss blocks, since its reader isn't you.
+The title and the body's three sections follow `pr-shape.md`, the file beside this `SKILL.md`. Read it from this skill's directory, never from the repo. Word every halt and report to the user per the `gloss-me` skill, and check the body against `unslop`. The body itself carries no gloss blocks, since its reader isn't you.
 
 ## 1. Pin the work and check the handoff
 
@@ -20,9 +20,9 @@ The base is `main` unless the user names another. Halt unless all four hold, nam
 - **Folded.** `git log <base>..HEAD` has a commit whose subject starts `Tests #<N>: tidy and fold`. If not, say to run `$max:unit-test-ticket` first.
 - **Committed.** `git status --porcelain` is empty. Never commit someone else's leftovers to make it so.
 - **Green.** The whole suite passes. If not, say which tests fail and stop. Red never gets a PR.
-- **No PR yet.** `gh pr list --head <branch> --state open` is empty. If one exists, offer to rewrite its body instead, and on yes skip to step 3 with `gh pr edit` in place of `gh pr create`.
+- **No PR yet.** `gh pr list --head <branch> --state open` is empty. If one exists, offer to rewrite its title and body instead, and on yes skip to step 3 with `gh pr edit` in place of `gh pr create`.
 
-Keep the suite's pass count for Evidence.
+Keep the suite's pass count for Evidence. Run the squash merge check from `pr-shape.md` and keep its result for the report. It never halts.
 
 ## 2. Read the branch
 
@@ -35,7 +35,7 @@ Keep the suite's pass count for Evidence.
 
 ## 3. Write the body
 
-Title: the ticket's title.
+Title per `pr-shape.md`, such as `feat: (3.2) Add OAuth login`. Settle it after Merge danger, since the breaking call reads Blast radius.
 
 ```markdown
 > *Implemented by AI through the kanban chain. A human approved the interface and the tests. Review the diff before merging.*
@@ -64,18 +64,20 @@ Write Summary, Evidence and Merge danger per `pr-shape.md`. Leave `For the revie
 
 ```
 git push -u origin <branch>
-gh pr create --base <base> --title "<ticket title>" --body-file <file>
+gh pr create --base <base> --title "<PR title>" --body-file <file>
 ```
 
 Write the body to a temp file outside the repo, so nothing stray lands in the working tree. Never close the issue. `Closes #<N>` closes it on merge, and merging is the user's call.
 
 ## 5. Report
 
-Close with these lines and nothing after them except `gloss-me`'s footer:
+Close with these lines and nothing after them except `gloss-me`'s footer. When the squash merge check failed, the Merge line says what else is allowed, such as `merge commits allowed, the prefix can miss main`.
 
 ```
 Branch    42-fix-expired-session, pushed
 Suite     green, 214 tests
+Title     feat: (3.2) Add OAuth login
 PR        https://github.com/owner/repo/pull/57
+Merge     squash with PR title
 Reviewer  2 items
 ```
