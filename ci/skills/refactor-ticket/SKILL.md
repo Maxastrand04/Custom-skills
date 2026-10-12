@@ -28,7 +28,7 @@ The kanban-ci loop starts you with `claude -p`. Nobody reads this session and no
 
 Take the current branch. Its name carries the issue number. Fetch the ticket with `gh issue view <number>`. If the invocation's number and the branch's disagree, hand off to `review` and name both.
 
-**The spec is two things.** The ticket's **Expected behaviour** is the user-visible bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
+**The spec is two things.** The ticket's **Spec** is the intended bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
 
 The diff is `git diff <base>...HEAD`, three-dot, against the merge-base. Confirm the diff is non-empty and adds exactly one acceptance file. If either fails, hand off to `review` and name it. Find the runner command, since you will run named test files and single tests with it.
 
@@ -38,14 +38,14 @@ The **module scope** is every non-test source file the diff changes, plus each o
 
 ## 2. True-to-spec
 
-**Make no edits while you read.** Work through the ticket's expected behaviour one item at a time:
+**Make no edits while you read.** Work through the ticket's Spec one line at a time. Each **Interface** line must match a piece of the settled public interface; a missing or extra piece is a finding. For each **Behaviour** line:
 
 - **Is a test true to it?** Find the acceptance test covering it. A test that asserts something weaker, stubs out the behaviour it should exercise, or is a **tautological test** per `test-standards.md` is not true to spec, green or not. A tautological test is a finding here only when it is the behaviour's sole cover. The rest are `unit-test-ticket`'s to delete.
 - **Is it covered at all?** A behaviour the ticket asked for with no test behind it is the worst finding here, because a green suite says otherwise.
 - **Does the diff meet it?** Where no test can reach the behaviour, read the code against the ticket directly.
 - **Did anything arrive the ticket never asked for?** Check it against Out of scope. Scope creep is a spec finding too.
 
-**Completion criterion:** every expected behaviour in the ticket accounted for, each one either true-to-spec or a named finding.
+**Completion criterion:** every Spec line in the ticket accounted for, each one either true-to-spec or a named finding.
 
 Zero findings means the spec is settled, so go to step 3.
 

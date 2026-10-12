@@ -18,7 +18,7 @@ Word every question and report per the `gloss-me` skill.
 
 The branch carries its GitHub issue number in the name, following the branch-naming convention every ticket publishes. Take the current branch, or the one the user names, extract the number, and fetch the ticket with `gh issue view <number>`.
 
-**The spec is two things.** The ticket's **Expected behaviour** is the user-visible bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
+**The spec is two things.** The ticket's **Spec** is the intended bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
 
 - If the branch name carries no issue number, the convention was skipped. Ask the user which issue this closes, and flag that the branch should be renamed to include the number.
 - If the issue doesn't already record which branch implements it, backfill the link with `gh issue comment <number>` and a one-line ``Refactored on branch `<branch>` ``.
@@ -31,7 +31,7 @@ The **module scope** is every non-test source file the diff changes, plus each o
 
 ## 2. True-to-spec
 
-**Make no edits in this step.** Work through the ticket's expected behaviour one item at a time:
+**Make no edits in this step.** Work through the ticket's Spec one line at a time. Each **Interface** line must match a piece of the settled public interface; a missing or extra piece is a finding. For each **Behaviour** line:
 
 - **Is a test true to it?** Find the acceptance test covering it. A test that asserts something weaker, stubs out the behaviour it should exercise, or is a **tautological test** per `../unit-test-ticket/test-standards.md` is not true to spec, green or not. A tautological test is a finding here only when it is the behaviour's sole cover. The rest are `unit-test-ticket`'s to delete.
 - **Is it covered at all?** A behaviour the ticket asked for with no test behind it is the worst finding here, because a green suite says otherwise.
@@ -40,7 +40,7 @@ The **module scope** is every non-test source file the diff changes, plus each o
 
 **Don't run the acceptance file here.** The branch is already green against it, and you are reading for true-to-spec, not for a pass.
 
-**Completion criterion:** every expected behaviour in the ticket accounted for, each one either true-to-spec or a named finding.
+**Completion criterion:** every Spec line in the ticket accounted for, each one either true-to-spec or a named finding.
 
 Zero findings means the spec is settled, so go to step 3. Any finding goes to the user before you refactor.
 

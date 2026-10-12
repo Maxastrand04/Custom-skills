@@ -2,21 +2,25 @@
 
 ## Goal
 
-{GOAL}
+{GOAL_ONE_SENTENCE}
 
-## Expected behaviour
+## Spec
 
-- {BEHAVIOUR_1}
-- {BEHAVIOUR_2}
+### Interface
+
+- {PIECE_1}
+- {PIECE_2}
+
+### Behaviour
+
+1. {FLOW_STEP_1}
+2. {FLOW_STEP_2}
+- {EDGE_CASE_1}
 
 ## Out of scope
 
-{OUT_OF_SCOPE}
+- {OUT_OF_SCOPE_1}
 
 ## Branch
 
-`{BRANCH_SLUG}`
-
----
-
-> **Branch:** implement this ticket on `<this issue's number>-{BRANCH_SLUG}`. The station that opens the branch prepends the number, since the slug is chosen before the issue number exists. The number in the branch name is what links the work back to this ticket.
+Implement on `<this issue's number>-{BRANCH_SLUG}`. The station that opens the branch prepends the number.

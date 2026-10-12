@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 One session, one ticket, all three legs of **red-green-refactor**, no gates. The ticket was labelled `autopilot` at filing because the planning would cost more than reading the finished diff, so the review moves from the contract to the PR.
 
-**The ticket is the spec.** Expected behaviour lines are the acceptance criteria, and you turn each into a test before you write any implementation. "AC met" means those tests are green, never your own reading of the code.
+**The ticket is the spec.** Its Behaviour lines are the acceptance criteria, and you cover each with a test before you write any implementation. "AC met" means those tests are green, never your own reading of the code.
 
 ---
 
@@ -16,7 +16,7 @@ One session, one ticket, all three legs of **red-green-refactor**, no gates. The
 
 Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHub issue URL. No argument means ask which issue, and stop until told. Never take a ticket from conversation.
 
-`gh issue view <number> --json title,body,labels`. Read Goal, Expected behaviour, Out of scope, and Branch.
+`gh issue view <number> --json title,body,labels`. Read Goal, Spec, Out of scope, and Branch. Spec's Interface lines tell you which pieces to build, and you name them in the project's style.
 
 **Precondition.** The labels must carry `ticket:autopilot` or `epic:autopilot`. Otherwise halt:
 
@@ -45,7 +45,7 @@ The same halt applies at any later step where a criterion turns out to fail. Lea
 
 ## 3. Red
 
-Convert each Expected behaviour line into one named test, in the project's naming style, in the file the surrounding tests live in. One behaviour per test, docstring stating the behaviour in one sentence. A `[bug]` ticket gets its standing test, the reproduction steps no longer produce the symptom.
+Cover every Behaviour line with at least one named test, in the project's naming style, in the file the surrounding tests live in. A flow step that only sets up the next one is covered by that next step's test. Interface lines get no tests. One behaviour per test, docstring stating the behaviour in one sentence. A `[bug]` ticket gets its standing test, the reproduction steps no longer produce the symptom.
 
 Run them. Every one must fail because the behaviour doesn't exist yet. A test that passes asserts nothing or covers something already shipped, so sharpen it. A test that errors is broken, not red, so fix the typo or halt on a missing dependency.
 
@@ -60,7 +60,7 @@ Red.
 Issue: #<N>
 ```
 
-**Completion criterion:** every Expected behaviour line has one test, every test observed failing for the right reason, one commit.
+**Completion criterion:** every Behaviour line covered by a test, every test observed failing for the right reason, one commit.
 
 ## 4. Green
 

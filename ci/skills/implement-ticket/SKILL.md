@@ -30,7 +30,7 @@ The kanban-ci loop starts you with `claude -p`. Nobody reads this session and no
 ## Pin the work
 
 1. **The branch.** The current branch. Its name carries the issue number, as in `42-oauth-admin-login`. If the invocation's number and the branch's number disagree, hand off to `review` and name both.
-2. **The ticket.** `gh issue view <number> --json title,body`. Read Goal, Expected behaviour, and Out of scope. It tells you whether a green test actually shipped the feature.
+2. **The ticket.** `gh issue view <number> --json title,body`. Read Goal, Spec, and Out of scope. It tells you whether a green test actually shipped the feature.
 3. **The diff.** `git diff <base>...HEAD`, three-dot, against the merge-base.
 
 ### Precondition

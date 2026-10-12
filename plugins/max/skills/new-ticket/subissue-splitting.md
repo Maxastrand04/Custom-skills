@@ -16,8 +16,8 @@ If a proposed sub-issue cannot be demoed end-to-end without one of the others sh
 Every sub-issue uses the task ticket shape, the same as the parent. See `ticket-shapes.md`.
 
 Per sub-issue:
-- **Goal** describes the slice end-to-end at behaviour level, with no file paths and no code.
-- **Expected behaviour** is user-visible outcomes specific to this slice.
+- **Goal** is one sentence describing the slice end-to-end, with no file paths and no code.
+- **Spec** holds only the pieces and flow steps this slice delivers.
 - **Out of scope** names the neighbouring slices this one does not deliver.
 
 Parentage and blocking are **not** body sections. They are wired natively via the GitHub API. See *Native wiring* in `ticket-shapes.md`.
@@ -29,12 +29,12 @@ Before publishing any sub-issues, run a **two-tier coverage check**. Both tiers 
 ### Tier 1, per-slice coverage
 
 For each sub-issue on its own:
-- Every expected-behaviour line in that sub-issue belongs to this slice.
-- The sub-issue's own expected behaviour fully covers the slice it claims to deliver, leaving nothing inside the slice unstated.
+- Every Spec line in that sub-issue belongs to this slice.
+- The sub-issue's own Spec fully covers the slice it claims to deliver, leaving nothing inside the slice unstated.
 
 ### Tier 2, systemic coverage
 
 Across the whole set of sub-issues:
-- The **union** of all sub-issue expected behaviour covers the **full** expected behaviour of the parent issue.
+- The **union** of all sub-issue Specs covers the **full** Spec of the parent issue.
 
-If Tier 2 fails, either expand an existing sub-issue, add a new sub-issue to absorb the gap, or pull the missing behaviour back into the parent and re-evaluate whether the split still makes sense.
+If Tier 2 fails, either expand an existing sub-issue, add a new sub-issue to absorb the gap, or pull the missing lines back into the parent and re-evaluate whether the split still makes sense.

@@ -47,7 +47,7 @@ The names, parameters, return values, and documented contracts of every entry po
 _Avoid_: API, contract surface, signature list
 
 **Acceptance test**:
-A test written by `architect-ticket` against the **Public interface** stubs, before any implementation exists. **The acceptance tests are the acceptance criteria**; there is no separate list, and each test's name and docstring is the one place its criterion is written. Derived from the **Ticket**'s user-visible expected behaviour plus the edge cases and failure modes the contract names. Frozen for `implement-ticket`, and checked against the **Ticket** by `refactor-ticket`'s true-to-spec pass.
+A test written by `architect-ticket` against the **Public interface** stubs, before any implementation exists. **The acceptance tests are the acceptance criteria**; there is no separate list, and each test's name and docstring is the one place its criterion is written. Derived from the **Spec**'s Behaviour lines plus the edge cases and failure modes the contract names. Frozen for `implement-ticket`, and checked against the **Ticket** by `refactor-ticket`'s true-to-spec pass.
 _Avoid_: AC, criterion, verification test, spec test
 
 **ADR**:
@@ -83,19 +83,23 @@ A `(N.M)` **Ticket** published by `map-epic` as a sub-issue of an **Epic**, labe
 _Avoid_: story, to-do, backlog item, task row
 
 **WHAT / HOW split**:
-The division of labor between `new-ticket`, which grills WHAT, meaning user-visible behaviour and scope, with no architecture, file paths, or tests, and `architect-ticket`, which grills HOW, meaning the **Public interface**, the **Acceptance tests**, and the structure behind them. The two Skills hand off via a GitHub Issue. The line is drawn where the knowledge is: a **Ticket** is written before anyone reads the code, so pinning an exact bar there pins it blind.
+The division of labor between `new-ticket`, which grills WHAT, meaning the pieces of the solution, the flow between them, and scope, written as the **Spec** with nothing named, and `architect-ticket`, which grills HOW, meaning the names, the **Public interface**, the **Acceptance tests**, and the structure behind them. The two Skills hand off via a GitHub Issue. The line is drawn where the knowledge is: a **Ticket** is written before anyone reads the code, so a name or signature written there is a guess.
 _Avoid_: spec/design split, intake/build split
 
 **Ticket**:
-A published GitHub Issue holding one unit of work, in one of two shapes: a task ticket, carrying Goal, Expected behaviour, Out of scope, and Branch, or a question ticket, carrying a Question only. `map-epic` publishes tickets under an epic map issue with the `epic:` label scope; `new-ticket` publishes standalone ones with the `ticket:` scope. Both render the same templates.
+A published GitHub Issue holding one unit of work, in one of two shapes: a task ticket, carrying a one-sentence Goal, the **Spec**, Out of scope, and Branch, or a question ticket, carrying a Question only. `map-epic` publishes tickets under an epic map issue with the `epic:` label scope; `new-ticket` publishes standalone ones with the `ticket:` scope. Both render the same templates.
 _Avoid_: card, story, work item
+
+**Spec**:
+The heart of a task **Ticket**: how the developer pictures the solution working, written like pseudocode with nothing named. Two parts. **Interface** lists the pieces the change adds or alters and what each carries, which `architect-ticket` turns into the **Public interface** as stubs; Interface lines never become tests. **Behaviour** is the happy path as numbered flow steps, read like a sequence diagram in text, then edge cases as bullets; every Behaviour line is covered by at least one **Acceptance test**. One claim per line. Never names a function, class, file, type, or test.
+_Avoid_: expected behaviour, requirements, acceptance criteria, design doc
 
 **Ticket shapes**:
 `new-ticket/ticket-shapes.md`, the single source of truth for how any **Ticket** is written and published: body templates, title format, the `<scope>:<type>` label table, branch slug rule, AI disclaimer, `gh` preflight, the preview-edit-approve publish loop, and native sub-issue and blocking wiring. Both `new-ticket` and `map-epic` read it, and neither restates it.
 _Avoid_: issue template, ticket spec
 
 **Sub-issue**:
-A child **Ticket** published by `new-ticket`'s split path when the parent's expected behaviour spans clearly separable user-visible concerns. Each sub-issue is an independently demoable vertical slice with its own expected behaviour, attached to its parent and wired to its blockers through the GitHub API rather than through body text. The union of sub-issue behaviour must cover the parent's full behaviour, which is what the **two-tier coverage check** enforces, per-slice and systemic.
+A child **Ticket** published by `new-ticket`'s split path when the parent's **Spec** spans clearly separable user-visible concerns. Each sub-issue is an independently demoable vertical slice with its own Spec, attached to its parent and wired to its blockers through the GitHub API rather than through body text. The union of sub-issue Specs must cover the parent's full Spec, which is what the **two-tier coverage check** enforces, per-slice and systemic.
 _Avoid_: child issue, subtask
 
 **Framework test**:
