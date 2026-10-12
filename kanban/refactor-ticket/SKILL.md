@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 The first of the two sessions that make up the refactor leg of **red-green-refactor**. The branch is **green** against its **acceptance file**, the one test file `architect-ticket` wrote for this ticket, and you refactor under that green. You own the code. `unit-test-ticket`, the second session, folds the acceptance file into the unit suite and tidies the tests.
 
-**Refactor** means the behaviour is already right and only the shape changes. Before any edit, ask whether a caller would see a difference. If one would, it is not a refactor. Steps 1 to 4 make the branch safe to refactor, step 5 is the refactor, and the rest records it. Wherever a step names no stop for the user, decide and act.
+**Refactor** means the behaviour is already right and only the shape changes. Before any edit, ask whether a caller would see a difference. If one would, it is not a refactor. A caller sees more than the signature. With enough callers, someone depends on every observable behaviour, such as the order of a returned list, an error message's text, a default value, or timing, so changing any of those is a behaviour change even when no signature moves. Steps 1 to 4 make the branch safe to refactor, step 5 is the refactor, and the rest records it. Wherever a step names no stop for the user, decide and act.
 
 `code-standards.md`, `../unit-test-ticket/test-standards.md` and `../architect-ticket/RECORD-FORMAT.md` resolve from this skill's directory. Never read a same-named file from the repo.
 
@@ -90,6 +90,7 @@ Three tiers, read per `../architect-ticket/RECORD-FORMAT.md`:
 2. **ADRs in `docs/adr/`** hold the design decisions. A breach is a hard violation too. Fix it and cite `ADR-NNNN`. Nothing pre-selects them, so take the whole set and judge yourself which the changed files fall under. Read each one's **Decision** for what's required and its **Consequence** for what a breach looks like in a diff.
    - **Amend an ADR only when it contradicts a signature already settled on this branch.** The architect settled that signature with the user and it is frozen, so the record is what moves. Amend it per the format file. Any other disagreement with an ADR is fixed in the code and reported, not amended.
    - **Write a new ADR when the diff introduces a shape neighbouring code will copy** and no record names it: a new layer, a new kind of module, a dependency direction the first of its kind establishes. Run it through the ADR tests in the format file. Most refactors write none.
+   - **Write a found ADR for every fence comment** the comment smell in `code-standards.md` moves out of the code, per the format file. Delete the comment in the same commit.
    - If the diff itself adds a file under `docs/adr/` or `docs/pcr/`, it is the architect's and you leave it alone.
    - If neither directory exists, this step runs on the baseline alone, and the Records table collapses to `**Records** no docs/pcr/ or docs/adr/`.
 3. **The baseline in `code-standards.md`** applies everywhere no record covers. It carries its own gates for deciding which entries a given codebase has, and applying them is yours.
@@ -114,7 +115,7 @@ Judge both against the whole branch diff, not just your refactor edits.
 
 Run the whole suite:
 
-- **All green.** Commit the refactor, the docs, and any record together as one commit on the branch, so the refactor stays separately readable from the rest of the branch. Subject: `Refactor: <ticket title>`. An amended ADR adds one line under the body, `Amends ADR-0003: <why, one line>`, since the file carries no history. Don't push unless the user asks.
+- **All green.** Commit the refactor, the docs, and any record together as one commit on the branch, so the refactor stays separately readable from the rest of the branch. Subject: `Refactor: <ticket title>`. An amended ADR adds one line under the body, `Amends ADR-0003: <why, one line>`, since the file carries no history. A found ADR adds `Comment in <file> moved to ADR-NNNN`. Don't push unless the user asks.
 - **Back to red.** The break is yours, and code that turned a test red was not a refactor. Fix or revert it, then re-run.
 
 ## 8. Report
@@ -146,6 +147,7 @@ Eight tables, in this order, same shape throughout.
 | `src/order.ts:17` | ADR-0004, no DB in handlers | query moved to `OrderRepository` |
 | `src/order.ts:3` | PCR-0002, no ORM imports | rewritten to `db.query` |
 | `src/repos/` | none | ADR-0009 written, repositories own SQL |
+| `src/sync.ts:31` | fence comment | ADR-0010 found, comment deleted |
 
 **Code smells**
 
@@ -186,7 +188,7 @@ The five lines:
 
 ```
 Changes  7 across 4 files
-Records  ADR-0009 written, ADR-0003 amended
+Records  ADR-0009 written, ADR-0010 found, ADR-0003 amended
 Docs     CONTEXT.md updated, README.md unchanged
 Commits  fix b0c1d2e, halt c9d8e7f, refactor a1b2c3d
 Tests    suite green, 2 reconciled, 2 changed at module halt

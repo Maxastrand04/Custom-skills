@@ -11,7 +11,7 @@ The back half of the kanban board, run by GitHub Actions instead of by me. I arc
 3. The nightly run, or `gh workflow run kanban-ci --ref <branch>`, starts the loop in `scripts/run-chain.sh`.
 4. The loop runs whichever station `HEAD`'s `Handoff-To` trailer names. After each one it pushes, runs the whole suite once, and passes the result to the next station in its prompt.
 5. Stations hand off forward, back a station, or early to `review`. Two backward moves per ticket at most. A third ends the chain.
-6. The loop opens a PR that closes the issue on merge. On a finished chain, `pr-ticket` first writes the body's Summary, Evidence and Merge danger sections from the commits. A halted chain skips it and gets a draft with a plain body. Every station's `For the reviewer` items are collected into the PR body either way.
+6. The loop opens a PR that closes the issue on merge. On a finished chain, `pr-ticket` first writes the body's Summary, Evidence and Merge danger sections from the commits, with Merge danger flagging changes callers may rely on and changed behaviour no test protects. A halted chain skips it and gets a draft with a plain body. Every station's `For the reviewer` items are collected into the PR body either way.
 7. `/kanban-ci:review-ticket <PR>` on my laptop goes through those items with me, applies the fixes I approve, and writes the issue comment. My own test workflow checks the PR, and I merge.
 
 Commit bodies are written for the next agent. The issue comment is written for a human, and only the review session writes it.

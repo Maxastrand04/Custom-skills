@@ -25,7 +25,7 @@ Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHu
 Settle two things, and confirm both to the user in one line before touching code:
 
 - **Branch.** `<issue-number>-<slug>`, slug from the ticket's `## Branch` section, or derived from the title when absent: 2 to 4 words, kebab-case, no articles.
-- **Base.** `main`, unless the user named one at invocation or the ticket is a sub-issue of an epic that has its own branch.
+- **Base.** `main`, unless the user named one at invocation.
 
 Then `git checkout -b <branch>` from the base. Surface unrelated uncommitted changes before switching. Never drag them across.
 
@@ -86,11 +86,11 @@ Each of these stops the session before push. Describe the failure in plain Engli
 
 - **No progress.** The same test fails with the same evidence two passes running.
 - **The ticket contradicts itself.** Two behaviours can't both be true.
-- **A record blocks it, or a decision is needed.** A PCR or ADR the only workable implementation would breach, or a call a future reader could undo by accident. Name it. Never code around it, never edit a record, and never write one; the ticket was mislabelled, so relabel and run `/architect-ticket <N>`.
+- **A record blocks it, or a decision is needed.** A PCR or ADR the only workable implementation would breach, or a call a future reader could undo by accident. Name it. Never code around it, never edit a record, and never write one other than a found ADR; the ticket was mislabelled, so relabel and run `/architect-ticket <N>`.
 
 ## 5. Refactor
 
-Shape only, never behaviour. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`, read from that skill's directory, never searched for in the repo. A record overrides the baseline. Tests are exempt. This station writes no records and amends none; a diff that needs one is the halt above.
+Shape only, never behaviour. Behaviour includes what callers can observe behind an unchanged signature, such as the order of a returned list, an error message's text, a default value, or timing. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`, read from that skill's directory, never searched for in the repo. A record overrides the baseline. Tests are exempt. This station writes no argued records and amends none; a diff that needs one is the halt above. The one record it writes is a found ADR, per `../architect-ticket/RECORD-FORMAT.md`, for each fence comment the comment smell moves out of the code. Delete the comment in the same commit.
 
 Re-run the tests from step 3 plus the neighbouring tests. Back to red means the edit changed behaviour, so revert it. Then commit once:
 
@@ -99,6 +99,8 @@ Refactor: <ticket title>
 
 Issue: #<N>
 ```
+
+A found ADR adds `Comment in <file> moved to ADR-NNNN` to the body.
 
 Update `CONTEXT.md` if the branch shifted a domain term and the file exists, and `README.md` only if a contributor now needs to run or configure something new. Fold either into the refactor commit.
 

@@ -3,7 +3,7 @@ name: implement-ticket
 description: Headless green leg for kanban-ci. Fills in the stub bodies on a red branch until the acceptance file passes, then hands off to refactor-ticket in a commit.
 disable-model-invocation: true
 ---
-<!-- synced-from kanban/implement-ticket/SKILL.md blob 87eb7a517ae10f5784c3f4bb5c2e85b9f7d4e10a -->
+<!-- synced-from kanban/implement-ticket/SKILL.md blob 75eac30f4e3cbe85bd487beb6a8b928a4723bf65 -->
 
 # implement-ticket, headless
 
