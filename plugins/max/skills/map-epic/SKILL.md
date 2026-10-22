@@ -7,7 +7,7 @@ description: Files a new epic skeleton issue, breadth-first grills one epic into
 
 Each run does one of three jobs:
 
-- **Filing** turns a goal into a new `(N) [epic]` skeleton issue, holding the Destination and nothing else.
+- **Filing** turns a goal into a new `epic: (N)` skeleton issue, holding the Destination and nothing else.
 - **Charting** turns a skeleton's goal into a GitHub-native **map**. The epic issue holds the destination and a running decision log, and its **tickets**, native GitHub sub-issues typed `task`, `research`, or `prototype`, are wired together with native blocking. Anything not yet specifiable is written down as fog.
 - **Graduating** revisits a charted epic once tickets have closed, and turns fog that is now specifiable into tickets.
 
@@ -15,7 +15,7 @@ This skill owns every epic and every epic-linked ticket end to end. `new-ticket`
 
 Read these at runtime. Do not assume their contents from this document:
 
-- **`../new-ticket/ticket-shapes.md` is the single source of truth** for ticket body shape, title format, labels, branch slug, the AI disclaimer, gh preflight, the publish loop, and native wiring. Read it before Step 1.
+- **`../new-ticket/ticket-shapes.md` is the single source of truth** for ticket body shape, title format, labels, effort criteria, branch slug, the AI disclaimer, gh preflight, the publish loop, and native wiring. Read it before Step 1.
 - `template_epic_issue.md` holds the epic issue body, with Destination, Notes, Decisions so far, and Not yet specified.
 
 ---
@@ -32,7 +32,7 @@ Run the **gh preflight** from `ticket-shapes.md`, including its remediation step
 gh issue list --state all --limit 500 --json number,title,state
 ```
 
-Keep the issues whose title starts with a `(N) [epic]` token and parse `N` from each.
+Keep the issues whose title starts with an `epic: (N)` token and parse `N` from each.
 
 **If the argument is a number `N`**, as in `$max:map-epic 2`, match it against that list. If it isn't found, list the available epics and ask the user to pick one or file a new one.
 
@@ -81,7 +81,7 @@ Render `template_epic_issue.md`:
 Run the publish loop's preview, edit, and approve steps from `ticket-shapes.md`, then:
 
 ```
-gh issue create --title "(N) [epic] <epic name>" --body "$(cat ...rendered...)"
+gh issue create --title "epic: (N) <epic name>" --body "$(cat ...rendered...)"
 ```
 
 Output the issue URL, then ask whether to chart it now. On yes, continue at Step 6 with this epic. On no, stop.
@@ -147,8 +147,8 @@ Epic tickets take the `epic:` label scope.
 1. Draft the Goal, the Spec, the Out of scope, and the Branch slug from what the breadth-first grill already surfaced.
 2. Run the publish loop's preview, edit, and approve steps. Spend the discussion on the Spec, and keep it free of names per `ticket-shapes.md`.
 3. Assign the `(N.M)` id by taking `max(M) + 1` over the `(N.M)` ids already in the epic issue's sub-issue titles, starting at 1 if none exist. This is append-only. Never renumber or delete an existing ticket.
-4. Judge it against `ticket-shapes.md`'s **autopilot criteria** and state the label, `epic:task` or `epic:autopilot`, with one line of reasoning. The user confirms or overrides.
-5. Publish with the title `(N.M) [feature] <short title>`. Every task defaults to feature-shaped, so do not ask feature vs bug here.
+4. Judge it against `ticket-shapes.md`'s **effort criteria** and state the level, `trivial`, `minor`, `medium`, or `major`, with one line naming the check that decided it. The user confirms or overrides.
+5. Publish with the title `feat: (N.M) <short title>` and the labels `epic:task` and `effort:<level>`. Every task defaults to `feat`, so do not ask feat vs fix here.
 6. Move to the next task ticket.
 
 **Wire every published ticket** as a sub-issue of the epic issue, and wire each confirmed blocking edge, per `ticket-shapes.md`'s native wiring.

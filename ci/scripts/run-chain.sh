@@ -128,14 +128,10 @@ $SUITE_SUMMARY" || log "pr-ticket failed, using the plain body"
     git reset --hard -q "$before"
 }
 
-# Turns a ticket title like "(3.2) [bug] Fix X" into "fix: (3.2) Fix X".
+# The ticket title, like "fix: (3.2) Fix X", is already the PR title.
 # Only pr-ticket can tell a breaking change, so this never adds the "!".
 plain_title() {
-    local raw type=feat
-    raw=$(gh issue view "$ISSUE" --json title --jq .title)
-    [[ "$raw" == *"[bug]"* ]] && type=fix
-    raw=$(sed -E 's/ *\[(feature|bug)\] */ /; s/^ +//' <<<"$raw")
-    printf '%s: %s' "$type" "$raw"
+    gh issue view "$ISSUE" --json title --jq .title
 }
 
 # Opens or updates the PR. $1 is empty when finished, else the halt reason.
