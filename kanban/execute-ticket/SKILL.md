@@ -1,11 +1,12 @@
 ---
-name: autopilot-ticket
-description: Runs an autopilot ticket unattended, red-green-refactor in one session, and opens a PR for review. Takes the ticket reference as its argument.
+name: execute-ticket
+description: Executes an effort:minor ticket unattended, red-green-refactor in one session, and opens a PR for review. Takes the ticket reference as its argument.
+disable-model-invocation: true
 ---
 
-# autopilot-ticket
+# execute-ticket
 
-One session, one ticket, all three legs of **red-green-refactor**, no gates. The ticket was labelled `autopilot` at filing because the planning would cost more than reading the finished diff, so the review moves from the contract to the PR.
+One session, one ticket, all three legs of **red-green-refactor**, no gates. The ticket was labelled `effort:minor` at filing because the planning would cost more than reading the finished diff, so the review moves from the contract to the PR.
 
 **The ticket is the spec.** Its Behaviour lines are the acceptance criteria, and you cover each with a test before you write any implementation. "AC met" means those tests are green, never your own reading of the code.
 
@@ -17,9 +18,9 @@ Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHu
 
 `gh issue view <number> --json title,body,labels`. Read Goal, Spec, Out of scope, and Branch. Spec's Interface lines tell you which pieces to build, and you name them in the project's style.
 
-**Precondition.** The labels must carry `ticket:autopilot` or `epic:autopilot`. Otherwise halt:
+**Precondition.** The labels must carry `effort:minor`. Otherwise halt:
 
-> #<N> isn't an autopilot ticket. Run `$max:architect-ticket <N>` for the red leg, or relabel it if it qualifies under `ticket-shapes.md`.
+> #<N> isn't an `effort:minor` ticket. Take the route its effort level names in `ticket-shapes.md`, or relabel it if it qualifies.
 
 Settle two things, and confirm both to the user in one line before touching code:
 
@@ -36,19 +37,19 @@ Read the region you will change, not the whole repo. Grep for the symbols the ti
 
 ### The qualifying check
 
-The `autopilot` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **autopilot criteria** in `../new-ticket/ticket-shapes.md`. Any one failing means the ticket was mislabelled, and this session halts with nothing committed:
+The `effort:minor` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **effort criteria** in `../new-ticket/ticket-shapes.md`. Any of the three checks failing, or a Behaviour line no automated test reaches, means the ticket was mislabelled, and this session halts with nothing committed:
 
-> #<N> needs a decision I shouldn't make unattended: <which criterion, one line>. Relabel and run `$max:architect-ticket <N>`.
+> #<N> needs a decision I shouldn't make unattended: <which check, one line>. Relabel it to the effort level that check gives and take that route.
 
-The same halt applies at any later step where a criterion turns out to fail. Leave a branch that already carries commits in place and name it in the halt. Never delete it.
+The same halt applies at any later step where a check turns out to fail. Leave a branch that already carries commits in place and name it in the halt. Never delete it.
 
 ## 3. Red
 
-Cover every Behaviour line with at least one named test, in the project's naming style, in the file the surrounding tests live in. A flow step that only sets up the next one is covered by that next step's test. Interface lines get no tests. One behaviour per test, docstring stating the behaviour in one sentence. A `[bug]` ticket gets its standing test, the reproduction steps no longer produce the symptom.
+Cover every Behaviour line with at least one named test, in the project's naming style, in the file the surrounding tests live in. A flow step that only sets up the next one is covered by that next step's test. Interface lines get no tests. One behaviour per test, docstring stating the behaviour in one sentence. A `fix` ticket gets its standing test, the reproduction steps no longer produce the symptom.
 
 Run them. Every one must fail because the behaviour doesn't exist yet. A test that passes asserts nothing or covers something already shipped, so sharpen it. A test that errors is broken, not red, so fix the typo or halt on a missing dependency.
 
-A behaviour no automated test can reach is not a reason to skip it. Halt and name it. An autopilot ticket with an untestable behaviour was mislabelled.
+A behaviour no automated test can reach is not a reason to skip it. Halt and name it. An `effort:minor` ticket with an untestable behaviour was mislabelled, and is `trivial` at most.
 
 Commit the tests:
 
@@ -81,11 +82,11 @@ Once every test you wrote is green, run the **neighbouring tests**, meaning ever
 
 ### Loop exits
 
-Each of these stops the session before push. Describe the failure in plain English, which test, the evidence, your best guess at the cause stated as a guess, and offer the real options: a hint from the user, relabelling to `task` and running `$max:architect-ticket <N>`, a `$max:challenge-pcr` session when a PCR is the block, or stopping here.
+Each of these stops the session before push. Describe the failure in plain English, which test, the evidence, your best guess at the cause stated as a guess, and offer the real options: a hint from the user, relabelling to the effort level the failure points at and taking that route, a `/challenge-pcr` session when a PCR is the block, or stopping here.
 
 - **No progress.** The same test fails with the same evidence two passes running.
 - **The ticket contradicts itself.** Two behaviours can't both be true.
-- **A record blocks it, or a decision is needed.** A PCR or ADR the only workable implementation would breach, or a call a future reader could undo by accident. Name it. Never code around it, never edit a record, and never write one other than a found ADR; the ticket was mislabelled, so relabel and run `$max:architect-ticket <N>`.
+- **A record blocks it, or a decision is needed.** A PCR or ADR the only workable implementation would breach, or a call a future reader could undo by accident. Name it. Never code around it, never edit a record, and never write one other than a found ADR; the ticket was mislabelled, so relabel it `effort:major` and run `/architect-ticket <N>`.
 
 ## 5. Refactor
 
@@ -115,7 +116,7 @@ gh pr create --base <base> --title "<PR title>" --body-file <file>
 PR body, this shape:
 
 ```
-> *This was implemented by AI on autopilot. Review the diff before merging.*
+> *This was implemented unattended by AI with execute-ticket. Review the diff before merging.*
 
 Closes #<N>
 

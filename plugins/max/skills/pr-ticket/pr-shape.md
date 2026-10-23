@@ -1,6 +1,6 @@
 # PR shape
 
-The title and the three sections of a PR body, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `autopilot-ticket` both write them. The header lines and `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
+The title and the three sections of a PR body, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `execute-ticket` both write them. The header lines and `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
 
 ## Title
 
@@ -8,10 +8,10 @@ The title and the three sections of a PR body, for a reviewer who hasn't read th
 <type>: <id> <short title>
 ```
 
-Build it from the ticket title. The id is the `(N.M)` an epic task carries, and a standalone ticket has none. Drop the `[feature]` or `[bug]` tag, since the type replaces it. `(3.2) [feature] Add OAuth login` becomes `feat: (3.2) Add OAuth login`.
+Copy the ticket title, which is already in this shape. The id is the `(N.M)` an epic task carries, and a standalone ticket has none. The ticket `feat: (3.2) Add OAuth login` opens the PR `feat: (3.2) Add OAuth login`.
 
-- `feat` for a `[feature]` ticket, `fix` for a `[bug]` ticket.
-- `!` after the type for a breaking change, as in `feat!:` or `fix!:`.
+- The type is `feat` or `fix`, as the ticket says.
+- Add `!` after the type for a breaking change, as in `feat!:` or `fix!:`. That is the one edit the title gets.
 
 The prefix follows Conventional Commits. A PR merges into main as one squash commit whose subject is the PR title, and release tooling reads the type from that subject to pick the next version. `fix` raises the patch number, `feat` the minor, and `!` the major.
 
@@ -202,7 +202,7 @@ function expandSkill(command: string): string {
 The tests are the evidence. Before is the red commit, where every test the ticket added was watched failing. After is `HEAD`, where the same tests pass.
 
 - **On the kanban chain**, the red commit is `Architect #<N>:`. The tests have since moved into the module test files `unit-test-ticket` folded them into, so take each one's file at `HEAD` from the `Tests #<N>: tidy and fold` commit or `unit-test-ticket`'s issue comment. Leave dropped tests out. The whole suite ran green, so say so with its count.
-- **On autopilot**, the red commit is `Test #<N>:`, and the tests are still where it wrote them. It ran its own tests and the neighbouring tests, not the whole suite, so say exactly that.
+- **On `execute-ticket`**, the red commit is `Test #<N>:`, and the tests are still where it wrote them. It ran its own tests and the neighbouring tests, not the whole suite, so say exactly that.
 
 List one line per test: the behaviour in the ticket's words, then the test's file and name at `HEAD`. Never claim a test passed or failed without a run or a commit that says so.
 

@@ -1,6 +1,6 @@
 # Code standards
 
-Shared contract. The baseline `refactor-ticket` refactors against and `autopilot-ticket` reads, in two groups: **code smells**, which are local, and **bad architecture**, which is structural. The rules for tests live in `../unit-test-ticket/test-standards.md`. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source. An entry from elsewhere names its source in full.
+Shared contract. The baseline `refactor-ticket` refactors against and `execute-ticket` reads, in two groups: **code smells**, which are local, and **bad architecture**, which is structural. The rules for tests live in `../unit-test-ticket/test-standards.md`. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source. An entry from elsewhere names its source in full.
 
 ## Gates
 

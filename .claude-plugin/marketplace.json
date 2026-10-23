@@ -22,7 +22,7 @@
         "./kanban/refactor-ticket",
         "./kanban/unit-test-ticket",
         "./kanban/pr-ticket",
-        "./kanban/autopilot-ticket",
+        "./kanban/execute-ticket",
         "./developer-tools/brainstorming",
         "./developer-tools/challenge-pcr",
         "./developer-tools/pro-con",
