@@ -17,6 +17,7 @@ CONVENTIONAL = re.compile(r"([A-Za-z]+)(\([^)]*\))?(!)?:")
 RELEASE_COMMIT = re.compile(r"chore\(release\): v(\d+\.\d+\.\d+)")
 MANIFEST_VERSION = re.compile(r'("version"\s*:\s*)"[^"]*"')
 BREAKING, FEATURE, FIX = 3, 2, 1
+FIRST_RELEASE = "1.0.0"
 
 Plan = namedtuple("Plan", ["version", "deciding", "unconventional"])
 Plan.__doc__ = """The release a run should make.
@@ -50,10 +51,16 @@ def _version_text(numbers):
     return ".".join(str(n) for n in numbers)
 
 
+def _release_commit_version(message):
+    """The "X.Y.Z" a release commit names, or None if the message isn't one."""
+    match = RELEASE_COMMIT.fullmatch(_subject(message))
+    return match.group(1) if match else None
+
+
 def _released_messages(messages):
     """The messages a release covers: up to an unfinished release commit, or all of them."""
     for index, message in enumerate(messages):
-        if RELEASE_COMMIT.fullmatch(_subject(message)):
+        if _release_commit_version(message):
             return messages[:index]
     return messages
 
@@ -64,7 +71,7 @@ def last_release(tags):
     Only tags shaped "vX.Y.Z" count, and they compare as numbers, so "v1.10.0"
     beats "v1.9.0". Any other tag is skipped. No release tag returns None.
     """
-    found = [tuple(int(n) for n in m.groups()) for m in map(TAG.fullmatch, tags) if m]
+    found = [_numbers(tag[1:]) for tag in tags if TAG.fullmatch(tag)]
     if not found:
         return None
     return _version_text(max(found))
@@ -91,9 +98,7 @@ def plan_release(last, messages):
     when a release commit names a version not above last.
     """
     unconventional = [_subject(m) for m in messages if _raise_kind(m) is None]
-    unfinished = [
-        match.group(1) for match in (RELEASE_COMMIT.fullmatch(_subject(m)) for m in messages) if match
-    ]
+    unfinished = [v for v in map(_release_commit_version, messages) if v]
     if len(unfinished) > 1:
         raise ValueError(f"more than one release commit since the last tag: {', '.join(unfinished)}")
     covered = _released_messages(messages)
@@ -105,7 +110,7 @@ def plan_release(last, messages):
             raise ValueError(f"release commit names v{version}, which is not above v{last}")
         return Plan(version, deciding, unconventional)
     if last is None:
-        return Plan("1.0.0", deciding, unconventional)
+        return Plan(FIRST_RELEASE, deciding, unconventional)
 
     kind = max((_raise_kind(m) or 0 for m in covered), default=0)
     if not kind:
