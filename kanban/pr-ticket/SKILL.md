@@ -10,7 +10,7 @@ The last station on the board, for every branch. On the kanban chain, `unit-test
 
 **You never edit code or tests.** A problem you find goes in `For the reviewer`, not into a commit.
 
-The title and the body's three sections follow `pr-shape.md`, the file beside this `SKILL.md`. Read it from this skill's directory, never from the repo. Word every halt and report to the user per the `gloss-me` skill, and check the body against `unslop`. The body itself carries no gloss blocks, since its reader isn't you.
+The title and the body's three sections follow `pr-shape.md`, the file beside this `SKILL.md`. Read it from this skill's directory, never from the repo. Word every halt and report to the user per the `gloss-me` skill. The body itself carries no gloss blocks, since its reader isn't you.
 
 ## 1. Pin the work and check the handoff
 
@@ -31,7 +31,7 @@ The level picks the checks. Halt unless every check for it holds, naming the one
 | `trivial` | Reviewed, Committed, Green if the repo has a suite |
 
 - **Folded.** `git log <base>..HEAD` has a commit whose subject starts `Tests #<N>: tidy and fold`. If not, say to run `/unit-test-ticket` first.
-- **Reviewed.** A review note, per `../review-diff/review-note.md`, sits in the issue's comments or the open PR's. Take the newest. If none, say to run `/review-diff` first. If the newest commit on the branch, `git log -1 --format=%cI`, is later than the note's `createdAt`, the note no longer covers `HEAD`, so say to run `/review-diff` again.
+- **Reviewed.** A review note, per `../review-diff/review-note.md`, sits in the issue's comments or the open PR's. Read them with `gh issue view <N> --json comments`, plus `gh pr view <PR> --json comments` when a PR is open. Each comment carries its `body` and `createdAt`. Take the newest note. If none, say to run `/review-diff` first. If the newest commit on the branch, `git log -1 --format=%cI`, is later than the note's `createdAt`, the note no longer covers `HEAD`, so say to run `/review-diff` again. Compare them as times, not strings, since git prints a local offset and GitHub prints UTC.
 - **Committed.** `git status --porcelain` is empty. Never commit someone else's leftovers to make it so.
 - **Green.** The whole suite passes. If not, say which tests fail and stop. Red never gets a PR. On `trivial` with no suite in the repo, record that for Evidence and carry on.
 
@@ -44,12 +44,12 @@ Keep the suite's pass count for Evidence. Run the squash merge check from `pr-sh
 - **The diff.** `git diff <base>...HEAD`, read in full, so the Summary describes the code and not the commit messages.
 - **The fold**, on `major` or `medium`. The `Tests #<N>: tidy and fold` commit and `unit-test-ticket`'s issue comment map each acceptance test to its file at `HEAD`.
 - **The review note**, on `minor` or `trivial`. Its Suite line, Fixes and Found, not fixed rows, and any records it wrote or amended.
-- **Reviewer items.** Every `For the reviewer` line in the issue comments: bugs found and deleted, undefined behaviour, design worsened for testability.
+- **Reviewer items.** Every `For the reviewer` line in the issue comments: bugs found and deleted, undefined behaviour, design worsened for testability, drift the user confirmed as intentional.
 - **`CONTEXT.md`**, if the repo has one, for the terms the Summary should use.
 
 ## 3. Write the body
 
-Title per `pr-shape.md`, such as `feat: (3.2) Add OAuth login`. Settle it after Merge danger, since the breaking call reads Blast radius.
+Title per `pr-shape.md`, such as `feat: (3.2) Add OAuth login`.
 
 ```markdown
 > *<header line>*
