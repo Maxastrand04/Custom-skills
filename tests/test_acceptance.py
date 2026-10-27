@@ -88,22 +88,22 @@ class PlanReleaseTests(unittest.TestCase):
 
     def test_other_types_release_nothing(self):
         """Commits of types other than feat and fix leave nothing to release."""
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, "no feat, fix, or breaking change"):
             release.plan_release("1.2.3", ["chore: Tidy", "docs: Reword", "refactor: Split"])
 
     def test_no_commits_since_last_release_releases_nothing(self):
         """No commits since the last release leave nothing to release."""
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, "no feat, fix, or breaking change"):
             release.plan_release("1.2.3", [])
 
     def test_unconventional_commits_release_nothing(self):
         """Commits without a type prefix leave nothing to release."""
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, "no feat, fix, or breaking change"):
             release.plan_release("1.2.3", ["Merge pull request #19 from x/y", "Add license"])
 
     def test_codex_build_commit_releases_nothing(self):
         """The commit the per-merge Codex build makes doesn't raise the version."""
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, "no feat, fix, or breaking change"):
             release.plan_release("1.2.3", ["chore: Build Codex marketplace skills"])
 
     def test_unconventional_subjects_are_listed(self):
