@@ -21,6 +21,7 @@
         "./kanban/implement-ticket",
         "./kanban/refactor-ticket",
         "./kanban/unit-test-ticket",
+        "./kanban/review-diff",
         "./kanban/pr-ticket",
         "./kanban/execute-ticket",
         "./developer-tools/brainstorming",
