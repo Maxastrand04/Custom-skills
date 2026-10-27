@@ -1,6 +1,6 @@
 ---
 name: architect-ticket
-description: Third station, the red leg of red-green-refactor. Turns a ticket into a branch of interface stubs and failing acceptance tests, committed once you approve the diff.
+description: Third station, the red leg of red-green-refactor. Turns a ticket into a branch of interface stubs and failing acceptance tests, committed and pushed once you approve the diff.
 ---
 
 # architect-ticket
@@ -11,7 +11,7 @@ That commit is the whole handoff. `implement-ticket` takes it **green** and `ref
 
 **The user owns the contract; the implementer owns everything behind it.** You settle the names, parameters, return values, and documented behaviour of every entry point the change adds or alters.
 
-**The tests are the acceptance criteria.** There is no separate list. The ticket's Behaviour lines are the bar; you convert them into named test functions, and each test's name and docstring is the criterion it enforces. Never write an AC list beside the tests it duplicates.
+**The tests are the acceptance criteria.** The ticket's Behaviour lines are the bar; you convert them into named test functions, and each test's name and docstring is the criterion it enforces. Never write an AC list beside the tests it duplicates.
 
 **They all land in one acceptance file.** One new file at the root of the test tree, named in the project's style, `tests/test_acceptance.py` or `tests/acceptance.test.ts`, holding this ticket's tests and nothing else. It lives only on this branch; `unit-test-ticket` folds it into the module test files before the branch merges.
 
@@ -21,7 +21,7 @@ That commit is the whole handoff. `implement-ticket` takes it **green** and `ref
 
 You are a developer grilling a project leader about code structure. Every question in this phase runs under the `grilling` skill's interview mechanics, so invoke it.
 
-The phase runs as **one continuous session, ending in agreement on the contract**. Draft as you go and present work back only when something is open. **The contract is never gated here.** A pause mid-grill for a correction is part of the interview.
+The phase runs as **one continuous session, ending in agreement on the contract**. Draft as you go and present work back only when something is open.
 
 ### Resolve the ticket
 
@@ -33,7 +33,7 @@ This skill starts from a ticket. Resolve one of:
 
 Then read the body in full with `gh issue view <ref> --json title,body,labels`. Take **Goal**, **Spec**, and **Out of scope** as given. They are the WHAT and were settled when the ticket was filed. Spec's **Interface** lines name the pieces without naming them in code, and its **Behaviour** lines trace the flow between them. Naming those pieces, and everything else in this phase, is yours.
 
-Settle the **branch name**, which is `<issue-number>-<slug>`. Take the slug from the ticket's `## Branch` section when it has one. Otherwise derive it from the title: 2 to 4 words, kebab-case, no articles, no issue number. This skill owns the branch name, so a ticket filed by anyone can be architected.
+Settle the **branch name**, which is `<issue-number>-<slug>`. Take the slug from the ticket's `## Branch` section when it has one. Otherwise derive it from the title: 2 to 4 words, kebab-case, no articles, no issue number.
 
 ### Exploration, runs before any question
 
@@ -70,10 +70,12 @@ Draft from Exploration first. Propose the interface that fits what already exist
 
 Now convert the ticket's Behaviour lines into named tests. Interface lines become stubs, never tests.
 
-Every Behaviour line is covered by at least one test. A flow step that only sets up the next one, such as "the player clicks", is covered by the test of the step it leads to. For each test, settle:
+Every Behaviour line is covered by at least one test. A flow step that only sets up the next one, such as "the player clicks", is covered by the test of the step it leads to. For each test, draft:
 
 - **The test function name**, in the project's naming style.
 - **What it asserts**, in one sentence, phrased as an observable outcome through the public interface.
+
+**Draft the tests quietly.** The user never approves a test name or a test list. Ask only when a Behaviour line is ambiguous enough that two readings would need different tests. Then ask one question about that line, phrased as a behaviour ("Does a second login while one is active end the first session?"), never as a test name.
 
 Then sweep for what the ticket didn't say, because a ticket stops short of the contract's detail:
 
@@ -87,9 +89,9 @@ Then sweep for what the ticket didn't say, because a ticket stops short of the c
 
 ### Leaving Phase 1
 
-The phase ends when every entry point is settled on all four counts and every Behaviour line in the ticket is covered by a named test.
+The phase ends when every entry point is settled on all four counts and every Behaviour line in the ticket is covered by a drafted test.
 
-**Never write the contract back as fenced stubs or a test table.** That is the diff's job, and doing it here makes the user review the same material twice. If drafting the tests surfaces a gap in the interface, close it in conversation and carry on.
+**Never write the contract back as fenced stubs, a test list, or a test table.** The files on disk do that job, and doing it here makes the user review the same material twice. If drafting the tests surfaces a gap in the interface, close it in conversation and carry on.
 
 Then say:
 
@@ -115,9 +117,9 @@ Write each settled entry point into its real file: the signature, the contract a
 
 ### 3. Tests
 
-Write every test settled in Phase 1 into the acceptance file, calling the code **only through the stubs as written**. These tests are what pin the contract, so a test that reaches around the public interface into internals pins nothing and blocks the implementer from restructuring.
+Write every test drafted in Phase 1 into the acceptance file, calling the code **only through the stubs as written**. A test that reaches around the public interface into internals pins nothing and blocks the implementer from restructuring.
 
-**Never write a structure-sensitive test**, as `../unit-test-ticket/test-standards.md` defines it. That includes any test touching a private function or field. `unit-test-ticket` drops one that slips through, and the behaviour it covered loses its test.
+**Never write a structure-sensitive test**, as `../unit-test-ticket/test-standards.md` defines it.
 
 Each test's docstring states the behaviour it enforces, in one sentence.
 
@@ -132,13 +134,13 @@ Two ways this goes wrong, and both mean you are not done:
 
 What the test run can't reach is external: a credential, a running service, a created bucket or queue. Name those to the user in one line if the contract needs any.
 
-**Completion criterion:** every test settled in Phase 1 exists, has been run, and has been observed failing for the right reason. Not "should fail". Observed.
+**Completion criterion:** every test drafted in Phase 1 exists, has been run, and has been observed failing for the right reason. Not "should fail". Observed.
 
 ### 5. Records
 
-Read `RECORD-FORMAT.md`, the file beside this `SKILL.md`, and run every record candidate from Phase 1 through its ADR tests. Write one ADR per candidate that passes, taking the next free number, and drop the rest without comment. The spine test is what keeps this to one or two per ticket: a module's purpose and shape, what future code inside it may not do, a dependency direction, a data owner, an interface that beat a real alternative. A ticket whose grill argued nothing writes nothing, and that is the common case.
+Read `RECORD-FORMAT.md`, the file beside this `SKILL.md`, and run every record candidate from Phase 1 through its ADR tests. Write one ADR per candidate that passes, taking the next free number, and drop the rest without comment. A ticket whose grill argued nothing writes nothing, and that is the common case.
 
-Write **amendments** settled in Phase 1 the same way: keep the number, rewrite Decision, Reason, and Consequence together, bump the Date. The reason for the change goes in the commit message and nowhere in the file.
+Write any **amendments** settled in Phase 1 the way that file describes.
 
 Write a **PCR** only when this ticket is the first to settle something project-wide, which usually means the first ticket to pick a test runner, a library, or a naming style in a repo that has no `docs/pcr/` yet. Never amend one here.
 
@@ -146,9 +148,9 @@ Write without asking; the user reads the Decision line at the diff gate like eve
 
 ### 6. The diff gate
 
-`git add` the stubs, the acceptance file, and any record, then show `git diff --staged` in full and **stop**. This is the session's only gate.
+Leave the stubs, the acceptance file, and any record on disk, **unstaged**, and **stop**. This is the session's only gate. The user reads the changes in their own editor, so never paste the diff or any file into chat.
 
-Put four lines above it, plus any manual checks or external resources the user still owns:
+Post four lines, plus any manual checks or external resources the user still owns:
 
 ```
 Branch    42-oauth-admin-login
@@ -157,20 +159,20 @@ Tests     tests/test_acceptance.py, 6 written, 6 red
 Records   ADR-0007 written, ADR-0003 amended
 ```
 
-The Records line reads `none` when nothing was written.
+The Records line reads `none` when nothing was written. End with one line saying the changes are on disk, unstaged, for the user to read before approving.
 
-**Do not commit until the user approves.**
+**Do not stage, commit, or push until the user approves.**
 
 Corrections come back in two kinds, handled differently:
 
-- **A fix inside the contract**, meaning a name, a type, a missing test, a wrong assertion. Edit the working tree, re-run the tests, re-stage, show the diff again.
+- **A fix inside the contract**, meaning a name, a type, a missing test, a wrong assertion. Edit the working tree, re-run the tests, then post the four lines again plus one line per file you changed, such as `Edited    tests/test_acceptance.py`. Still no diff.
 - **A change to the contract itself**, meaning a boundary in the wrong place, an entry point that shouldn't exist, a behaviour no signature can reach. **Return to Phase 1 and grill it.** Code already on disk is not evidence the shape was right. Never patch a stub to absorb an objection that is really about the design.
 
-If the user abandons the session, nothing is committed, so `git reset` unstages and `git checkout <previous-branch> && git branch -D <branch>` drops the branch. New files stay untracked, so list them with `git clean -nd` and let the user say what goes.
+If the user abandons the session, nothing is staged or committed, so `git checkout <previous-branch> && git branch -D <branch>` drops the branch. Your edits stay in the working tree, so list them with `git status --short` and let the user say what goes.
 
 ### 7. Commit
 
-On approval, commit on the branch.
+On approval, `git add` exactly the files you wrote or edited this session, each by path. Never `git add -A` or `git add .`, since the user may have unrelated edits open in their editor, and a blanket add sweeps them into the red commit. Then commit on the branch.
 
 ```
 Architect #<N>: <ticket title>
@@ -181,8 +183,8 @@ Issue: #<N>
 
 An amended ADR adds one line per amendment under the body, `Amends ADR-0003: <why, one line>`, since the file itself carries no history.
 
-Don't push unless the user asks.
+Then push with `git push -u origin <branch>`.
 
 ### 8. Confirm
 
-One line, `Commit    a1b2c3d`, then say that `$max:implement-ticket` takes it green.
+Two lines, `Commit    a1b2c3d` and `Pushed    origin/<branch>`, then say that `$max:implement-ticket` takes it green.
