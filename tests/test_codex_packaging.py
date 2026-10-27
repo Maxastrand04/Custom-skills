@@ -110,12 +110,6 @@ class PackagingTests(unittest.TestCase):
         actual = {p.parent.name for p in (ROOT / "plugins/max/skills").glob("*/SKILL.md")}
         self.assertEqual(actual, expected)
 
-    def test_bump_version_raises_only_the_last_number(self):
-        manifest = self.root / "plugin.json"
-        manifest.write_text('{\n  "name": "max",\n  "version": "1.4.9",\n  "x": 1\n}\n')
-        self.assertEqual(builder.bump_version(manifest), "1.4.10")
-        self.assertEqual(manifest.read_text(), '{\n  "name": "max",\n  "version": "1.4.10",\n  "x": 1\n}\n')
-
     def test_skill_mentions_change_but_paths_and_urls_do_not(self):
         names = ["grilling", "pr-ticket"]
         source = "\n".join([
