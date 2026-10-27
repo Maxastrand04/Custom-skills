@@ -75,6 +75,5 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # A chore commit, which never raises the version. Only the release workflow sets it.
           git commit -m "chore: Build Codex marketplace skills"
           git push origin "HEAD:$BRANCH_NAME"
