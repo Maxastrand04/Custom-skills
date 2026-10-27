@@ -114,8 +114,8 @@
   <div>
     <h3>Add the marketplace</h3>
     <p>Start Claude Code anywhere and type:</p>
-    <pre>/plugin marketplace add Maxastrand04/Custom-skills</pre>
-    <p class="muted">This tells Claude Code where the skills live. It installs nothing yet.</p>
+    <pre>/plugin marketplace add Maxastrand04/Custom-skills#release</pre>
+    <p class="muted">This tells Claude Code where the skills live. It installs nothing yet. The <code>#release</code> part picks the <code>release</code> branch, which only changes when a new version goes out.</p>
   </div>
 </div>
 
@@ -148,7 +148,7 @@
 </div>
 
 <p>Prefer a shell? These do steps 1 and 2:</p>
-<pre>claude plugin marketplace add Maxastrand04/Custom-skills
+<pre>claude plugin marketplace add Maxastrand04/Custom-skills#release
 claude plugin install max@custom-skills</pre>
 
 <p>You get the kanban skills, the developer tools, and the behaviour skills. The <a href="skills-tutorial.html">developer skills sheet</a> covers what each one does and where to start.</p>
@@ -162,8 +162,8 @@ claude plugin install max@custom-skills</pre>
   <div>
     <h3>Add the marketplace</h3>
     <p>In a terminal, run:</p>
-    <pre>codex plugin marketplace add Maxastrand04/Custom-skills</pre>
-    <p class="muted">This tells Codex where the skills live. It installs nothing yet.</p>
+    <pre>codex plugin marketplace add Maxastrand04/Custom-skills --ref release</pre>
+    <p class="muted">This tells Codex where the skills live. It installs nothing yet. <code>--ref release</code> picks the <code>release</code> branch, which only changes when a new version goes out.</p>
   </div>
 </div>
 
@@ -189,17 +189,28 @@ claude plugin install max@custom-skills</pre>
 <!-- ============ UPDATING ============ -->
 <h2 id="updating">Updating and removing</h2>
 <h3>Claude Code</h3>
-<p>Pull the latest skills:</p>
+<p>Pull the latest release:</p>
 <pre>/plugin marketplace update custom-skills</pre>
 <p>Remove them:</p>
 <pre>/plugin uninstall max@custom-skills</pre>
 
 <h3>Codex</h3>
-<p>Pull the latest skills. The first command fetches the new version, the second installs it:</p>
+<p>Pull the latest release. The first command fetches the new version, the second installs it:</p>
 <pre>codex plugin marketplace upgrade custom-skills-codex
 codex plugin add max@custom-skills-codex</pre>
 <p>Remove them:</p>
 <pre>codex plugin remove max@custom-skills-codex</pre>
+
+<h3 id="re-add">Added a marketplace before releases?</h3>
+<p>If your add command had no <code>#release</code> or <code>--ref release</code>, you're reading from <code>main</code>, which stops working as a marketplace soon. Re-add it once.</p>
+<p>Claude Code:</p>
+<pre>claude plugin marketplace remove custom-skills
+claude plugin marketplace add Maxastrand04/Custom-skills#release
+claude plugin install max@custom-skills</pre>
+<p>Codex:</p>
+<pre>codex plugin marketplace remove custom-skills-codex
+codex plugin marketplace add Maxastrand04/Custom-skills --ref release
+codex plugin add max@custom-skills-codex</pre>
 
 <!-- ============ INSTALL.SH ============ -->
 <h2 id="install-sh">install.sh and making your own</h2>

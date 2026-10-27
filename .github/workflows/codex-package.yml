@@ -15,6 +15,7 @@ on:
       - 'plugins/max/**'
       - '.agents/plugins/**'
       - 'scripts/build-codex.py'
+      - 'scripts/release.py'
       - 'install.sh'
       - 'tests/**'
       - '.github/workflows/codex-package.yml'
@@ -51,28 +52,16 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          # The version step needs history to find the last version change.
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
       - run: python3 scripts/build-codex.py
-      - name: Raise the plugin version when the skills changed
-        run: |
-          # Compare against the commit that last set the version, so skills
-          # rebuilt locally and committed by hand also get a new version.
-          git add -- plugins/max/skills
-          last=$(git log -1 --format=%H -- plugins/max/plugin.json)
-          if [ -n "$last" ] && ! git diff --cached --quiet "$last" -- plugins/max/skills; then
-            python3 scripts/build-codex.py --bump-version
-          fi
       - name: Commit generated marketplace skills
         env:
           BRANCH_NAME: ${{ github.ref_name }}
           EXPECTED_SHA: ${{ github.sha }}
         run: |
-          git add -- plugins/max/skills plugins/max/plugin.json
+          git add -- plugins/max/skills
           if git diff --cached --quiet; then
             echo "Codex marketplace skills are already current."
             exit 0
@@ -86,5 +75,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Build Codex marketplace skills"
+          # A chore commit, which never raises the version. Only the release workflow sets it.
+          git commit -m "chore: Build Codex marketplace skills"
           git push origin "HEAD:$BRANCH_NAME"

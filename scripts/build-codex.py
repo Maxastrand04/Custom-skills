@@ -124,27 +124,11 @@ def marketplace_entries():
     return [p.removeprefix("./") for p in entries]
 
 
-def bump_version(manifest):
-    """Raise the last number of the plugin version so Codex installs a fresh copy."""
-    text = manifest.read_text()
-    match = re.search(r'"version": "(\d+)\.(\d+)\.(\d+)"', text)
-    if not match:
-        raise ValueError(f"No X.Y.Z version in {manifest}")
-    major, minor, patch = match.groups()
-    version = f"{major}.{minor}.{int(patch) + 1}"
-    manifest.write_text(text[:match.start()] + f'"version": "{version}"' + text[match.end():])
-    return version
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--local", action="store_true", help="Build all live skills for install.sh")
     parser.add_argument("--check", action="store_true", help="Check generated files without writing")
-    parser.add_argument("--bump-version", action="store_true", help="Raise the marketplace plugin version")
     args = parser.parse_args()
-    if args.bump_version:
-        print(f"Raised plugin version to {bump_version(ROOT / 'plugins' / 'max' / 'plugin.json')}")
-        return
     skills = live_skills()
     if args.local:
         selected = list(skills)

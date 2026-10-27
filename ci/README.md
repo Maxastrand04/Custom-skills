@@ -19,11 +19,19 @@ Commit bodies are written for the next agent. The issue comment is written for a
 ## Setup, once per machine
 
 ```
-claude plugin marketplace add Maxastrand04/Custom-skills
+claude plugin marketplace add Maxastrand04/Custom-skills#release
 claude plugin install kanban-ci@custom-skills
 ```
 
-That gives `/kanban-ci:launch` and `/kanban-ci:review-ticket` on the laptop. The runner loads the plugin straight from a checkout of this repo, so it needs no install.
+That gives `/kanban-ci:launch` and `/kanban-ci:review-ticket` on the laptop. `#release` reads the `release` branch, which only moves when a new version goes out. If you added the marketplace earlier without it, re-add it once:
+
+```
+claude plugin marketplace remove custom-skills
+claude plugin marketplace add Maxastrand04/Custom-skills#release
+claude plugin install kanban-ci@custom-skills
+```
+
+The shared workflow and template below still track `main`. The runner loads the plugin straight from a checkout of this repo, so it needs no install.
 
 ## Setup, once per project
 
