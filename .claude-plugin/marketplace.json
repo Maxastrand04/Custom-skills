@@ -8,6 +8,7 @@
   "plugins": [
     {
       "name": "max",
+      "version": "1.0.0",
       "source": ".",
       "strict": false,
       "description": "The kanban chain, developer tools, and behaviour skills from the tutorial.",
