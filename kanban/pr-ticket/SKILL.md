@@ -1,12 +1,12 @@
 ---
 name: pr-ticket
-description: Last station. Pushes the folded ticket branch and opens a PR whose body a reviewer can read cold, written from the commits. Runs after unit-test-ticket.
+description: Last station. Checks the handoff the ticket's effort level asks for, pushes the branch, and opens a PR whose body a reviewer can read cold, written from the commits. Runs after unit-test-ticket or review-diff.
 disable-model-invocation: true
 ---
 
 # pr-ticket
 
-The last station on the board. `unit-test-ticket` committed the fold, so the branch is finished, green, and still local. You push it and open the PR. The body is for a reviewer who never read the ticket or the commits. They should see what changed, why the tests prove it, and what a bad merge would break, without opening the diff.
+The last station on the board, for every branch. On the kanban chain, `unit-test-ticket` committed the fold. Off it, `review-diff` left a review note. Either way the branch is finished and committed. You push it and open the PR. The body is for a reviewer who never read the ticket or the commits. They should see what changed, why the tests prove it, and what a bad merge would break, without opening the diff.
 
 **You never edit code or tests.** A problem you find goes in `For the reviewer`, not into a commit.
 
@@ -16,21 +16,34 @@ The title and the body's three sections follow `pr-shape.md`, the file beside th
 
 The branch carries its **GitHub issue number** in the name. Take the current branch, or the one the user names, extract the number, and fetch the ticket with `gh issue view <number> --comments`. If the name carries no number, ask the user which issue this is.
 
-The base is `main` unless the user names another. Halt unless all four hold, naming the one that failed:
+The base is `main` unless the user names another.
+
+Read the ticket's `effort:<level>` label. With no effort label, ask the user for the level and use their answer for this run. Never add or change the issue's labels.
+
+Find the open PR, if any, with `gh pr list --head <branch> --state open --json number,isDraft`. It changes step 4, not the checks.
+
+The level picks the checks. Halt unless every check for it holds, naming the one that failed:
+
+| Level | Checks |
+|---|---|
+| `major`, `medium` | Folded, Committed, Green |
+| `minor` | Reviewed, Committed, Green |
+| `trivial` | Reviewed, Committed, Green if the repo has a suite |
 
 - **Folded.** `git log <base>..HEAD` has a commit whose subject starts `Tests #<N>: tidy and fold`. If not, say to run `/unit-test-ticket` first.
+- **Reviewed.** A review note, per `../review-diff/review-note.md`, sits in the issue's comments or the open PR's. Take the newest. If none, say to run `/review-diff` first. If the newest commit on the branch, `git log -1 --format=%cI`, is later than the note's `createdAt`, the note no longer covers `HEAD`, so say to run `/review-diff` again.
 - **Committed.** `git status --porcelain` is empty. Never commit someone else's leftovers to make it so.
-- **Green.** The whole suite passes. If not, say which tests fail and stop. Red never gets a PR.
-- **No PR yet.** `gh pr list --head <branch> --state open` is empty. If one exists, offer to rewrite its title and body instead, and on yes skip to step 3 with `gh pr edit` in place of `gh pr create`.
+- **Green.** The whole suite passes. If not, say which tests fail and stop. Red never gets a PR. On `trivial` with no suite in the repo, record that for Evidence and carry on.
 
 Keep the suite's pass count for Evidence. Run the squash merge check from `pr-shape.md` and keep its result for the report. It never halts.
 
 ## 2. Read the branch
 
 - **The ticket**, for the why and its words.
-- **The commits.** `git log <base>..HEAD --format='%h %s%n%b'`. The `Architect #<N>:` commit is Before. Its body and `Amends ADR-` lines say what was decided.
+- **The commits.** `git log <base>..HEAD --format='%h %s%n%b'`. On `major` or `medium`, the `Architect #<N>:` commit is Before. Its body and `Amends ADR-` lines say what was decided.
 - **The diff.** `git diff <base>...HEAD`, read in full, so the Summary describes the code and not the commit messages.
-- **The fold.** The `Tests #<N>: tidy and fold` commit and `unit-test-ticket`'s issue comment map each acceptance test to its file at `HEAD`.
+- **The fold**, on `major` or `medium`. The `Tests #<N>: tidy and fold` commit and `unit-test-ticket`'s issue comment map each acceptance test to its file at `HEAD`.
+- **The review note**, on `minor` or `trivial`. Its Suite line, Fixes and Found, not fixed rows, and any records it wrote or amended.
 - **Reviewer items.** Every `For the reviewer` line in the issue comments: bugs found and deleted, undefined behaviour, design worsened for testability.
 - **`CONTEXT.md`**, if the repo has one, for the terms the Summary should use.
 
@@ -39,7 +52,7 @@ Keep the suite's pass count for Evidence. Run the squash merge check from `pr-sh
 Title per `pr-shape.md`, such as `feat: (3.2) Add OAuth login`. Settle it after Merge danger, since the breaking call reads Blast radius.
 
 ```markdown
-> *Implemented by AI through the kanban chain. A human approved the interface and the tests. Review the diff before merging.*
+> *<header line>*
 
 Closes #<N>
 
@@ -57,6 +70,11 @@ Closes #<N>
 - <item, copied from the issue comment, each readable on its own>
 ```
 
+The header line follows the route the branch took:
+
+- **`major` or `medium`.** `Implemented by AI through the kanban chain. A human approved the interface and the tests. Review the diff before merging.`
+- **`minor` or `trivial`.** `Implemented by AI in a session a human watched, then reviewed with review-diff. Review the diff before merging.`
+
 Write Summary, Evidence and Merge danger per `pr-shape.md`. Leave `For the reviewer` out when there are no items.
 
 **Don't wait for approval.** Once the body passes `unslop`, go straight to step 4. The user reads the body on the PR, and the PR is the review.
@@ -68,11 +86,20 @@ git push -u origin <branch>
 gh pr create --base <base> --title "<PR title>" --body-file <file>
 ```
 
+With an open PR from step 1, push the same way, then rewrite it in place and mark a draft ready for review:
+
+```
+gh pr edit <PR> --title "<PR title>" --body-file <file>
+gh pr ready <PR>
+```
+
+Run `gh pr ready` only when `isDraft` was true.
+
 Write the body to a temp file outside the repo, so nothing stray lands in the working tree. Never close the issue. `Closes #<N>` closes it on merge, and merging is the user's call.
 
 ## 5. Report
 
-Close with these lines and nothing after them except `gloss-me`'s footer. When the squash merge check failed, the Merge line says what else is allowed, such as `merge commits allowed, the prefix can miss main`.
+Close with these lines and nothing after them except `gloss-me`'s footer. With no suite in the repo, the Suite line reads `none in repo`. A rewritten PR adds `, rewritten` to the PR line, and `, marked ready` if it was a draft. When the squash merge check failed, the Merge line says what else is allowed, such as `merge commits allowed, the prefix can miss main`.
 
 ```
 Branch    42-fix-expired-session, pushed
