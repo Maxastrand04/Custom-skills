@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -256,23 +257,131 @@ class WriteVersionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             release.write_version("1.2.3", self.root)
 
+    def test_a_new_version_replaces_the_one_already_in_the_catalog(self):
+        """A write over an earlier version leaves the max entry with the new one."""
+        release.write_version("1.2.3", self.root)
+        release.write_version("1.3.0", self.root)
+        entry = catalog_entry(self.read(".claude-plugin/marketplace.json"), "max")
+        self.assertEqual(entry["version"], "1.3.0")
 
-class CodexBuildTests(unittest.TestCase):
-    def test_codex_builder_no_longer_raises_the_version(self):
-        """The Codex builder offers no way to raise the plugin version."""
-        with tempfile.TemporaryDirectory(prefix="custom-skills-test-") as temp:
-            root = Path(temp)
-            (root / "scripts").mkdir()
-            shutil.copy2(ROOT / "scripts/build-codex.py", root / "scripts/build-codex.py")
-            manifest = root / "plugins/max/plugin.json"
-            manifest.parent.mkdir(parents=True)
-            shutil.copy2(ROOT / "plugins/max/plugin.json", manifest)
-            before = manifest.read_text()
-            subprocess.run(
-                [sys.executable, str(root / "scripts/build-codex.py"), "--bump-version"],
-                capture_output=True, timeout=20,
-            )
-            self.assertEqual(manifest.read_text(), before)
+    def test_catalog_without_a_max_entry_is_refused(self):
+        """A catalog with no max plugin raises ValueError."""
+        catalog = self.read(".claude-plugin/marketplace.json")
+        catalog["plugins"] = [p for p in catalog["plugins"] if p["name"] != "max"]
+        (self.root / ".claude-plugin/marketplace.json").write_text(json.dumps(catalog))
+        with self.assertRaises(ValueError):
+            release.write_version("1.2.3", self.root)
+
+    def test_plugin_manifest_without_a_version_is_refused(self):
+        """A plugin.json with no version field raises ValueError."""
+        (self.root / "plugins/max/plugin.json").write_text('{"name": "max"}\n')
+        with self.assertRaises(ValueError):
+            release.write_version("1.2.3", self.root)
+
+
+class CommandLineTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="custom-skills-test-")
+        self.root = Path(self.temp.name)
+        (self.root / "scripts").mkdir()
+        shutil.copy2(ROOT / "scripts/release.py", self.root / "scripts/release.py")
+        for manifest in MANIFESTS:
+            (self.root / manifest).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(ROOT / manifest, self.root / manifest)
+        self.env = dict(
+            os.environ,
+            GIT_CONFIG_GLOBAL=os.devnull,
+            GIT_CONFIG_NOSYSTEM="1",
+            GIT_AUTHOR_NAME="Test",
+            GIT_AUTHOR_EMAIL="test@example.com",
+            GIT_COMMITTER_NAME="Test",
+            GIT_COMMITTER_EMAIL="test@example.com",
+        )
+        self.git("init", "-q")
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def git(self, *args):
+        subprocess.run(["git", *args], cwd=self.root, env=self.env, check=True, capture_output=True)
+
+    def commit(self, *messages):
+        for message in messages:
+            self.git("commit", "-q", "--allow-empty", "-m", message)
+
+    def run_release(self, *args):
+        return subprocess.run(
+            [sys.executable, str(self.root / "scripts/release.py"), *args],
+            cwd=self.root, env=self.env, capture_output=True, text=True, timeout=20,
+        )
+
+    def released(self, *messages):
+        """A repo with v1.2.3 tagged, then these commits."""
+        self.commit("feat: Before the release")
+        self.git("tag", "v1.2.3")
+        self.commit(*messages)
+
+    def test_plan_prints_the_next_version(self):
+        """The plan names the version it would release."""
+        self.released("feat: Add a skill")
+        self.assertIn("Next release: v1.3.0", self.run_release("plan").stdout)
+
+    def test_plan_prints_the_deciding_commits(self):
+        """The plan names the commits that decided the version."""
+        self.released("feat: Add a skill")
+        self.assertIn("feat: Add a skill", self.run_release("plan").stdout)
+
+    def test_plan_prints_the_unconventional_commits(self):
+        """The plan names the commits without a type prefix."""
+        self.released("fix: Stop a crash", "Add license")
+        self.assertIn("Add license", self.run_release("plan").stdout)
+
+    def test_version_only_prints_just_the_version(self):
+        """With --version-only the plan prints the bare version and nothing else."""
+        self.released("feat: Add a skill")
+        self.assertEqual(self.run_release("plan", "--version-only").stdout, "1.3.0\n")
+
+    def test_plan_reads_only_the_commits_since_the_last_tag(self):
+        """A breaking change before the last tag doesn't raise the next version."""
+        self.commit("feat!: Rename skills")
+        self.git("tag", "v1.2.3")
+        self.commit("fix: Stop a crash")
+        self.assertEqual(self.run_release("plan", "--version-only").stdout, "1.2.4\n")
+
+    def test_plan_without_a_tag_releases_1_0_0(self):
+        """With no release tag the plan releases 1.0.0."""
+        self.commit("chore: Start")
+        self.assertEqual(self.run_release("plan", "--version-only").stdout, "1.0.0\n")
+
+    def test_plan_with_nothing_to_raise_fails(self):
+        """With no feat, fix, or breaking change since the last tag, the plan exits 1."""
+        self.released("chore: Tidy")
+        self.assertEqual(self.run_release("plan").returncode, 1)
+
+    def test_plan_with_nothing_to_raise_says_why(self):
+        """With nothing to raise, the plan says there is nothing to release."""
+        self.released("chore: Tidy")
+        self.assertIn("nothing to release", self.run_release("plan").stderr)
+
+    def test_notes_cover_the_commits_since_the_last_tag(self):
+        """The notes list the commits since the last tag and none before it."""
+        self.released("fix: Stop a crash (#3)")
+        self.assertEqual(self.run_release("notes").stdout, "## Fixes\n\n- Stop a crash (#3)\n")
+
+    def test_notes_for_an_unfinished_release_stop_at_its_release_commit(self):
+        """Commits after an unfinished release commit stay out of its notes."""
+        self.released("fix: Stop a crash (#3)", "chore(release): v1.2.4", "feat: Add a skill (#4)")
+        self.assertEqual(self.run_release("notes").stdout, "## Fixes\n\n- Stop a crash (#3)\n")
+
+    def test_write_puts_the_version_in_the_manifests(self):
+        """write VERSION sets the version in the manifests beside the script."""
+        self.run_release("write", "1.2.3")
+        manifest = json.loads((self.root / "plugins/max/plugin.json").read_text())
+        self.assertEqual(manifest["version"], "1.2.3")
+
+    def test_unknown_command_prints_the_usage(self):
+        """A command the script doesn't know prints the usage and exits 1."""
+        self.assertIn("usage:", self.run_release("publish").stderr)
 
 
 if __name__ == "__main__":
