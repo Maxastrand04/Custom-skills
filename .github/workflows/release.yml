@@ -1,0 +1,97 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Show the version it would release, then stop
+        type: boolean
+        default: true
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Refuse any branch but main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "Releases only run on main, not ${{ github.ref_name }}."
+          exit 1
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Build and check the Codex package
+        run: |
+          python3 scripts/build-codex.py
+          python3 scripts/build-codex.py --check
+      - run: python3 -m unittest discover -s tests -v
+      - run: bash -n install.sh
+
+      - name: Plan the release
+        id: plan
+        run: |
+          python3 scripts/release.py plan
+          echo "version=$(python3 scripts/release.py plan --version-only)" >> "$GITHUB_OUTPUT"
+
+      - name: Stop here on a dry run
+        if: inputs.dry_run
+        run: echo "Dry run. Nothing was changed."
+
+      - name: Commit the version to main
+        id: commit
+        if: ${{ !inputs.dry_run }}
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          python3 scripts/release.py write "$VERSION"
+          git add -- .claude-plugin/marketplace.json plugins/max/plugin.json ci/.claude-plugin/plugin.json
+          if git diff --cached --quiet; then
+            # A re-run after a failure partway through. The release commit is already on main.
+            target=$(git log -1 --format=%H --fixed-strings --grep="chore(release): v$VERSION")
+            echo "The manifests already hold $VERSION, set by $target."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore(release): v$VERSION"
+            git push origin HEAD:refs/heads/main
+            target=$(git rev-parse HEAD)
+          fi
+          echo "target=$target" >> "$GITHUB_OUTPUT"
+          echo "main=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Move the release marker
+        if: ${{ !inputs.dry_run }}
+        env:
+          TARGET: ${{ steps.commit.outputs.target }}
+          MAIN: ${{ steps.commit.outputs.main }}
+        run: |
+          git fetch origin main
+          if [ "$(git rev-parse FETCH_HEAD)" != "$MAIN" ]; then
+            echo "main gained a commit during the run. Start the release again."
+            exit 1
+          fi
+          git push origin "$TARGET:refs/heads/release"
+
+      - name: Create the release page
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.plan.outputs.version }}
+          TARGET: ${{ steps.commit.outputs.target }}
+        run: |
+          python3 scripts/release.py notes > notes.md
+          gh release create "v$VERSION" --target "$TARGET" --title "v$VERSION" --notes-file notes.md

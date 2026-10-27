@@ -2,6 +2,8 @@
 
 My skills for Claude Code, Antigravity, and Codex. What each skill does and how they fit together is on the [tutorial page](https://maxastrand04.github.io/Custom-skills/). This file covers setup. The [setup page](https://maxastrand04.github.io/Custom-skills/setup.html) is a click-through version for Claude Code, Codex, and Antigravity.
 
+> **Added a marketplace before releases existed?** You're reading from plain `main`, which stops working as a marketplace soon. Re-add it from the `release` branch once, as shown in [Re-adding a marketplace](#re-adding-a-marketplace).
+
 ## Codex, from your clone
 
 Use `install.sh` for your personal selection. It offers every live skill, including schoolwork:
@@ -26,10 +28,10 @@ Without a target flag, the script installs to Claude Code. Use `--codex` to sele
 
 The Codex marketplace ships the same skills as the Claude marketplace. That covers the full ticket chain, the shared developer tools, and the writing and interview rules. Schoolwork, `prune-skill`, `show-me`, and `kanban-ci` are excluded.
 
-Once these files are pushed to GitHub:
+Add the marketplace from the `release` branch, which only moves when a release goes out:
 
 ```bash
-codex plugin marketplace add Maxastrand04/Custom-skills
+codex plugin marketplace add Maxastrand04/Custom-skills --ref release
 codex plugin add max@custom-skills-codex
 ```
 
@@ -46,7 +48,7 @@ python3 scripts/build-codex.py
 python3 scripts/build-codex.py --check
 ```
 
-GitHub Actions rebuilds the package when the list or skill sources change. It validates pull requests and, on the default branch, commits updated `plugins/max/skills/` files automatically. You can still build and commit them locally. When the built skills differ from the last release, the same run raises the last number of the version in `plugins/max/plugin.json`, so Codex installs a fresh copy. Set a bigger version by hand when you want one, and CI counts on from there. The personal installer always offers every live skill, independently of this list.
+GitHub Actions rebuilds the package when the list or skill sources change. It validates pull requests and, on the default branch, commits updated `plugins/max/skills/` files automatically as a `chore` commit. You can still build and commit them locally. That build never touches the version. Only a release sets it, see [Releases](#releases). The personal installer always offers every live skill, independently of this list.
 
 Packaging details and remaining proposed skill edits are in [codex/README.md](codex/README.md).
 
@@ -55,14 +57,14 @@ Packaging details and remaining proposed skill edits are in [codex/README.md](co
 The main way to install, and the quickest. Inside Claude Code:
 
 ```
-/plugin marketplace add Maxastrand04/Custom-skills
+/plugin marketplace add Maxastrand04/Custom-skills#release
 /plugin install max@custom-skills
 ```
 
 Or from a shell:
 
 ```bash
-claude plugin marketplace add Maxastrand04/Custom-skills
+claude plugin marketplace add Maxastrand04/Custom-skills#release
 ```
 
 ```bash
@@ -71,7 +73,35 @@ claude plugin install max@custom-skills
 
 Restart Claude Code or run `/reload-plugins`. Every skill carries the `max:` prefix, so you type `/max:grilling` or `/max:map-epic`. The tutorial writes them without the prefix.
 
-You get the kanban chain, the developer tools, and the behaviour skills, 19 in all. Run `/plugin marketplace update custom-skills` to pick up changes, and `/plugin uninstall max@custom-skills` to remove it.
+You get the kanban chain, the developer tools, and the behaviour skills, 19 in all. Run `/plugin marketplace update custom-skills` to pick up a new release, and `/plugin uninstall max@custom-skills` to remove it.
+
+## Releases
+
+Both marketplaces serve the `release` branch, not `main`. Work merged to `main` reaches marketplace users only when I release it.
+
+A release is a hand-started run of the **Release** workflow in the Actions tab, on `main`. Leave **dry run** ticked to see the version it would release and the commits that decided it. Untick it to release. The run builds the Codex package and runs the tests, then picks the next version from the conventional commits since the last `vX.Y.Z` tag. A breaking change (`feat!:` or a `BREAKING CHANGE:` body line) raises the first number, `feat` raises the middle, and `fix` raises the last. Other types and commits without a type raise nothing, and a release with none of the three stops without changing anything. The first release is `1.0.0`.
+
+The run writes that one version into `max` on Claude, `max` on Codex, and `kanban-ci`, commits it to `main` as `chore(release): vX.Y.Z`, moves `release` forward to that commit, and creates the GitHub release page with notes grouped into breaking changes, features, and fixes. If a run fails partway, start it again and it finishes the same version. To try the version rules locally, run `python3 scripts/release.py plan`.
+
+### Re-adding a marketplace
+
+If you added a marketplace before releases existed, it points at `main`. Re-add it once from `release`.
+
+Claude Code:
+
+```bash
+claude plugin marketplace remove custom-skills
+claude plugin marketplace add Maxastrand04/Custom-skills#release
+claude plugin install max@custom-skills
+```
+
+Codex:
+
+```bash
+codex plugin marketplace remove custom-skills-codex
+codex plugin marketplace add Maxastrand04/Custom-skills --ref release
+codex plugin add max@custom-skills-codex
+```
 
 ## install.sh, step by step
 
