@@ -6,8 +6,8 @@ The back half of the kanban board, run by GitHub Actions instead of by me. I arc
 
 ## How a ticket moves
 
-1. `/architect-ticket` commits the red branch, the same as always.
-2. `/kanban-ci:launch` adds `Handoff-To: implement-ticket` to that commit, pushes, and labels the issue `ci:queued`.
+1. `/architect-ticket` commits and pushes the red branch once you approve it.
+2. `/kanban-ci:launch` adds `Handoff-To: implement-ticket` in an empty commit on top, since the architect commit is already pushed, pushes, and labels the issue `ci:queued`.
 3. The nightly run, or `gh workflow run kanban-ci --ref <branch>`, starts the loop in `scripts/run-chain.sh`.
 4. The loop runs whichever station `HEAD`'s `Handoff-To` trailer names. After each one it pushes, runs the whole suite once, and passes the result to the next station in its prompt.
 5. Stations hand off forward, back a station, or early to `review`. Two backward moves per ticket at most. A third ends the chain.
