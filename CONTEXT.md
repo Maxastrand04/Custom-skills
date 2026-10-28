@@ -107,7 +107,7 @@ A published GitHub Issue holding one unit of work, in one of two shapes: a task 
 _Avoid_: card, story, work item
 
 **Ticket PR**:
-The one draft pull request a **Ticket**'s branch carries from the moment a station creates the branch until `pr-ticket` rewrites its description and marks it ready. The **Ticket** holds the **Spec**; the Ticket PR holds what happened to the branch: progress, **Review notes**, findings, handoffs. They link both ways, through `Closes #<N>` in the PR and a `Ticket PR:` comment on the issue. A branch with no open Ticket PR gets one before any station works on it, and one whose PR merged takes no more work. Contract in `kanban/pr-ticket/ticket-pr.md`.
+The one draft pull request a **Ticket**'s branch carries from the moment a station creates the branch until `pr-ticket`, or `execute-ticket` on its own route, rewrites its description and marks it ready. The **Ticket** holds the **Spec**; the Ticket PR holds what happened to the branch: progress, **Review notes**, findings, handoffs. They link both ways, through `Closes #<N>` in the PR and a `Ticket PR:` comment on the issue. A branch with no open Ticket PR gets one before any station works on it, and one whose PR merged takes no more work. Contract in `kanban/pr-ticket/ticket-pr.md`.
 _Avoid_: draft, work PR, tracking PR
 
 **Spec amendment**:

@@ -1,6 +1,6 @@
 # Ticket PR
 
-Shared contract. Every ticket branch has one **ticket PR**, a draft pull request opened when the branch is created and kept through review. The ticket holds the spec. The ticket PR holds everything that happens to the branch after that: progress, review notes, findings, handoffs. `pr-ticket` rewrites its description and marks it ready at the end.
+Shared contract. Every ticket branch has one **ticket PR**, a draft pull request opened when the branch is created and kept through review. The ticket holds the spec. The ticket PR holds everything that happens to the branch after that: progress, review notes, findings, handoffs. `pr-ticket`, or `execute-ticket` on its own route, rewrites its description and marks it ready at the end.
 
 ## Open or reuse it
 
@@ -21,7 +21,7 @@ gh pr list --head <branch> --state all --json number,state,url
   4. Link the ticket back: `gh issue comment <N> --body "Ticket PR: <PR URL>"`.
 
 ```md
-> *Draft. Development history for this ticket collects in the comments below. `pr-ticket` rewrites this description when the branch is ready.*
+> *Draft. Development history for this ticket collects in the comments below. The description is rewritten when the branch is ready.*
 
 Closes #<N>
 ```
