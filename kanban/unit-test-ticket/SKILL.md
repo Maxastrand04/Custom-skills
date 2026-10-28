@@ -14,7 +14,7 @@ Word every halt, question, and report per the `gloss-me` skill.
 
 ## 1. Pin the work and check the handoff
 
-The branch carries its **GitHub issue number** in the name. Take the current branch, or the one the user names, extract the number, and fetch the ticket with `gh issue view <number>`. If the name carries no number, ask the user which issue this is.
+The branch carries its **GitHub issue number** in the name. Take the current branch, or the one the user names, extract the number, and fetch the ticket with `gh issue view <number> --comments`, read as the current Spec in `../pr-ticket/ticket-pr.md`. If the name carries no number, ask the user which issue this is. Then open or reuse the branch's **ticket PR** per the same file.
 
 The diff is `git diff main...HEAD`, three-dot, on that branch. Substitute the base the user names if it isn't `main`. Find the runner command for the whole suite.
 
@@ -35,7 +35,7 @@ The rules are the **Test rules** in `test-standards.md`, the file beside this `S
 3. **Tidy the module scope.** Delete every tautological test and fix every rule not marked report only. Design worsened for testability goes to Found, not fixed.
 4. **Break check** every test this step wrote or rewrote.
 
-**A new test that fails on the untouched code has found a bug.** Delete it from the branch, since the code is not yours to fix and a red suite can't merge. Record it in Found and in the issue comment at step 4, with the assertion that failed, so the reviewer can decide whether it becomes a new ticket. Behaviour that `too few tests` reports as undefined goes to the same two places.
+**A new test that fails on the untouched code has found a bug.** Delete it from the branch, since the code is not yours to fix and a red suite can't merge. Record it in Found and in the PR comment at step 4, with the assertion that failed, so the reviewer can decide whether it becomes a new ticket. Behaviour that `too few tests` reports as undefined goes to the same two places.
 
 **Completion criterion:** the acceptance file is gone, and every test it held is either in a module test file exactly once or a Tests row saying dropped or rewritten. Every fixable rule is applied across the module scope, every test written or rewritten was observed red in its break check, and every bug-exposing test is in Found.
 
@@ -43,9 +43,9 @@ The rules are the **Test rules** in `test-standards.md`, the file beside this `S
 
 Run the whole suite. The code hasn't moved, so red means a test edit is wrong. Fix the test, never the code. On green, commit as `Tests #<N>: tidy and fold`. Don't push unless the user asks.
 
-## 4. Comment on the issue
+## 4. Comment on the ticket PR
 
-`gh issue comment <N>` with the branch name and one line per acceptance test naming its new file, or `dropped, <kind>`.
+`gh pr comment <PR>` with one line per acceptance test naming its new file, or `dropped, <kind>`.
 
 If Found holds a bug-exposing test or undefined behaviour, add a `For the reviewer` heading under those lines, with one line per item: the behaviour, what the test asserted, and what the code did.
 
@@ -72,13 +72,13 @@ Two tables.
 | File | Issue | Why |
 |---|---|---|
 | `src/cart.ts:12` | design worsened for testability | report only |
-| `src/tax.ts:31` | negative total accepted | bug, test deleted, on issue |
+| `src/tax.ts:31` | negative total accepted | bug, test deleted, on PR |
 
 Close with four lines. Nothing follows them except `gloss-me`'s footer. A new term in a table gets its gloss in a `gloss-me` block before that table.
 
 ```
 Commits  tests e3f4a5b
 Tests    suite green, acceptance folded into tests/test_order.py, 2 dropped
-Issue    commented #42, 1 item for the reviewer
+PR       commented #57, 1 item for the reviewer
 Next     /pr-ticket pushes and opens the PR
 ```

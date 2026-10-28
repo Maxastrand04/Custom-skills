@@ -16,12 +16,12 @@ Word every question and report per the `gloss-me` skill.
 
 ## 1. Pin the work and the diff
 
-The branch carries its GitHub issue number in the name, following the branch-naming convention every ticket publishes. Take the current branch, or the one the user names, extract the number, and fetch the ticket with `gh issue view <number>`.
+The branch carries its GitHub issue number in the name, following the branch-naming convention every ticket publishes. Take the current branch, or the one the user names, extract the number, and fetch the ticket with `gh issue view <number> --comments`.
 
-**The spec is two things.** The ticket's **Spec** is the intended bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
+**The spec is two things.** The ticket's current **Spec**, per `../pr-ticket/ticket-pr.md`, is the intended bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
 
 - If the branch name carries no issue number, the convention was skipped. Ask the user which issue this closes, and flag that the branch should be renamed to include the number.
-- If the issue doesn't already record which branch implements it, backfill the link with `gh issue comment <number>` and a one-line ``Refactored on branch `<branch>` ``.
+- Open or reuse the branch's **ticket PR** per `../pr-ticket/ticket-pr.md`.
 
 The diff is `git diff main...HEAD`, three-dot, against the merge-base, on that branch. Substitute the base the user names if it isn't `main`. Confirm the branch resolves, the diff is non-empty, and the diff adds exactly one acceptance file. If one fails, stop and name it. Find the runner command for the whole suite.
 
@@ -46,7 +46,7 @@ Zero findings means the spec is settled, so go to step 3. Any finding goes to th
 
 ### Spec findings
 
-Print the findings as the **True-to-spec** table from step 8 and nothing else, then ask the user whether to fix the acceptance **tests** so they're true to the ticket. Only the tests. The ticket body is the single source of truth and is never edited here, and neither is a signature already settled on the branch.
+Print the findings as the **True-to-spec** table from step 8 and nothing else, then ask the user whether to fix the acceptance **tests** so they're true to the ticket. Only the tests. The ticket body is never edited here, and neither is a signature already settled on the branch. When the user says the Spec line itself is wrong, propose an amendment per `../pr-ticket/ticket-pr.md` instead, and fix the tests to the amended line once it is approved.
 
 With their go-ahead, fix the tests and run the acceptance file:
 
@@ -182,7 +182,7 @@ Every test change from step 4.
 |---|---|---|
 | discount shown per line | `test_discount_rate` | added rate assertion, user approved |
 
-Close with five lines, then one line handing off: ``Next, run `/unit-test-ticket` in a fresh session.`` Nothing follows them except `gloss-me`'s footer. A new term in a table gets its gloss in a `gloss-me` block before that table.
+Post the eight tables on the ticket PR as one comment with `gh pr comment <PR> --body-file <file>`, written to a temp file outside the repo. Then close in chat with five lines and one line handing off: ``Next, run `/unit-test-ticket` in a fresh session.`` Nothing follows them except `gloss-me`'s footer. A new term in a table gets its gloss in a `gloss-me` block before that table.
 
 The five lines:
 

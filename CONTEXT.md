@@ -71,7 +71,7 @@ A Project Convention Record. A binding convention that holds across the whole pr
 _Avoid_: standard, style guide, project rule, config
 
 **Review note**:
-The comment `review-diff` leaves when it finishes reviewing a branch, on the PR if one is open and on the **Ticket** otherwise. Holds the pre-review commit, the drift verdicts, the fixes, the reconciled tests, the records written, and what was found but not fixed. Its first line, `## review-diff note`, is how `pr-ticket` finds it on a branch that never went through the **TDD cycle**. Shape in `kanban/review-diff/review-note.md`.
+The comment `review-diff` leaves on the **Ticket PR** when it finishes reviewing a branch. Holds the pre-review commit, the drift verdicts, the fixes, the reconciled tests, the records written, and what was found but not fixed. Its first line, `## review-diff note`, is how `pr-ticket` finds it on a branch that never went through the **TDD cycle**. Shape in `kanban/review-diff/review-note.md`.
 _Avoid_: review summary, review comment, QA report
 
 **Record format**:
@@ -105,6 +105,14 @@ _Avoid_: spec/design split, intake/build split
 **Ticket**:
 A published GitHub Issue holding one unit of work, in one of two shapes: a task ticket, carrying a one-sentence Goal, the **Spec**, Out of scope, and Branch, or a question ticket, carrying a Question only. `map-epic` publishes tickets under an epic map issue with the `epic:` label scope; `new-ticket` publishes standalone ones with the `ticket:` scope. Both render the same templates.
 _Avoid_: card, story, work item
+
+**Ticket PR**:
+The one draft pull request a **Ticket**'s branch carries from the moment a station creates the branch until `pr-ticket` rewrites its description and marks it ready. The **Ticket** holds the **Spec**; the Ticket PR holds what happened to the branch: progress, **Review notes**, findings, handoffs. They link both ways, through `Closes #<N>` in the PR and a `Ticket PR:` comment on the issue. A branch with no open Ticket PR gets one before any station works on it, and one whose PR merged takes no more work. Contract in `kanban/pr-ticket/ticket-pr.md`.
+_Avoid_: draft, work PR, tracking PR
+
+**Spec amendment**:
+A dated note, posted on both the **Ticket** and its **Ticket PR** once the user approves it, that replaces one **Spec** line or adds one. The Ticket body is never edited, so the current Spec is the original plus every amendment in date order. Its first line is always `## Spec amendment`.
+_Avoid_: spec edit, change request, intentional drift
 
 **Spec**:
 The heart of a task **Ticket**: how the developer pictures the solution working, written like pseudocode with nothing named. Two parts. **Interface** lists the pieces the change adds or alters and what each carries, which `architect-ticket` turns into the **Public interface** as stubs; Interface lines never become tests. **Behaviour** is the happy path as numbered flow steps, read like a sequence diagram in text, then edge cases as bullets; every Behaviour line is covered by at least one **Acceptance test**. One claim per line. Never names a function, class, file, type, or test.

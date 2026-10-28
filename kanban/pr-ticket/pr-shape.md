@@ -201,7 +201,7 @@ function expandSkill(command: string): string {
 
 The tests are the evidence. On a branch that went through red, Before is the red commit, where every test the ticket added was watched failing. After is `HEAD`, where the same tests pass.
 
-- **On the kanban chain**, the red commit is `Architect #<N>:`. The tests have since moved into the module test files `unit-test-ticket` folded them into, so take each one's file at `HEAD` from the `Tests #<N>: tidy and fold` commit or `unit-test-ticket`'s issue comment. Leave dropped tests out. The whole suite ran green, so say so with its count.
+- **On the kanban chain**, the red commit is `Architect #<N>:`. The tests have since moved into the module test files `unit-test-ticket` folded them into, so take each one's file at `HEAD` from the `Tests #<N>: tidy and fold` commit or `unit-test-ticket`'s comment on the ticket PR, or on the issue for a branch older than the ticket PR. Leave dropped tests out. The whole suite ran green, so say so with its count.
 - **On `execute-ticket`**, the red commit is `Test #<N>:`, and the tests are still where it wrote them. It ran its own tests and the neighbouring tests, not the whole suite, so say exactly that.
 - **On a branch with no red commit**, such as one `review-diff` reviewed, nothing was watched failing. Drop the Before line. After reads `**After** \`<HEAD sha>\`, these pass.` with the whole suite's count. List only the Behaviour lines a test asserts, and put every line checked by hand under Untested behaviour in Merge danger. With no suite in the repo, Evidence is the one line `none, no suite in repo`, and every Behaviour line goes under Untested behaviour.
 

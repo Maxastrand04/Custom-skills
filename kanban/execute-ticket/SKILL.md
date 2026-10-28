@@ -16,7 +16,7 @@ One session, one ticket, all three legs of **red-green-refactor**, no gates. The
 
 Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHub issue URL. No argument means ask which issue, and stop until told. Never take a ticket from conversation.
 
-`gh issue view <number> --json title,body,labels`. Read Goal, Spec, Out of scope, and Branch. Spec's Interface lines tell you which pieces to build, and you name them in the project's style.
+`gh issue view <number> --json title,body,labels,comments`. Read Goal, Spec, Out of scope, and Branch, read as the current Spec per `../pr-ticket/ticket-pr.md`. Spec's Interface lines tell you which pieces to build, and you name them in the project's style.
 
 **Precondition.** The labels must carry `effort:minor`. Otherwise halt:
 
@@ -27,7 +27,9 @@ Settle two things, and confirm both to the user in one line before touching code
 - **Branch.** `<issue-number>-<slug>`, slug from the ticket's `## Branch` section, or derived from the title when absent: 2 to 4 words, kebab-case, no articles.
 - **Base.** `main`, unless the user named one at invocation.
 
-Then `git checkout -b <branch>` from the base. Surface unrelated uncommitted changes before switching. Never drag them across.
+Then `git checkout -b <branch>` from the base. Surface unrelated uncommitted changes before switching. Never drag them across. Open the branch's **ticket PR** per `../pr-ticket/ticket-pr.md` straight away.
+
+Every halt below also goes on the ticket PR, word for word, with `gh pr comment <PR>`, so the history survives the session.
 
 ## 2. Read the code
 
@@ -37,7 +39,7 @@ Read the region you will change, not the whole repo. Grep for the symbols the ti
 
 ### The qualifying check
 
-The `effort:minor` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **effort criteria** in `../new-ticket/ticket-shapes.md`. Any of the three checks failing, or a Behaviour line no automated test reaches, means the ticket was mislabelled, and this session halts with nothing committed:
+The `effort:minor` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **effort criteria** in `../new-ticket/ticket-shapes.md`. Any of the three checks failing, or a Behaviour line no automated test reaches, means the ticket was mislabelled, and this session halts with nothing committed beyond the start commit:
 
 > #<N> needs a decision I shouldn't make unattended: <which check, one line>. Relabel it to the effort level that check gives and take that route.
 
@@ -82,7 +84,7 @@ Once every test you wrote is green, run the **neighbouring tests**, meaning ever
 
 ### Loop exits
 
-Each of these stops the session before push. Describe the failure in plain English, which test, the evidence, your best guess at the cause stated as a guess, and offer the real options: a hint from the user, relabelling to the effort level the failure points at and taking that route, a `/challenge-pcr` session when a PCR is the block, or stopping here.
+Each of these stops the session before push. Describe the failure in plain English, which test, the evidence, your best guess at the cause stated as a guess, and offer the real options: a hint from the user, a spec amendment per `../pr-ticket/ticket-pr.md` when the ticket itself is wrong, relabelling to the effort level the failure points at and taking that route, a `/challenge-pcr` session when a PCR is the block, or stopping here.
 
 - **No progress.** The same test fails with the same evidence two passes running.
 - **The ticket contradicts itself.** Two behaviours can't both be true.
@@ -106,11 +108,14 @@ Update `CONTEXT.md` if the branch shifted a domain term and the file exists, and
 
 **Completion criterion:** every changed non-test file read against `docs/pcr/`, `docs/adr/`, and the baseline, each finding fixed, affected tests green, one commit.
 
-## 6. Push and open the PR
+## 6. Push and mark the PR ready
+
+Rewrite the ticket PR's description from scratch and mark it ready for review:
 
 ```
 git push -u origin <branch>
-gh pr create --base <base> --title "<PR title>" --body-file <file>
+gh pr edit <PR> --title "<PR title>" --body-file <file>
+gh pr ready <PR>
 ```
 
 PR body, this shape:
@@ -130,7 +135,7 @@ Closes #<N>
 ...
 ```
 
-Write the title, Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`, read from that skill's directory, never searched for in the repo. Settle the title after Merge danger, since the breaking call reads Blast radius. Run the squash merge check from the same file for the report. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
+Write the title, Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`, read from that skill's directory, never searched for in the repo. Settle the title after Merge danger, since the breaking call reads Blast radius. List every amendment note under a `For the reviewer` heading, one line each, linking the note. Run the squash merge check from the same file for the report. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
 
 Do not close the issue. `Closes #<N>` closes it on merge, and merging is the review.
 

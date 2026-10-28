@@ -32,7 +32,7 @@ This skill starts from a ticket. Resolve one of:
 2. **A ticket published in this session** by `new-ticket` or `map-epic`. Confirm with the user before adopting it.
 3. **Neither.** Ask which issue this is, and point at `/new-ticket` if none exists. Do not architect from a conversation.
 
-Then read the body in full with `gh issue view <ref> --json title,body,labels`. Take **Goal**, **Spec**, and **Out of scope** as given. They are the WHAT and were settled when the ticket was filed. Spec's **Interface** lines name the pieces without naming them in code, and its **Behaviour** lines trace the flow between them. Naming those pieces, and everything else in this phase, is yours.
+Then read the ticket in full with `gh issue view <ref> --comments`, read as the current Spec per `../pr-ticket/ticket-pr.md`. Take **Goal**, **Spec**, and **Out of scope** as given. They are the WHAT and were settled when the ticket was filed. Spec's **Interface** lines name the pieces without naming them in code, and its **Behaviour** lines trace the flow between them. Naming those pieces, and everything else in this phase, is yours.
 
 Settle the **branch name**, which is `<issue-number>-<slug>`. Take the slug from the ticket's `## Branch` section when it has one. Otherwise derive it from the title: 2 to 4 words, kebab-case, no articles, no issue number.
 
@@ -108,6 +108,8 @@ and proceed immediately to Phase 2 without waiting to be prompted.
 
 `git checkout -b <issue-number>-<slug>`, or `git checkout` it if it already exists. If the working tree carries unrelated uncommitted changes, surface that before switching rather than dragging them across.
 
+Then open or reuse the branch's **ticket PR** per `../pr-ticket/ticket-pr.md`, before writing any file.
+
 ### 2. Stubs into the source files
 
 Write each settled entry point into its real file: the signature, the contract as the docstring, and a body that raises the language's not-implemented error. Real source files, in the project's language and style, not pseudocode and not a scratch file.
@@ -169,7 +171,7 @@ Corrections come back in two kinds, handled differently:
 - **A fix inside the contract**, meaning a name, a type, a missing test, a wrong assertion. Edit the working tree, re-run the tests, then post the four lines again plus one line per file you changed, such as `Edited    tests/test_acceptance.py`. Still no diff.
 - **A change to the contract itself**, meaning a boundary in the wrong place, an entry point that shouldn't exist, a behaviour no signature can reach. **Return to Phase 1 and grill it.** Code already on disk is not evidence the shape was right. Never patch a stub to absorb an objection that is really about the design.
 
-If the user abandons the session, nothing is staged or committed, so `git checkout <previous-branch> && git branch -D <branch>` drops the branch. Your edits stay in the working tree, so list them with `git status --short` and let the user say what goes.
+If the user abandons the session, nothing is staged or committed beyond the empty start commit. When this session opened the ticket PR, `gh pr close <PR> --delete-branch`, then `git checkout <previous-branch> && git branch -D <branch>` drops the branch. Your edits stay in the working tree, so list them with `git status --short` and let the user say what goes.
 
 ### 7. Commit
 
@@ -184,8 +186,8 @@ Issue: #<N>
 
 An amended ADR adds one line per amendment under the body, `Amends ADR-0003: <why, one line>`, since the file itself carries no history.
 
-Then push with `git push -u origin <branch>`.
+Then push with `git push -u origin <branch>`, and post one line on the ticket PR with `gh pr comment <PR>`: `Red at <short hash>, <count> acceptance tests failing in <acceptance file>`.
 
 ### 8. Confirm
 
-Two lines, `Commit    a1b2c3d` and `Pushed    origin/<branch>`, then say that `/implement-ticket` takes it green.
+Two lines, `Commit    a1b2c3d` and `PR        <ticket PR URL>`, then say that `/implement-ticket` takes it green.

@@ -19,10 +19,12 @@ You are the green leg of red-green-refactor. `architect-ticket` committed the pu
 ## Pin the work
 
 1. **The branch.** Take the current branch, or the one the user names. Its name carries the issue number, as in `42-oauth-admin-login`. If the branch name has no number, ask which issue this implements before reading anything.
-2. **The ticket.** `gh issue view <number> --json title,body`. Read Goal, Spec, and Out of scope. It tells you whether a green test actually shipped the feature.
+2. **The ticket.** `gh issue view <number> --comments`. Read Goal, Spec, and Out of scope, read as the current Spec per `../pr-ticket/ticket-pr.md`. It tells you whether a green test actually shipped the feature.
 3. **The diff.** `git diff main...HEAD`, three-dot, against the merge-base. Substitute the base the user names if it isn't `main`.
 
-Confirm the branch and issue with the user in one line before writing code.
+4. **The ticket PR.** Open or reuse it per `../pr-ticket/ticket-pr.md`.
+
+Confirm the branch, issue, and ticket PR with the user in one line before writing code.
 
 ### Precondition
 
@@ -69,7 +71,7 @@ Four things stop the loop and go to the user, because none is yours to fix:
 - **A record blocks the implementation.** The contract was architected against `docs/pcr/` and `docs/adr/`, so a PCR or ADR that the only workable implementation would breach means the contract has a gap. Name the record and what it blocks. Do not code around it, and never edit one; this station writes no records.
 - **You are weighing a decision.** A module boundary, a dependency direction, a data owner, anything a future reader could undo by accident. Those were the architect's to settle, and one left open is a contract gap. Name it. Do not settle it in code.
 
-On any exit, describe the failure in plain English: which test, the evidence, and your best guess at the cause, stated as a guess. Then ask what should happen next and offer the real options: a hint from them, a contract amendment back through `/architect-ticket`, a `/challenge-pcr` session when a PCR is the block, or stopping here.
+On any exit, describe the failure in plain English: which test, the evidence, and your best guess at the cause, stated as a guess. Then ask what should happen next and offer the real options: a hint from them, a contract amendment back through `/architect-ticket`, a `/challenge-pcr` session when a PCR is the block, or stopping here. Post the same description on the ticket PR with `gh pr comment <PR>`, so the next session finds it.
 
 ---
 
@@ -77,7 +79,7 @@ On any exit, describe the failure in plain English: which test, the evidence, an
 
 Bookkeeping, once the acceptance file is green. It runs no tests. In order:
 
-1. **Comment on the issue** with `gh issue comment <N>`: the branch name, and one line per acceptance test naming it and confirming it green. Don't close the issue.
+1. **Comment on the ticket PR** with `gh pr comment <PR>`: one line per acceptance test naming it and confirming it green. Don't close the issue.
 2. **Commit** on the branch, as a separate commit from the architect's.
 
    ```
@@ -96,7 +98,7 @@ Close with these lines, then the two notes below and nothing else:
 ```
 Tests     tests/test_acceptance.py, 6 green
 Files     src/auth/oauth.py, src/auth/session.py
-Issue     commented #42
+PR        commented #57
 Commit    d4e5f6a
 ```
 
