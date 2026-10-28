@@ -6,11 +6,11 @@ disable-model-invocation: true
 
 # pr-ticket
 
-The last station on the board, for every branch. On the kanban chain, `unit-test-ticket` committed the fold. Off it, `review-diff` left a review note. Either way the branch is finished and committed. You push it, rewrite its **ticket PR** from scratch, and mark it ready for review. The body is for a reviewer who never read the ticket or the commits. They should see what changed, why the tests prove it, and what a bad merge would break, without opening the diff.
+The last station on the board, for every branch. On the kanban chain, `unit-test-ticket` committed the fold. Off it, `review-diff` left a review note. Either way the branch is finished and committed. You push it, rewrite its **ticket PR** from scratch, and mark it ready for review. The body is for a reviewer who never read the ticket or the commits. They should see what changed, why the tests prove it, and what a bad merge would break, before they open the diff.
 
 **You never edit code or tests.** A problem you find goes in `For the reviewer`, not into a commit.
 
-The title and the body's three sections follow `pr-shape.md`, the file beside this `SKILL.md`. The ticket PR follows `ticket-pr.md`, beside it. Read both from this skill's directory, never from the repo. Word every halt and report to the user per the `gloss-me` skill. The body itself carries no gloss blocks, since its reader isn't you.
+`pr-shape.md` and `ticket-pr.md` sit beside this `SKILL.md`. Read both from this skill's directory, never from the repo. You never amend the Spec, so from `ticket-pr.md` you only need Open or reuse it, Where notes go and Current Spec. Word every halt and report to the user per the `gloss-me` skill. The body itself carries no gloss blocks, since its reader isn't you.
 
 ## 1. Pin the work and check the handoff
 
@@ -33,20 +33,18 @@ The level picks the checks. Halt unless every check for it holds, naming the one
 - **Folded.** `git log <base>..HEAD` has a commit whose subject starts `Tests #<N>: tidy and fold`. If not, say to run `/unit-test-ticket` first.
 - **Reviewed.** A review note, per `../review-diff/review-note.md`, sits in the issue's comments or the ticket PR's. Read them with `gh issue view <N> --json comments` and `gh pr view <PR> --json comments`. Each comment carries its `body` and `createdAt`. Take the newest note. If none, say to run `/review-diff` first. If the newest commit on the branch, `git log -1 --format=%cI`, is later than the note's `createdAt`, the note no longer covers `HEAD`, so say to run `/review-diff` again. Compare them as times, not strings, since git prints a local offset and GitHub prints UTC.
 - **Committed.** `git status --porcelain` is empty. Never commit someone else's leftovers to make it so.
-- **Green.** The whole suite passes. If not, say which tests fail and stop. Red never gets a PR. On `trivial` with no suite in the repo, record that for Evidence and carry on.
+- **Green.** The whole suite passes. If not, say which tests fail and stop. On `trivial` with no suite in the repo, record that for Evidence and carry on.
 
 Keep the suite's pass count for Evidence. Run the squash merge check from `pr-shape.md` and keep its result for the report. It never halts.
 
 ## 2. Read the branch
 
 - **The ticket**, for the why and its words.
-- **The commits.** `git log <base>..HEAD --format='%h %s%n%b'`. On `major` or `medium`, the `Architect #<N>:` commit is Before. Its body and `Amends ADR-` lines say what was decided.
+- **The commits.** `git log <base>..HEAD --format='%h %s%n%b'`. On `major` or `medium`, the `Architect #<N>:` commit's body and `Amends ADR-` lines say what was decided.
 - **The diff.** `git diff <base>...HEAD`, read in full, so the Summary describes the code and not the commit messages.
-- **The fold**, on `major` or `medium`. The `Tests #<N>: tidy and fold` commit and `unit-test-ticket`'s comment on the ticket PR, or on the issue for an older branch, map each acceptance test to its file at `HEAD`.
+- **The fold**, on `major` or `medium`, found as `pr-shape.md`'s Evidence says.
 - **The review note**, on `minor` or `trivial`. Its Suite line, Fixes and Found, not fixed rows, and any records it wrote or amended.
 - **Reviewer items.** Every `For the reviewer` line in the issue and ticket PR comments: bugs found and deleted, undefined behaviour, design worsened for testability. Add one line per amendment note, naming the Spec line it changed and linking the note.
-- **`CONTEXT.md`**, if the repo has one, for the terms the Summary should use.
-
 ## 3. Write the body
 
 Title per `pr-shape.md`, such as `feat: (3.2) Add OAuth login`.
