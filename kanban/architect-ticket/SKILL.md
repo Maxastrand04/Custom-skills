@@ -60,7 +60,7 @@ Rules for this block:
 - **Nothing is settled while any of the four is open.** A parameter with no type, a return described only as "the result", an error path nobody named. Each is an unresolved branch. Keep going.
 - **Grill the interface, not the implementation.** "One function or a class with three methods?" is the contract, so grill it. "A dict or an LRU cache for the tokens?" sits behind the boundary, so don't spend the user's attention on it.
 - **Cover the whole Spec.** Every Interface line maps to at least one entry point on this list, and every Behaviour line has to be reachable through one. A piece with no entry point, or a step no signature can reach, means the contract is incomplete, so surface the gap and resolve it.
-- **Keep the ticket true.** When the code shows a Spec line is wrong, settle the change with the user and edit the issue with `gh issue edit` before going on. Never depart from the ticket silently.
+- **Keep the ticket true.** When the code shows a Spec line is wrong, amend it per `../pr-ticket/ticket-pr.md` before going on. Never depart from the ticket silently.
 - **Stay inside `docs/pcr/`.** If the natural interface would breach a project convention, that is not yours to override. Name the PCR and take it to the user, who either accepts a different interface or stops to run `/challenge-pcr` as its own session. Do not design against a convention you expect to fall.
 - **An ADR in the way is yours to argue.** Name it, say what the ticket needs that the record did not anticipate, and settle with the user whether the interface bends to the ADR or the ADR is amended. An amendment is settled here and written in Phase 2. Until it is settled the ADR binds.
 - **Mark every argument.** When a question resolves *against* a named alternative, note it in one line as a **record candidate**. These are what Phase 2 writes. A question the user answered without a contest is not a candidate.
@@ -90,7 +90,7 @@ Then sweep for what the ticket didn't say, because a ticket stops short of the c
 
 ### Leaving Phase 1
 
-The phase ends when every entry point is settled on all four counts and every Behaviour line in the ticket is covered by a drafted test.
+The phase ends when every entry point is settled on all four counts, every Behaviour line in the ticket is covered by a drafted test, and every error the contract names has a test of its own.
 
 **Never write the contract back as fenced stubs, a test list, or a test table.** The files on disk do that job, and doing it here makes the user review the same material twice. If drafting the tests surfaces a gap in the interface, close it in conversation and carry on.
 
@@ -112,15 +112,14 @@ Then open or reuse the branch's **ticket PR** per `../pr-ticket/ticket-pr.md`, b
 
 ### 2. Stubs into the source files
 
-Write each settled entry point into its real file: the signature, the contract as the docstring, and a body that raises the language's not-implemented error. Real source files, in the project's language and style, not pseudocode and not a scratch file.
+Write each settled entry point into its real file: the signature, the contract as the docstring, and a body that raises the language's not-implemented error.
 
-- **Match the file's existing shape.** Imports, ordering, and export style follow what is already there.
 - **Create a file only when the interface needs a new one.** Prefer the module the surrounding interface already lives in.
 - **Write nothing behind the boundary.** No helpers, no control flow, no data structures.
 
 ### 3. Tests
 
-Write every test drafted in Phase 1 into the acceptance file, calling the code **only through the stubs as written**. A test that reaches around the public interface into internals pins nothing and blocks the implementer from restructuring.
+Write every test drafted in Phase 1 into the acceptance file, calling the code **only through the stubs as written**.
 
 **Never write a structure-sensitive test**, as `../unit-test-ticket/test-standards.md` defines it.
 
@@ -145,7 +144,7 @@ Read `RECORD-FORMAT.md`, the file beside this `SKILL.md`, and run every record c
 
 Write any **amendments** settled in Phase 1 the way that file describes.
 
-Write a **PCR** only when this ticket is the first to settle something project-wide, which usually means the first ticket to pick a test runner, a library, or a naming style in a repo that has no `docs/pcr/` yet. Never amend one here.
+Write a **PCR** only when this ticket is the first to settle something project-wide.
 
 Write without asking; the user reads the Decision line at the diff gate like everything else.
 
