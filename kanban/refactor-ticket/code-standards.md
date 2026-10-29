@@ -1,6 +1,6 @@
 # Code standards
 
-Shared contract. The baseline `refactor-ticket` refactors against and `execute-ticket` reads, in two groups: **code smells**, which are local, and **bad architecture**, which is structural. The rules for tests live in `../unit-test-ticket/test-standards.md`. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source. An entry from elsewhere names its source in full.
+Shared contract. The code baseline, in two groups: **code smells**, which are local, and **bad architecture**, which is structural. The rules for tests live in `../unit-test-ticket/test-standards.md`. Every entry cites the section of Leif Lindbäck's *A First Course in Object-Oriented Development* it comes from, so a finding can be checked against the source. An entry from elsewhere names its source in full.
 
 ## Gates
 
@@ -32,7 +32,7 @@ Apply these before judging any entry:
 - **Middle man.** A unit that mostly just delegates onward. Cut it and call the real target. (5.2)
 - **Missing or wrong doc comments.** Every public declaration needs one, covering parameters and return value. It says *what*, never *how*, so the implementation stays free to change. Getters and setters included, since a blanket rule means nothing gets missed. (6.3, 6.6)
 - **Comments inside a body.** Needing one means the function is too long or does too much. Fix the code and delete the comment. (6.3)
-  - **A fence comment is the exception.** It forbids or limits a change: "don't", "must", "keep", "never", "works around", "breaks if". Someone decided the code must stay this way, and a comment is too quiet to hold that, since a batch edit can rewrite it unseen. Move it into a found ADR per `../architect-ticket/RECORD-FORMAT.md`, then delete the comment. When unsure whether a comment is a fence, treat it as one. Finding out why it exists is not part of the refactor.
+  - **A fence comment is the exception.** It forbids or limits a change: "don't", "must", "keep", "never", "works around", "breaks if". Move it into a found ADR per `../architect-ticket/RECORD-FORMAT.md`, then delete the comment. When unsure whether a comment is a fence, treat it as one. Finding out why it exists is not part of the refactor.
 - **Speculative generality.** Code built for a need no caller has yet: a parameter every caller passes the same value, a hook nothing hooks into, an abstraction with one implementation, a branch for a case the ticket never named. Every line is upkeep, so delete what nothing uses and inline the abstraction. A public piece the ticket declared stays, per **Leaky public interface**. (Martin Fowler, *Refactoring*, 2nd ed., ch. 3)
 - **Refused bequest. (OO only)** A subclass that ignores or overrides most of what it inherits. Drop the inheritance and use composition. (6.4)
 - **Inheritance used for code reuse. (OO only)** Reuse is better served by holding a reference and calling the methods. Inheritance passes down the implementation, not just the contract, so a superclass change silently breaks the subclass. Inherit only to modify behaviour through an overridable step, or to supply a default implementation. (9.3)
