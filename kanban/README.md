@@ -12,7 +12,7 @@ The ticket workflow. Each skill leaves an artifact the next one reads, and GitHu
 | `refactor-ticket` | The refactor step. Checks the tests cover the ticket, runs the full suite, cleans the code against the project's records, folds the acceptance tests into the unit tests, and closes the issue. |
 | `unit-test-ticket` | The second refactor session. Folds the acceptance file into the unit tests and tidies them. |
 | `review-diff` | Reviews any branch against its ticket, fixes code smells and record breaches, and leaves a review note on the PR or the issue. For branches that skipped `refactor-ticket`. |
-| `pr-ticket` | Checks what the ticket's effort level asks of the branch, then opens or rewrites its PR. |
+| `pr-ticket` | Checks what the ticket's effort level asks of the branch, then rewrites its ticket PR and marks it ready. |
 | `execute-ticket` | Runs red, green, and refactor in one unattended session for a ticket labelled `effort:minor`, then opens a PR. |
 
 Run `map-epic` or `new-ticket` first. The ticket's effort label then picks the route, per `new-ticket/ticket-shapes.md`:
@@ -21,6 +21,10 @@ Run `map-epic` or `new-ticket` first. The ticket's effort label then picks the r
 - `effort:trivial` is an ordinary session where you watch the agent and check what no test reaches.
 - `effort:medium` runs `architect-ticket` by hand, then `/kanban-ci:launch` queues the rest for kanban-ci.
 - `effort:major` runs `architect-ticket`, `implement-ticket`, and `refactor-ticket` in order on one branch.
+
+## Every branch has a ticket PR
+
+Whichever station creates a ticket's branch opens a draft PR for it straight away, and every later station writes its notes there. The ticket keeps the spec, and the PR keeps the history. `review-diff` opens the draft on branches built in an ordinary session. Spec changes go on both as dated amendment notes, once you approve them. The contract is `pr-ticket/ticket-pr.md`.
 
 ## Every branch ends at pr-ticket
 

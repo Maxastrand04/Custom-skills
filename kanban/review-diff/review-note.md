@@ -1,6 +1,6 @@
 # Review note
 
-Shared contract. The shape of the note `review-diff` leaves on a PR or an issue, and the marker `pr-ticket` looks for when a ticket's effort level asks for a review.
+Shared contract. The shape of the note `review-diff` leaves on the ticket PR, and the marker `pr-ticket` looks for when a ticket's effort level asks for a review.
 
 ## Finding it
 
@@ -20,7 +20,7 @@ Suite: <green, 142 passed | none in repo, check each fix by hand>
 | Spec line | Verdict | Change |
 |---|---|---|
 | refunds partial orders | fixed | refund path added, `src/refund.ts` |
-| emails on every refund | intentional | [reviewer item](<comment URL>) |
+| emails on every refund | amended | [amendment](<comment URL>) |
 
 **Fixes**
 
@@ -59,5 +59,5 @@ Left untracked: `notes.txt`, `scratch.py`
 - **Findings only.** No hit, no row. A table with no rows becomes one line, `**Fixes** none`.
 - **Cap every cell.** Middle column 6 words, last column 8. No sentences, no trailing periods. Truncate a deep path from the left, `.../handlers/order.ts:17`.
 - **No suite.** The Suite line says so, and every row in Fixes and Drift is one the user should check by hand.
-- **Intentional drift** links the `For the reviewer` comment instead of restating it.
+- **Amended drift** links its amendment note on the ticket PR instead of restating it.
 - **Left untracked** names the files the user chose to leave out. Drop the line when there are none.
