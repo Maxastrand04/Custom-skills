@@ -20,7 +20,7 @@ That commit is the whole handoff. `implement-ticket` takes it **green** and `ref
 
 ## Phase 1: Grill session
 
-You are a developer grilling a project leader about code structure. Every question in this phase runs under the `grilling` skill's interview mechanics, so invoke it.
+You are a developer grilling a project leader about code structure. Every question in this phase runs through the code grill. Invoke the `grilling` skill, then read `CODE-GRILL.md`, the file beside this `SKILL.md`, for how to ask each question.
 
 The phase runs as **one continuous session, ending in agreement on the contract**. Draft as you go and present work back only when something is open.
 
@@ -61,8 +61,8 @@ Rules for this block:
 - **Grill the interface, not the implementation.** "One function or a class with three methods?" is the contract, so grill it. "A dict or an LRU cache for the tokens?" sits behind the boundary, so don't spend the user's attention on it.
 - **Cover the whole Spec.** Every Interface line maps to at least one entry point on this list, and every Behaviour line has to be reachable through one. A piece with no entry point, or a step no signature can reach, means the contract is incomplete, so surface the gap and resolve it.
 - **Keep the ticket true.** When the code shows a Spec line is wrong, amend it per `../pr-ticket/ticket-pr.md` before going on. Never depart from the ticket silently.
-- **Stay inside `docs/pcr/`.** If the natural interface would breach a project convention, that is not yours to override. Name the PCR and take it to the user, who either accepts a different interface or stops to run `/challenge-pcr` as its own session. Do not design against a convention you expect to fall.
-- **An ADR in the way is yours to argue.** Name it, say what the ticket needs that the record did not anticipate, and settle with the user whether the interface bends to the ADR or the ADR is amended. An amendment is settled here and written in Phase 2. Until it is settled the ADR binds.
+- **Stay inside `docs/pcr/`.** If the natural interface would breach a project convention, that is not yours to override. Put it to the user in `CODE-GRILL.md`'s two-line form. The user either accepts a different interface or stops to run `/challenge-pcr` as its own session. Do not design against a convention you expect to fall.
+- **An ADR in the way is yours to argue.** State it in `CODE-GRILL.md`'s two-line form and settle with the user whether the interface bends to the ADR or the ADR is amended. An amendment is settled here and written in Phase 2. Until it is settled the ADR binds.
 - **Mark every argument.** When a question resolves *against* a named alternative, note it in one line as a **record candidate**. These are what Phase 2 writes. A question the user answered without a contest is not a candidate.
 
 Draft from Exploration first. Propose the interface that fits what already exists and let the user correct it.
@@ -76,7 +76,7 @@ Every Behaviour line is covered by at least one test. A flow step that only sets
 - **The test function name**, in the project's naming style.
 - **What it asserts**, in one sentence, phrased as an observable outcome through the public interface.
 
-**Draft the tests quietly.** The user never approves a test name or a test list. Ask only when a Behaviour line is ambiguous enough that two readings would need different tests. Then ask one question about that line, phrased as a behaviour ("Does a second login while one is active end the first session?"), never as a test name.
+**Draft the tests quietly.** The user never approves a test name or a test list. Ask only when a Behaviour line is ambiguous enough that two readings would need different tests. Then ask one question about that line, as a call with each possible outcome as a comment, per `CODE-GRILL.md`. Never as a test name.
 
 Then sweep for what the ticket didn't say, because a ticket stops short of the contract's detail:
 
@@ -92,7 +92,7 @@ Then sweep for what the ticket didn't say, because a ticket stops short of the c
 
 The phase ends when every entry point is settled on all four counts, every Behaviour line in the ticket is covered by a drafted test, and every error the contract names has a test of its own.
 
-**Never write the contract back as fenced stubs, a test list, or a test table.** The files on disk do that job, and doing it here makes the user review the same material twice. If drafting the tests surfaces a gap in the interface, close it in conversation and carry on.
+**Code appears in chat only as open options.** Once the user picks one, it goes straight into the source files in Phase 2. Never write the settled contract back as stubs, a test list, or a test table, since the user would review the same material twice. If drafting the tests surfaces a gap in the interface, close it in conversation and carry on.
 
 Then say:
 
