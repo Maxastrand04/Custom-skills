@@ -9,24 +9,28 @@ One session, one ticket, all three legs of **red-green-refactor**, no gates. The
 
 **The ticket is the spec.** Its Behaviour lines are the acceptance criteria, and you cover each with a test before you write any implementation. "AC met" means those tests are green, never your own reading of the code.
 
+Every `../` path resolves from this skill's directory. Never search the repo for it.
+
 ---
 
 ## 1. Pin the work
 
 Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHub issue URL. No argument means ask which issue, and stop until told. Never take a ticket from conversation.
 
-`gh issue view <number> --json title,body,labels`. Read Goal, Spec, Out of scope, and Branch. Spec's Interface lines tell you which pieces to build, and you name them in the project's style.
+`gh issue view <number> --json title,body,labels,comments`. Read Goal, Spec, Out of scope, and Branch. Take Spec as the current Spec per `../pr-ticket/ticket-pr.md`. Spec's Interface lines tell you which pieces to build, and you name them in the project's style.
 
 **Precondition.** The labels must carry `effort:minor`. Otherwise halt:
 
 > #<N> isn't an `effort:minor` ticket. Take the route its effort level names in `ticket-shapes.md`, or relabel it if it qualifies.
 
-Settle two things, and confirm both to the user in one line before touching code:
+Settle two things, and state both to the user in one line, then continue:
 
 - **Branch.** `<issue-number>-<slug>`, slug from the ticket's `## Branch` section, or derived from the title when absent: 2 to 4 words, kebab-case, no articles.
-- **Base.** `main`, unless the user named one at invocation.
+- **Base.** The repo's default branch, unless the user named one at invocation.
 
-Then `git checkout -b <branch>` from the base. Surface unrelated uncommitted changes before switching. Never drag them across.
+Then `git checkout -b <branch>` from the base. Surface unrelated uncommitted changes before switching. Never drag them across. Open the branch's **ticket PR** per `../pr-ticket/ticket-pr.md` straight away.
+
+Every halt below also goes on the ticket PR, word for word, with `gh pr comment <PR>`, so the history survives the session.
 
 ## 2. Read the code
 
@@ -36,11 +40,13 @@ Read the region you will change, not the whole repo. Grep for the symbols the ti
 
 ### The qualifying check
 
-The `effort:minor` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **effort criteria** in `../new-ticket/ticket-shapes.md`. Any of the three checks failing, or a Behaviour line no automated test reaches, means the ticket was mislabelled, and this session halts with nothing committed:
+The `effort:minor` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **effort criteria** in `../new-ticket/ticket-shapes.md`. Any of the three checks failing, or a Behaviour line no automated test reaches, means the ticket was mislabelled, and this session halts with nothing committed beyond the start commit:
 
 > #<N> needs a decision I shouldn't make unattended: <which check, one line>. Relabel it to the effort level that check gives and take that route.
 
 The same halt applies at any later step where a check turns out to fail. Leave a branch that already carries commits in place and name it in the halt. Never delete it.
+
+**Completion criterion:** the three effort checks each judged against the code, every Behaviour line matched to a test that can reach it, and the test runner command found.
 
 ## 3. Red
 
@@ -48,7 +54,7 @@ Cover every Behaviour line with at least one named test, in the project's naming
 
 Run them. Every one must fail because the behaviour doesn't exist yet. A test that passes asserts nothing or covers something already shipped, so sharpen it. A test that errors is broken, not red, so fix the typo or halt on a missing dependency.
 
-A behaviour no automated test can reach is not a reason to skip it. Halt and name it. An `effort:minor` ticket with an untestable behaviour was mislabelled, and is `trivial` at most.
+A Behaviour line no automated test can reach is the qualifying-check halt, never a line to skip.
 
 Commit the tests:
 
@@ -81,15 +87,15 @@ Once every test you wrote is green, run the **neighbouring tests**, meaning ever
 
 ### Loop exits
 
-Each of these stops the session before push. Describe the failure in plain English, which test, the evidence, your best guess at the cause stated as a guess, and offer the real options: a hint from the user, relabelling to the effort level the failure points at and taking that route, a `$max:challenge-pcr` session when a PCR is the block, or stopping here.
+Each of these is a halt, raised before step 6. Name the test, the evidence, and your best guess at the cause, stated as a guess. Then offer the options: a hint from the user, a spec amendment per `../pr-ticket/ticket-pr.md` when the ticket itself is wrong, relabelling to the effort level the failure points at, a `$max:challenge-pcr` session when a PCR is the block, or stopping here.
 
 - **No progress.** The same test fails with the same evidence two passes running.
 - **The ticket contradicts itself.** Two behaviours can't both be true.
-- **A record blocks it, or a decision is needed.** A PCR or ADR the only workable implementation would breach, or a call a future reader could undo by accident. Name it. Never code around it, never edit a record, and never write one other than a found ADR; the ticket was mislabelled, so relabel it `effort:major` and run `$max:architect-ticket <N>`.
+- **A record blocks it, or a decision is needed.** A PCR or ADR the only workable implementation would breach, or a call a future reader could undo by accident. Name it. Never code around it, never edit a record, and never write one other than a found ADR. Check 2 has failed, so the relabel option here is `effort:major` and `$max:architect-ticket <N>`.
 
 ## 5. Refactor
 
-Shape only, never behaviour. Behaviour includes what callers can observe behind an unchanged signature, such as the order of a returned list, an error message's text, a default value, or timing. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`, read from that skill's directory, never searched for in the repo. A record overrides the baseline. Tests are exempt. This station writes no argued records and amends none; a diff that needs one is the halt above. The one record it writes is a found ADR, per `../architect-ticket/RECORD-FORMAT.md`, for each fence comment the comment smell moves out of the code. Delete the comment in the same commit.
+Shape only, never behaviour. Behaviour includes what callers can observe behind an unchanged signature, such as the order of a returned list, an error message's text, a default value, or timing. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`. A record overrides the baseline. Tests are exempt. A diff that needs a new or amended record is the record halt in step 4. The one record this step writes is a found ADR, per `../architect-ticket/RECORD-FORMAT.md`, for each fence comment the comment smell moves out of the code. Delete the comment in the same commit.
 
 Re-run the tests from step 3 plus the neighbouring tests. Back to red means the edit changed behaviour, so revert it. Then commit once:
 
@@ -105,11 +111,14 @@ Update `CONTEXT.md` if the branch shifted a domain term and the file exists, and
 
 **Completion criterion:** every changed non-test file read against `docs/pcr/`, `docs/adr/`, and the baseline, each finding fixed, affected tests green, one commit.
 
-## 6. Push and open the PR
+## 6. Push and mark the PR ready
+
+Rewrite the ticket PR's description from scratch and mark it ready for review:
 
 ```
 git push -u origin <branch>
-gh pr create --base <base> --title "<PR title>" --body-file <file>
+gh pr edit <PR> --title "<PR title>" --body-file <file>
+gh pr ready <PR>
 ```
 
 PR body, this shape:
@@ -127,15 +136,18 @@ Closes #<N>
 
 ## Merge danger
 ...
+
+## For the reviewer
+...
 ```
 
-Write the title, Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`, read from that skill's directory, never searched for in the repo. Settle the title after Merge danger, since the breaking call reads Blast radius. Run the squash merge check from the same file for the report. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
+Write the title, Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`. List every amendment note under `For the reviewer`, one line each, linking the note, and leave the heading out when there are none. Run the squash merge check from the same file for the report. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
 
 Do not close the issue. `Closes #<N>` closes it on merge, and merging is the review.
 
 ## 7. Report
 
-Close with these lines and nothing after them:
+Close with these lines and nothing after them. When the squash merge check fails, the Merge line says what it found.
 
 ```
 Branch    42-fix-expired-session

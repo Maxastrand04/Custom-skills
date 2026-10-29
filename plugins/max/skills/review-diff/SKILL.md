@@ -1,6 +1,6 @@
 ---
 name: review-diff
-description: Reviews any branch's committed diff against its ticket, the code smells, and the project's records, fixes what it finds, and leaves a review note on the PR or the issue. Runs before pr-ticket on branches refactor-ticket never saw.
+description: Reviews any branch's committed diff against its ticket, the code smells, and the project's records, fixes what it finds, and leaves a review note on the ticket PR. Runs before pr-ticket on branches refactor-ticket never saw.
 ---
 
 # review-diff
@@ -15,11 +15,11 @@ Word every question and report per the `gloss-me` skill.
 
 ## 1. Pin the work
 
-The user starts you with a ticket number. Without one, take it from the branch name, and if the name carries none, ask. Fetch the ticket with `gh issue view <N> --comments`. The base is `main` unless the user names another.
+The user starts you with a ticket number. Without one, take it from the branch name, and if the name carries none, ask. Fetch the ticket with `gh issue view <N> --comments`, read as the current Spec in `../pr-ticket/ticket-pr.md`. The base is `main` unless the user names another. Then open or reuse the branch's **ticket PR** per the same file. On a branch built in an ordinary session, this is usually where the ticket PR opens.
 
 Find the runner command for the whole suite. A repo with no suite is normal here. Record that and carry on, since every fix still happens.
 
-**Completion criterion:** ticket fetched, base known, suite command found or recorded as none.
+**Completion criterion:** ticket fetched, base known, ticket PR open, suite command found or recorded as none.
 
 ## 2. Commit what's loose
 
@@ -48,11 +48,11 @@ Zero findings means go to step 5. Otherwise print the findings as one table, `Sp
 
 **Completion criterion:** every Spec line accounted for, and every finding has the user's verdict.
 
-## 4. Record intentional drift
+## 4. Amend for intentional drift
 
-If any finding is intentional, post one `gh issue comment <N>` with a `For the reviewer` heading and one line per finding: the Spec line, what the diff does instead, and `intentional, user confirmed`. `pr-ticket` copies these lines into the PR body. Keep the comment's URL for the note.
+An intentional finding means the diff is right and the Spec line is not, so it is a spec change. For each one, propose an amendment per `../pr-ticket/ticket-pr.md`: the Spec line, the change that matches what the diff does, and the reason. Ask the user for the reason when they haven't given one. Post each approved note on the issue and the ticket PR, and keep the PR comment's URL for the review note. A refused amendment turns the finding unintentional, so step 6 fixes it.
 
-No intentional finding means no comment.
+No intentional finding means no amendment.
 
 ## 5. Smells and records
 
@@ -102,10 +102,7 @@ Tell the user the drift fixes are in the working tree, name the files with `git 
 
 Write the note per `review-note.md`, and check it against `unslop`. The note carries no gloss blocks, since its reader isn't you.
 
-Check for a PR with `gh pr list --head <branch> --state open`.
-
-- **A PR exists.** `git push`, then `gh pr comment <PR> --body-file <note>`.
-- **No PR.** Don't push. Post it with `gh issue comment <N> --body-file <note>`.
+`git push`, then post it on the ticket PR with `gh pr comment <PR> --body-file <note>`.
 
 Never close the issue. Merging the branch closes it.
 
@@ -115,7 +112,7 @@ Five lines, then one line handing off. Don't repeat the note's tables in chat. T
 
 ```
 Note     <URL of the note>
-Drift    3 found, 1 intentional, 2 fixed
+Drift    3 found, 1 amended, 2 fixed
 Fixes    5 smells, 1 record breach, 1 found not fixed
 Records  ADR-0009 written, ADR-0003 amended
 Commits  wip b0c1d2e, review a1b2c3d, drift c9d8e7f

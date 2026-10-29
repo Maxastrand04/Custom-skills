@@ -18,10 +18,11 @@ You are the green leg of red-green-refactor. `architect-ticket` committed the pu
 ## Pin the work
 
 1. **The branch.** Take the current branch, or the one the user names. Its name carries the issue number, as in `42-oauth-admin-login`. If the branch name has no number, ask which issue this implements before reading anything.
-2. **The ticket.** `gh issue view <number> --json title,body`. Read Goal, Spec, and Out of scope. It tells you whether a green test actually shipped the feature.
+2. **The ticket.** `gh issue view <number> --comments`. Read Goal, Out of scope, and the current Spec per `../pr-ticket/ticket-pr.md`. It tells you whether a green test actually shipped the feature.
 3. **The diff.** `git diff main...HEAD`, three-dot, against the merge-base. Substitute the base the user names if it isn't `main`.
+4. **The ticket PR.** Open or reuse it per `../pr-ticket/ticket-pr.md`.
 
-Confirm the branch and issue with the user in one line before writing code.
+Confirm the branch, issue, and ticket PR with the user in one line before writing code.
 
 ### Precondition
 
@@ -39,7 +40,7 @@ Read it once, in full, before writing anything. Three things come out of it, and
 
 - **The stubs.** Every signature and docstring. The docstring is the contract: the errors it names, the invariants it promises, the edge cases it describes. All of that is work you owe, whether or not a test covers it.
 - **The tests.** Each test's name and docstring is one acceptance criterion. The assertions are the exact bar.
-- **The surrounding code.** Read the region you're about to change, not the whole file. Grep to locate, then read with an offset and a limit.
+- **The surrounding code.** Read the region you're about to change, not the whole file.
 
 **Point, don't paste.** Never paste the stubs, the tests, or the ticket body back into your own response. You already read them.
 
@@ -48,27 +49,25 @@ Read it once, in full, before writing anything. Three things come out of it, and
 ## The green loop
 
 1. **Implement.** Fill in the stub bodies, plus whatever private code they need.
-2. **Run the acceptance file.** Not the whole suite.
+2. **Run the acceptance file.**
 3. **Read every failure before fixing any of them.** Fixing one at a time invites a fix that breaks a sibling.
 4. **Repeat until green.**
 
-**Track the pass number and report it**, as in "pass 3: 2 of 6 still red", so a loop that isn't converging shows itself.
-
-**Terse verdicts only.** One line per pass. The edit itself is the record, so name the files touched and move on.
+**Report each pass in one line**, naming the files touched, as in "pass 3: 2 of 6 still red", so a loop that isn't converging shows itself.
 
 **Completion criterion:** every test in the acceptance file passes, and no signature or assertion on the diff was edited.
 
 ### Loop exits
 
-Four things stop the loop and go to the user, because none is yours to fix:
+These stop the loop and go to the user, because none is yours to fix:
 
 - **The contract is wrong.** A signature can't express the behaviour, or two parts of it contradict each other. Say which stub and why. Do not fix it in code.
 - **A test is wrong.** It asserts something the ticket never asked for, or contradicts the docstring it sits under. Say which test and quote the conflict. Do not weaken it.
 - **No progress.** The same test fails with the same evidence two passes running. A third would spin.
-- **A record blocks the implementation.** The contract was architected against `docs/pcr/` and `docs/adr/`, so a PCR or ADR that the only workable implementation would breach means the contract has a gap. Name the record and what it blocks. Do not code around it, and never edit one; this station writes no records.
+- **A record blocks the implementation.** The contract was architected against `docs/pcr/` and `docs/adr/`, so a PCR or ADR that the only workable implementation would breach means the contract has a gap. Name the record and what it blocks. Do not code around it, and never edit one; this skill writes no records.
 - **You are weighing a decision.** A module boundary, a dependency direction, a data owner, anything a future reader could undo by accident. Those were the architect's to settle, and one left open is a contract gap. Name it. Do not settle it in code.
 
-On any exit, describe the failure in plain English: which test, the evidence, and your best guess at the cause, stated as a guess. Then ask what should happen next and offer the real options: a hint from them, a contract amendment back through `$max:architect-ticket`, a `$max:challenge-pcr` session when a PCR is the block, or stopping here.
+On any exit, describe the failure in plain English: which test, the evidence, and your best guess at the cause, stated as a guess. Then ask what should happen next and offer the real options: a hint from them, a contract amendment back through `$max:architect-ticket`, a `$max:challenge-pcr` session when a PCR is the block, or stopping here. Post the same description on the ticket PR with `gh pr comment <PR>`, so the next session finds it.
 
 ---
 
@@ -76,8 +75,7 @@ On any exit, describe the failure in plain English: which test, the evidence, an
 
 Bookkeeping, once the acceptance file is green. It runs no tests. In order:
 
-1. **Comment on the issue** with `gh issue comment <N>`: the branch name, and one line per acceptance test naming it and confirming it green. Don't close the issue.
-2. **Commit** on the branch, as a separate commit from the architect's.
+1. **Commit** on the branch, as a separate commit from the architect's.
 
    ```
    Implement #<N>: <ticket title>
@@ -86,7 +84,8 @@ Bookkeeping, once the acceptance file is green. It runs no tests. In order:
    Issue: #<N>
    ```
 
-   Don't push unless the user asks.
+2. **Push** with `git push`.
+3. **Comment on the ticket PR** with `gh pr comment <PR>`: `Green at <short hash>`, then one line per acceptance test naming it and confirming it green. Don't close the issue.
 
 ## Report
 
@@ -95,8 +94,8 @@ Close with these lines, then the two notes below and nothing else:
 ```
 Tests     tests/test_acceptance.py, 6 green
 Files     src/auth/oauth.py, src/auth/session.py
-Issue     commented #42
-Commit    d4e5f6a
+PR        commented #57
+Commit    d4e5f6a, pushed
 ```
 
 Then say `$max:refactor-ticket` reconciles the suite and refactors, and `$max:unit-test-ticket` folds the acceptance file in after it. Merging the branch closes the issue.

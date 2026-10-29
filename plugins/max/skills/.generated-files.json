@@ -33,6 +33,7 @@
   "pr-ticket/SKILL.md",
   "pr-ticket/agents/openai.yaml",
   "pr-ticket/pr-shape.md",
+  "pr-ticket/ticket-pr.md",
   "pro-con/SKILL.md",
   "pro-con/agents/openai.yaml",
   "pro-con/template_output.md",

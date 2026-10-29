@@ -19,10 +19,7 @@ Write Merge danger first, because the breaking call reads its Blast radius lines
 
 ### Breaking change
 
-A change is breaking when code outside this repo, calling its public interface, stops working or behaves differently after the merge. The public interface is whatever outside code reaches, such as a published API, a library's exported names, a CLI's flags and output, or a file format another program reads. Both kinds of Blast radius line count when the thing changed is public:
-
-- **Signature.** A public name, parameter, return type or thrown error changed.
-- **Behaviour.** A public name kept its signature but changed what callers see, such as a default, an error format or an output shape.
+A change is breaking when code outside this repo, calling its public interface, stops working or behaves differently after the merge. The public interface is whatever outside code reaches, such as a published API, a library's exported names, a CLI's flags and output, or a file format another program reads. Both kinds of Blast radius line count when the thing changed is public.
 
 Internal changes never count, however large. A renamed private function or a reshaped module isn't breaking, and a repo that publishes nothing has no breaking changes. When you can't tell whether a name is public, mark it breaking and name it in Blast radius. A wrong `!` costs a major bump. A missing one ships a break as a minor update.
 
@@ -151,43 +148,6 @@ A component change:
 +    <SkillResultCard />
 ```
 
-A file layout change:
-
-```diff
- src/
- ├── commands/
-+│   └── show-me.ts       # expands the slash command
- ├── sessions/
--└── transport.ts
-+└── transport/
-+    ├── client.ts
-+    └── stream.ts
-```
-
-A call tree change:
-
-```diff
- submitForm
-   createSession
-     persistPrompt
-+    expandSkillMention
-     launchAgent
--  navigateToSession
-+  navigateToSession
-+    subscribeToEvents
-```
-
-A state or control flow change:
-
-```diff
- on(save)
--  write content
-+  if content is unchanged
-+    return cached result
-+  write new content
-+  invalidate cache
-```
-
 Show a whole code block instead when most of it is new, when cutting context would hide ownership or order, or when the reviewer needs the target shape to copy:
 
 ```ts
@@ -201,7 +161,7 @@ function expandSkill(command: string): string {
 
 The tests are the evidence. On a branch that went through red, Before is the red commit, where every test the ticket added was watched failing. After is `HEAD`, where the same tests pass.
 
-- **On the kanban chain**, the red commit is `Architect #<N>:`. The tests have since moved into the module test files `unit-test-ticket` folded them into, so take each one's file at `HEAD` from the `Tests #<N>: tidy and fold` commit or `unit-test-ticket`'s issue comment. Leave dropped tests out. The whole suite ran green, so say so with its count.
+- **On the kanban chain**, the red commit is `Architect #<N>:`. The tests have since moved into the module test files `unit-test-ticket` folded them into, so take each one's file at `HEAD` from the `Tests #<N>: tidy and fold` commit or `unit-test-ticket`'s comment on the ticket PR, or on the issue for a branch older than the ticket PR. Leave dropped tests out. The whole suite ran green, so say so with its count.
 - **On `execute-ticket`**, the red commit is `Test #<N>:`, and the tests are still where it wrote them. It ran its own tests and the neighbouring tests, not the whole suite, so say exactly that.
 - **On a branch with no red commit**, such as one `review-diff` reviewed, nothing was watched failing. Drop the Before line. After reads `**After** \`<HEAD sha>\`, these pass.` with the whole suite's count. List only the Behaviour lines a test asserts, and put every line checked by hand under Untested behaviour in Merge danger. With no suite in the repo, Evidence is the one line `none, no suite in repo`, and every Behaviour line goes under Untested behaviour.
 
@@ -220,13 +180,13 @@ A two-way door can be walked back by reverting the merge. A one-way door can't: 
 One word for how far a bad merge reaches, such as `module`, `service`, `consumers` or `users`. Then one line per thing a caller could notice, in two kinds:
 
 - **Signature.** A public name, parameter, return type or thrown error changed. Name who calls it and breaks.
-- **Behaviour.** The signature stayed the same, but something a caller can observe changed: the order of a returned list, an error message's text, a default value, timing, a file or output format, stored data. With enough callers, someone depends on every observable behaviour, whether or not anyone promised it. These are the ones a reviewer can't spot from the signatures, so look hardest for them.
+- **Behaviour.** The signature stayed the same, but something a caller can observe changed: the order of a returned list, an error message's text, a default value, timing, a file or output format, stored data. These are the ones a reviewer can't spot from the signatures, so look hardest for them.
 
 Think past the diff to what reads its output, such as a config another repo reads or layout on small screens.
 
 ### Untested behaviour (Beyoncé rule)
 
-Behaviour with no test is unprotected, and the next change can break it without the suite noticing. List every behaviour the diff adds or changes that no test asserts, one line each.
+List every behaviour the diff adds or changes that no test asserts, one line each.
 
 - **Scope is the diff.** Only code the diff touches. Old gaps elsewhere aren't this PR's to flag.
 - **Use the coverage tool if the project has one.** Run it over the suite and list changed lines no test executed, each named as the behaviour it carries.
