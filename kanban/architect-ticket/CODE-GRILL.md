@@ -8,42 +8,54 @@ Before each question, judge its level. A decision that must be settled before an
 
 ## A code-level question
 
-```
+````
 ❓ **Q1** - **<question title>**: <one line saying what is being decided>
 
-Current:
-
-    def refresh(token: str) -> Session: ...
-
-A:
-
-    def refresh(token: Token) -> Session: ...
-    refresh(expired_token)  # raises TokenExpired
-
-B:
-
-    def refresh(token: Token) -> Session | None: ...
-    refresh(expired_token)  # returns None
-
-➡️ A, because every other entry point in `auth/` raises on a bad token.
+**Current**
+```python
+def refresh(token: str) -> Session: ...
 ```
 
+**A**
+```python
+def refresh(token: Token) -> Session: ...
+refresh(expired_token)        # raises TokenExpired
+```
+
+**B**
+```python
+def refresh(token: Token) -> Session | None: ...
+refresh(expired_token)        # returns None
+```
+
+➡️ **A**, because every other entry point in `auth/` raises on a bad token.
+````
+
 - **Options are code.** Label them A, B, and on. Write each as a snippet in the project's language, using real names from the codebase.
+- **One fenced block per snippet.** Each option and `Current` gets its own fenced block with the language tag. Its bold label sits alone on the line above, with a blank line before the label. Never indent code instead of fencing it, since indented code runs into the next label.
 - **Interface options are signatures.** Bodies are `...`.
-- **Guarantees are calls.** A call followed by its outcome as a trailing comment, such as `refresh(expired_token)  # raises TokenExpired`.
-- **Show what exists.** When the entry point already exists, put its current code above the options, under `Current:`.
+- **Guarantees are calls.** A call followed by its outcome as a trailing comment, such as `refresh(expired_token)        # raises TokenExpired`.
+- **Trailing comments stand apart.** Put at least 8 spaces between the code and `#`. Within a block, line every trailing `#` up in one column.
+- **Show what exists.** When the entry point already exists, put its current code above the options, under `Current`.
 - **Outcome comments are the only comments.** Options carry no docstrings. The contract's docstring is written in Phase 2.
 - **10 lines per option.** An option over 10 lines drops to signatures with `...` bodies. Still over 10 means the question covers too much, so split it.
-- **The recommendation is one letter** and one sentence of why.
+- **The recommendation is one bold letter** and one sentence of why, after a blank line.
 
 ## Ambiguous Behaviour lines
 
 Ask the line as a call through the settled stubs, then each possible reading as an outcome comment, one option per reading:
 
+````
+**A**
+```python
+login(user)        # ends the first session
 ```
-A:  login(user)  # ends the first session
-B:  login(user)  # both sessions stay active
+
+**B**
+```python
+login(user)        # both sessions stay active
 ```
+````
 
 ## Record conflicts
 
