@@ -6,7 +6,7 @@
 - Gloss every domain term not in ~/.claude/glossary.md, per the gloss-me skill. Project docs like CONTEXT.md never count as known terms.
 
 ## Working in a repo
-Each rule applies only where its condition holds. Branch rules need git, ticket rules need a GitHub remote, record rules need `docs/adr/` or `docs/pcr/` to exist. A question or a code read triggers no branch or ticket rule.
+Each rule applies only where its condition holds. Branch rules need git, ticket rules need a GitHub remote, reading the ADRs and PCRs needs `docs/adr/` or `docs/pcr/` to exist. A question or a code read triggers no branch or ticket rule.
 
 ### Records
 - Before changing code, read every ADR in `docs/adr/` and every PCR in `docs/pcr/`. Both are binding.

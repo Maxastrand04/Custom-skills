@@ -7,7 +7,7 @@
 - Do not spawn subagents unless the user explicitly requests delegation or an active skill requires it. Complete work directly in the main conversation.
 
 ## Working in a repo
-Each rule applies only where its condition holds. Branch rules need git, ticket rules need a GitHub remote, record rules need `docs/adr/` or `docs/pcr/` to exist. A question or a code read triggers no branch or ticket rule.
+Each rule applies only where its condition holds. Branch rules need git, ticket rules need a GitHub remote, reading the ADRs and PCRs needs `docs/adr/` or `docs/pcr/` to exist. A question or a code read triggers no branch or ticket rule.
 
 ### Records
 - Before changing code, read every ADR in `docs/adr/` and every PCR in `docs/pcr/`. Both are binding.
