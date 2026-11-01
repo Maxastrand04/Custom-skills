@@ -3,7 +3,7 @@
 Everything Claude Code reads from `~/.claude/`. Why each setting is what it is lives in [`../README.md`](../README.md).
 
 ```
-CLAUDE.md               global instructions, two lines
+CLAUDE.md               global instructions: communication rules, then repo rules
 settings.json           feature toggles, permissions.deny, hooks, statusLine
 hooks/inject_unslop.py  SessionStart: prints the full unslop skill into context
 hooks/remind_unslop.py  UserPromptSubmit: twelve-line reminder before every reply

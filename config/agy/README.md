@@ -3,7 +3,7 @@
 Everything Antigravity (agy) reads from `~/.gemini/config/`, its global customization root. Why each piece exists lives in [`../README.md`](../README.md).
 
 ```
-AGENTS.md               global rules
+AGENTS.md               global instructions: communication rules, then repo rules
 settings.json           tool deny list and disabled autoMemory
 hooks.json              wires both scripts to PreInvocation
 hooks/inject_unslop.py  first invocation: prints the full unslop skill into context
