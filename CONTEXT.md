@@ -111,7 +111,7 @@ The one draft pull request a **Ticket**'s branch carries from the moment a stati
 _Avoid_: draft, work PR, tracking PR
 
 **Spec amendment**:
-A dated note, posted on both the **Ticket** and its **Ticket PR** once the user approves it, that replaces one **Spec** line or adds one. The Ticket body is never edited, so the current Spec is the original plus every amendment in date order. Its first line is always `## Spec amendment`.
+A dated note, posted on both the **Ticket** and its **Ticket PR** once the user approves it, that replaces one **Spec** line or adds one. The Ticket body is never edited, so the current Spec is the original plus every amendment in date order. Its first line is `# Spec amendment`, or `## Spec amendment` on notes posted before the current look.
 _Avoid_: spec edit, change request, intentional drift
 
 **Spec**:
