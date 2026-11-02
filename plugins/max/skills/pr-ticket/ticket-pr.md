@@ -38,7 +38,7 @@ Branches started before this contract keep their earlier notes on the issue. Whe
 
 ## Current Spec
 
-The ticket's Spec, plus every amendment note on the issue, applied in date order. An amendment replaces the Spec line it quotes. Read the Spec this way wherever a station says "the ticket", never the body alone.
+The ticket's Spec, plus every amendment note on the issue, applied in date order. Notes in the old look, first line `## Spec amendment`, count the same as notes in the current look. An amendment replaces the Spec line it quotes. Read the Spec this way wherever a station says "the ticket", never the body alone.
 
 ## Amendments
 
@@ -48,13 +48,41 @@ The ticket body never changes. When a Spec line has to:
 2. On approval, post the same amendment note on the issue and on the ticket PR, then continue. Before the ticket PR exists, as in `architect-ticket`'s grill, post it on the issue now and on the ticket PR the moment it opens.
 3. On refusal, the Spec line stands.
 
-```md
-## Spec amendment
+Fill in the template below.
 
-Date: <YYYY-MM-DD>
-Original: <the Spec line, verbatim, or `none` for an added line>
-Change: <the approved line, or `removed`>
-Reason: <one line>
+- The `##` heading names the Spec line and the change in a few words.
+- The short diff holds only the changed clause, a few words either side, with the change in git word-diff markers: `[-removed-]` and `{+added+}`.
+- Under **Full lines**, the `-` row is the Spec line verbatim and the `+` row is the approved line verbatim. Under each row that has an unchanged part, a caret row marks the changed part with `^`, starting in the column where it starts. A caret row starts with two spaces, so it is never a `-` or `+` row.
+- For an added line, both diffs hold only a `+` row with the whole line, and the heading ends `new line`. For a removed line, only a `-` row, and the heading ends `removed`. Neither gets a caret row.
+
+````md
+# Spec amendment
+
+## <Spec line, like Behaviour 4>: <old words> → <new words>
+
+```diff
+! <changed clause, like: $max:grill-docs once{+ per session+}, and asks>
 ```
 
-The first line is always `## Spec amendment`, exactly. That is how a station finds one.
+## Why
+
+<one line>
+
+## Date
+
+<YYYY-MM-DD>
+
+<details><summary>Full lines</summary>
+
+```diff
+- <the Spec line, verbatim>
+  <spaces, then ^ under the changed part>
++ <the approved line, verbatim>
+  <spaces, then ^ under the changed part>
+```
+</details>
+````
+
+The first line is always `# Spec amendment`, exactly. That is how a station finds one. Older notes start `## Spec amendment` and use `Date:`, `Original:`, `Change:` and `Reason:` lines. Read them too, and never post a new one in that look.
+
+To read a note in the current look, take the old line from the `-` row and the new line from the `+` row under **Full lines**, minus the `- ` or `+ ` prefix. Skip caret rows. No `-` row means an added line, and no `+` row means a removed one.
