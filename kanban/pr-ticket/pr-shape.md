@@ -1,6 +1,6 @@
 # PR shape
 
-The title, the three sections of a PR body, and the layout of `For the reviewer`, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `execute-ticket` both write them. The header lines and which items go in `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
+Shared contract. The title, the three sections of a PR body, and the layout of `For the reviewer`, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `execute-ticket` both write them. The header lines and which items go in `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
 
 ## Title
 
