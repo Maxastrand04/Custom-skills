@@ -43,7 +43,8 @@ Keep the suite's pass count for Evidence. Run the squash merge check from `pr-sh
 - **The diff.** `git diff <base>...HEAD`, read in full, so the Summary describes the code and not the commit messages.
 - **The fold**, on `major` or `medium`, found as `pr-shape.md`'s Evidence says.
 - **The review note**, on `minor` or `trivial`. Its Suite line, Fixes and Found, not fixed rows, and any records it wrote or amended.
-- **Reviewer items.** Every `For the reviewer` line in the issue and ticket PR comments: bugs found and deleted, undefined behaviour, design worsened for testability. Add one line per amendment note, naming the Spec line it changed and linking the note.
+- **Reviewer items.** Every `For the reviewer` line in the issue and ticket PR comments: bugs found and deleted, undefined behaviour, design worsened for testability. Add one line per amendment note, naming the Spec line it changed and linking the note. An item about code outside the ticket's scope that the change breaks moves to Blast radius instead.
+
 ## 3. Write the body
 
 Title per `pr-shape.md`, such as `feat: (3.2) Add OAuth login`.
@@ -63,8 +64,7 @@ Closes #<N>
 ...
 
 ## For the reviewer
-
-- <item, copied from its comment, each readable on its own>
+...
 ```
 
 The header line follows the route the branch took:
@@ -72,7 +72,7 @@ The header line follows the route the branch took:
 - **`major` or `medium`.** `Implemented by AI through the kanban chain. A human approved the interface and the tests. Review the diff before merging.`
 - **`minor` or `trivial`.** `Implemented by AI in a session a human watched, then reviewed with review-diff. Review the diff before merging.`
 
-Write Summary, Evidence and Merge danger per `pr-shape.md`. Leave `For the reviewer` out when there are no items.
+Write Summary, Evidence, Merge danger and `For the reviewer` per `pr-shape.md`. Copy each reviewer item from its comment so it reads on its own, and sort it into its colour group.
 
 **Don't wait for approval.** Once the body passes `unslop`, go straight to step 4. The user reads the body on the PR, and the PR is the review.
 
