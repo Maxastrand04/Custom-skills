@@ -1,6 +1,6 @@
 # PR shape
 
-The title and the three sections of a PR body, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `execute-ticket` both write them. The header lines and `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
+The title, the three sections of a PR body, and the layout of `For the reviewer`, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `execute-ticket` both write them. The header lines and which items go in `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
 
 ## Title
 
@@ -44,10 +44,14 @@ Anything but `[false,false,"PR_TITLE"]` lets a merge reach main without the pref
 
 ## Evidence
 
+<details><summary><count> tests pass</summary>
+
 **Before** `<red sha>`, these tests failed.
 **After** `<HEAD sha>`, they pass. <what else ran green, such as the whole suite, 214 tests>
 
 - <behaviour, in the ticket's words> `<test file>::<test name>`
+
+</details>
 
 ## Merge danger
 
@@ -56,12 +60,27 @@ Anything but `[false,false,"PR_TITLE"]` lets a merge reach main without the pref
 
 ### Blast radius (Hyrum's law)
 <One word>.
+
+<details><summary>Signature and behaviour, <count> lines</summary>
+
 - Signature: <changed public signature>. <who breaks>
 - Behaviour: <observable change behind an unchanged signature>. <who relied on it>
 
+</details>
+
 ### Untested behaviour (Beyoncé rule)
+<count> untested.
+
+<details><summary>Which ones</summary>
+
 - <behaviour the diff adds or changes>. No test asserts it.
+
+</details>
 ```
+
+Summary and Door show open, because a reviewer needs both before the diff. Evidence, the Blast radius lines and the Untested behaviour lines sit in folds, which are `<details>` blocks GitHub shows closed with only the `<summary>` label visible. Leave a blank line after the `<summary>` line and before `</details>`, or GitHub won't render the markdown inside. A fold only hides lines. Write every line it holds as you would without it.
+
+An empty Blast radius or Untested behaviour section is the one line `none` with no fold. With no suite in the repo, Evidence's `none, no suite in repo` line shows open with no fold.
 
 Skip preambles and keep prose short. Use the project's terms as `CONTEXT.md` defines them, when the file exists. A reviewer reads the body cold, so never coin a term the code or `CONTEXT.md` doesn't use. Check every line against `unslop`.
 
@@ -177,12 +196,12 @@ A two-way door can be walked back by reverting the merge. A one-way door can't: 
 
 ### Blast radius (Hyrum's law)
 
-One word for how far a bad merge reaches, such as `module`, `service`, `consumers` or `users`. Then one line per thing a caller could notice, in two kinds:
+One word for who a bad merge affects, such as `local`, `callers` or `users`, shown open. Then one line per thing a caller could notice, in two kinds, inside the fold:
 
 - **Signature.** A public name, parameter, return type or thrown error changed. Name who calls it and breaks.
 - **Behaviour.** The signature stayed the same, but something a caller can observe changed: the order of a returned list, an error message's text, a default value, timing, a file or output format, stored data. These are the ones a reviewer can't spot from the signatures, so look hardest for them.
 
-Think past the diff to what reads its output, such as a config another repo reads or layout on small screens.
+Think past the diff to what reads its output, such as a config another repo reads or layout on small screens. Code outside the ticket's scope that the change breaks goes here, and never in `For the reviewer`.
 
 ### Untested behaviour (Beyoncé rule)
 
@@ -193,3 +212,31 @@ List every behaviour the diff adds or changes that no test asserts, one line eac
 - **Otherwise read.** For each changed path, such as a branch, an error case or a new return value, find a test that asserts it. Executing the line isn't enough. A test has to check the result.
 
 On a branch with no red commit, start with the ticket's Behaviour lines Evidence left out, one line each, ending `Checked by hand.` instead of `No test asserts it.` Otherwise the ticket's own Behaviour lines are already covered by the evidence tests, so what turns up here is usually an extra error path, a guard, or old behaviour the diff changed that never had a test.
+
+## For the reviewer
+
+Sort each item into one of three colour groups. When an item could go in two, pick the higher one, red over yellow over green.
+
+- **Red, bugs found.** The code is wrong, such as a test that failed on the untouched code and was deleted.
+- **Yellow, possible issues.** Something may be wrong and needs the reviewer's call, such as undefined behaviour, design worsened for testability, or a fix a record blocked.
+- **Green, notes.** Nothing to act on, such as an amendment note the user approved or a record a station wrote.
+
+```markdown
+## For the reviewer
+
+> [!CAUTION]
+> **Bugs found**
+> - <item>
+
+> [!WARNING]
+> **Possible issues**
+> - <item>
+
+<details><summary><count> notes</summary>
+
+- <item>
+
+</details>
+```
+
+Red and yellow show open, each as a GitHub alert, the `> [!CAUTION]` and `> [!WARNING]` blockquotes GitHub draws as a red and a yellow box. Keep a blank line between them, or GitHub merges them into one. Green goes in a fold labelled with its count. GitHub won't draw an alert inside a fold, so green is a plain list. Leave out a group with no items, and leave out the whole section when no group has any.

@@ -142,7 +142,7 @@ Closes #<N>
 ...
 ```
 
-Write the title, Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`. List every amendment note under `For the reviewer`, one line each, linking the note, and leave the heading out when there are none. Run the squash merge check from the same file for the report. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
+Write the title, Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`. List every amendment note under `For the reviewer`, one line each, linking the note, in the green group per the same file. Leave the heading out when there are none. Run the squash merge check from the same file for the report. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
 
 Do not close the issue. `Closes #<N>` closes it on merge, and merging is the review.
 
