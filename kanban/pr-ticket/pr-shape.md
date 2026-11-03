@@ -232,11 +232,12 @@ Sort each item into one of three colour groups. When an item could go in two, pi
 > **Possible issues**
 > - <item>
 
-<details><summary><count> notes</summary>
-
-- <item>
-
-</details>
+> [!TIP]
+> <details><summary><count> notes</summary>
+>
+> - <item>
+>
+> </details>
 ```
 
-Red and yellow show open, each as a GitHub alert, the `> [!CAUTION]` and `> [!WARNING]` blockquotes GitHub draws as a red and a yellow box. Keep a blank line between them, or GitHub merges them into one. Green goes in a fold labelled with its count. GitHub won't draw an alert inside a fold, so green is a plain list. Leave out a group with no items, and leave out the whole section when no group has any.
+Each group is a GitHub alert, a blockquote opened by `[!CAUTION]`, `[!WARNING]` or `[!TIP]`, which GitHub draws as a red, yellow or green box. Keep a blank line between them, or GitHub merges them into one. Red and yellow show open. Green holds a fold labelled with its count, and every line of the fold, blank ones included, starts with `>`. Leave out a group with no items, and leave out the whole section when no group has any.
