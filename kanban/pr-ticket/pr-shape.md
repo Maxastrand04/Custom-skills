@@ -56,10 +56,10 @@ Anything but `[false,false,"PR_TITLE"]` lets a merge reach main without the pref
 ## Merge danger
 
 ### Door
-<One-way or two-way>. <optional, one line on why>
+**`<One-way or Two-way>`**. <optional, one line on why>
 
 ### Blast radius (Hyrum's law)
-<One word>.
+**`<one word>`**.
 
 <details><summary>Signature and behaviour, <count> lines</summary>
 
@@ -78,7 +78,7 @@ Anything but `[false,false,"PR_TITLE"]` lets a merge reach main without the pref
 </details>
 ```
 
-Summary and Door show open, because a reviewer needs both before the diff. Evidence, the Blast radius lines and the Untested behaviour lines sit in folds, which are `<details>` blocks GitHub shows closed with only the `<summary>` label visible. Leave a blank line after the `<summary>` line and before `</details>`, or GitHub won't render the markdown inside. A fold only hides lines. Write every line it holds as you would without it.
+Summary and Door show open, because a reviewer needs both before the diff. Door's call and Blast radius's word are bold code, as in **`Two-way`** or **`users`**, with the asterisks outside the backticks. Backticks outside the asterisks show the asterisks as text. Evidence, the Blast radius lines and the Untested behaviour lines sit in folds, which are `<details>` blocks GitHub shows closed with only the `<summary>` label visible. Leave a blank line after the `<summary>` line and before `</details>`, or GitHub won't render the markdown inside. A fold only hides lines. Write every line it holds as you would without it.
 
 An empty Blast radius or Untested behaviour section is the one line `none` with no fold. With no suite in the repo, Evidence's `none, no suite in repo` line shows open with no fold.
 
@@ -192,11 +192,11 @@ Three parts, each under its own `###` heading exactly as named below, law names 
 
 ### Door
 
-A two-way door can be walked back by reverting the merge. A one-way door can't: a data migration, a deleted column, a published API or file format, a message sent to users. Say which, and for a one-way door, name what can't be undone.
+A two-way door can be walked back by reverting the merge. A one-way door can't: a data migration, a deleted column, a published API or file format, a message sent to users. Say which in bold code, and for a one-way door, name what can't be undone.
 
 ### Blast radius (Hyrum's law)
 
-One word for who a bad merge affects, such as `local`, `callers` or `users`, shown open. Then one line per thing a caller could notice, in two kinds, inside the fold:
+One word for who a bad merge affects, such as `local`, `callers` or `users`, shown open in bold code. Then one line per thing a caller could notice, in two kinds, inside the fold:
 
 - **Signature.** A public name, parameter, return type or thrown error changed. Name who calls it and breaks.
 - **Behaviour.** The signature stayed the same, but something a caller can observe changed: the order of a returned list, an error message's text, a default value, timing, a file or output format, stored data. These are the ones a reviewer can't spot from the signatures, so look hardest for them.
