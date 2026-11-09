@@ -18,7 +18,7 @@ Pick skills in the menu, review the plan, and apply it. To add specific skills w
 ./install.sh --codex grilling unslop gloss-me
 ```
 
-Codex reads the links in `~/.agents/skills/`. Those links point to Codex copies generated inside this clone. The copies use Codex's invocation settings and `$skill-name` mentions, and put the skill folders beside one another so shared-file links resolve. Source files remain in their category folders. Python 3.9 or newer is required.
+Codex reads the links in `~/.agents/skills/`. Those links point to Codex copies generated inside this clone. The copies use Codex's invocation settings and `$skill-name` mentions, and put the skill folders beside one another so shared-file links resolve. Source files remain in their category folders. Python 3.10 or newer is required.
 
 After editing a source skill or pulling updates, run `./install.sh --codex` again to refresh the copies. Codex detects changes automatically. Restart it if a skill does not appear. Use `/skills` or mention a skill as `$grilling` in Codex CLI and the editor extension. [Official skill documentation](https://learn.chatgpt.com/docs/build-skills)
 

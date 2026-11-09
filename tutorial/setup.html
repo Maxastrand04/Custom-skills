@@ -221,7 +221,7 @@ git clone https://github.com/&lt;you&gt;/Custom-skills.git ~/GitHub/Custom-skill
 cd ~/GitHub/Custom-skills
 ./install.sh            <span class="c"># menu, pick Claude Code, Antigravity, or Codex</span></pre>
 <p>For Claude Code and Antigravity, the script links each skill folder into <code>~/.claude/skills/</code> (or Antigravity's skills folder), so they read straight from your clone. Edit a <code>SKILL.md</code> and the next run of that skill uses the new version. Nothing to reinstall.</p>
-<p>Codex works differently. The script builds Codex copies of the skills inside your clone and links those into <code>~/.agents/skills/</code>. After you edit a skill or pull changes, run <code>./install.sh --codex</code> again to rebuild the copies. It needs Python 3.9 or newer.</p>
+<p>Codex works differently. The script builds Codex copies of the skills inside your clone and links those into <code>~/.agents/skills/</code>. After you edit a skill or pull changes, run <code>./install.sh --codex</code> again to rebuild the copies. It needs Python 3.10 or newer.</p>
 <p>Skills installed this way have no prefix, so it's <code>/grilling</code> in Claude Code and <code>$grilling</code> in Codex, not <code>/max:grilling</code>.</p>
 <p>The <a href="https://github.com/Maxastrand04/Custom-skills#installsh-step-by-step">README walks through it step by step</a>: the menu, adding your own skills, and pulling in my changes later.</p>
 <p class="note">Already installed from a marketplace? Remove it first with <code>/plugin uninstall max@custom-skills</code> or <code>codex plugin remove max@custom-skills-codex</code>, so you don't end up with two copies of every skill.</p>
