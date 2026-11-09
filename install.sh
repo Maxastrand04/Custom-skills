@@ -27,7 +27,7 @@ Install skills for Claude Code, Antigravity (agy), or Codex.
 Targets:
   --claude        Claude Code      (~/.claude/skills)
   --agy           Antigravity      (~/.gemini/config/skills)
-  --codex         Codex            (~/.agents/skills, requires Python 3.10+)
+  --codex         Codex            (~/.agents/skills, requires Python 3.12+)
   -h, --help      Show this help
 
 With no target flag, Claude Code is used.
@@ -489,9 +489,9 @@ add_to_target() {
 collect_live_skills
 
 prepare_codex() {
-    command -v python3 >/dev/null 2>&1 || { echo "Codex setup requires Python 3.10+." >&2; exit 1; }
-    python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)' || {
-        echo "Codex setup requires Python 3.10+." >&2
+    command -v python3 >/dev/null 2>&1 || { echo "Codex setup requires Python 3.12+." >&2; exit 1; }
+    python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 12) else 1)' || {
+        echo "Codex setup requires Python 3.12+." >&2
         exit 1
     }
     python3 "$REPO_DIR/scripts/build-codex.py" --local
