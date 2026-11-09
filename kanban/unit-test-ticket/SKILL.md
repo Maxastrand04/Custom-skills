@@ -49,9 +49,25 @@ Run the whole suite. The code hasn't moved, so red means a test edit is wrong. F
 
 ## 4. Comment on the ticket PR
 
-`gh pr comment <PR>` with one line per acceptance test naming its new file, or `dropped, <kind>`.
+`gh pr comment <PR> --body-file <file>`, the file written outside the repo, in this shape:
 
-If Found holds a bug-exposing test or undefined behaviour, add a `For the reviewer` heading under those lines, with one line per item: the behaviour, what the test asserted, and what the code did.
+```md
+Tests at <short hash>, <moved> moved, <rewritten> rewritten, <dropped> dropped
+
+<details><summary>Per-test lines</summary>
+
+- `<test name>` moved to `<new file>`
+- `<test name>` rewritten in `<new file>`
+- `<test name>` dropped, <kind>
+
+</details>
+```
+
+The short hash is the `Tests #<N>` commit. Every acceptance test gets one line in the fold, and the three counts add up to the number of lines. Rewritten counts the tests step 2 rewrote through the public interface. Moved counts the ones that moved as written. `pr-ticket` reads each test's new file from these lines.
+
+A fold is a `<details>` block GitHub shows closed, with only its `<summary>` label visible. Keep the blank line after the `<summary>` line and before `</details>`, or GitHub won't render the list inside.
+
+If Found holds a bug-exposing test or undefined behaviour, add a `For the reviewer` heading after the fold, outside it, with one line per item: the behaviour, what the test asserted, and what the code did. With no such item, the comment ends after the fold.
 
 Never close the issue. Merging the branch closes it.
 

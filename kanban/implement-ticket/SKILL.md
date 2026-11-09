@@ -68,7 +68,23 @@ These stop the loop and go to the user, because none is yours to fix:
 - **A record blocks the implementation.** The contract was architected against `docs/pcr/` and `docs/adr/`, so a PCR or ADR that the only workable implementation would breach means the contract has a gap. Name the record and what it blocks. Do not code around it, and never edit one; this skill writes no records.
 - **You are weighing a decision.** A module boundary, a dependency direction, a data owner, anything a future reader could undo by accident. Those were the architect's to settle, and one left open is a contract gap. Name it. Do not settle it in code.
 
-On any exit, describe the failure in plain English: which test, the evidence, and your best guess at the cause, stated as a guess. Then ask what should happen next and offer the real options: a hint from them, a contract amendment back through `/architect-ticket`, a `/challenge-pcr` session when a PCR is the block, or stopping here. Post the same description on the ticket PR with `gh pr comment <PR>`, so the next session finds it.
+On any exit, describe the failure in plain English: which test, the evidence, and your best guess at the cause, stated as a guess. Then ask what should happen next and offer the real options: a hint from them, a contract amendment back through `/architect-ticket`, a `/challenge-pcr` session when a PCR is the block, or stopping here. Post the same description on the ticket PR with `gh pr comment <PR> --body-file <file>`, so the next session finds it, in this shape:
+
+```md
+Exit at pass <n>, <passing> of <total> acceptance tests passing in <acceptance file>
+
+- `<red test>`: <evidence>. Guess: <cause>.
+
+<the exit, one line, when it names a stub, test, record or decision>
+
+<details><summary><passing> passing</summary>
+
+- `<test name>` green
+
+</details>
+```
+
+A fold is a `<details>` block GitHub shows closed, with only its `<summary>` label visible. Keep the blank line after the `<summary>` line and before `</details>`, or GitHub won't render the list inside. Every red test stays outside the fold, one line each. With no test passing yet, leave the fold out. Write the file outside the repo.
 
 ---
 
@@ -86,7 +102,19 @@ Bookkeeping, once the acceptance file is green. It runs no tests. In order:
    ```
 
 2. **Push** with `git push`.
-3. **Comment on the ticket PR** with `gh pr comment <PR>`: `Green at <short hash>`, then one line per acceptance test naming it and confirming it green. Don't close the issue.
+3. **Comment on the ticket PR** with `gh pr comment <PR> --body-file <file>`, the file written outside the repo. The first line matches the architect's red comment. Don't close the issue.
+
+   ```md
+   Green at <short hash>, <count> acceptance tests passing in <acceptance file>
+
+   <details><summary>Per-test lines</summary>
+
+   - `<test name>` green
+
+   </details>
+   ```
+
+   The fold follows the same rules as the exit comment's.
 
 ## Report
 
