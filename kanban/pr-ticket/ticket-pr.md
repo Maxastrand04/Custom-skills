@@ -45,7 +45,7 @@ The ticket's Spec, plus every amendment note on the issue, applied in date order
 The ticket body never changes. When a Spec line has to:
 
 1. Propose it to the user: the line as written, the change, and the reason. Wait.
-2. On approval, post the same amendment note on the issue and on the ticket PR, then continue. Before the ticket PR exists, as in `architect-ticket`'s grill, post it on the issue now and on the ticket PR the moment it opens.
+2. On approval, post the same amendment note on the issue and on the ticket PR, then continue.
 3. On refusal, the Spec line stands.
 
 Fill in the template below.
