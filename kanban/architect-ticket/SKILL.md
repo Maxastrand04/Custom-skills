@@ -82,7 +82,7 @@ Settle the interface one entry point at a time, in the order the ticket's flow r
 
 A parameter with no type, a return described only as "the result", or an error path nobody named is not done yet. Create a file only when the interface needs a new one, and prefer the module the surrounding interface already lives in. Write nothing behind the contract: no helpers, no control flow, no data structures.
 
-**2. Defend it.** A few lines of plain prose saying why this shape fits what already exists. Name the entry point and its file so the user can open it. When you weighed a real contender, say how it differs and why you didn't pick it, in the same prose. No headers, no labels, no template.
+**2. Defend it.** A few lines of plain prose saying why this shape fits what already exists. Name the entry point and its file so the user can open it. When you weighed a real contender, name it and say in one short line why it lost. No headers, no labels, no template.
 
 **3. Wait.** The user's reply decides what comes next:
 
