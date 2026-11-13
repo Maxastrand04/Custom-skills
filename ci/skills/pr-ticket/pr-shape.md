@@ -1,6 +1,6 @@
 # PR shape
 
-The title and the three sections of a PR body, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `execute-ticket` both write them. The header lines and `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
+Shared contract. The title, the three sections of a PR body, and the layout of `For the reviewer`, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `execute-ticket` both write them. The header lines and which items go in `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
 
 ## Title
 
@@ -19,10 +19,7 @@ Write Merge danger first, because the breaking call reads its Blast radius lines
 
 ### Breaking change
 
-A change is breaking when code outside this repo, calling its public interface, stops working or behaves differently after the merge. The public interface is whatever outside code reaches, such as a published API, a library's exported names, a CLI's flags and output, or a file format another program reads. Both kinds of Blast radius line count when the thing changed is public:
-
-- **Signature.** A public name, parameter, return type or thrown error changed.
-- **Behaviour.** A public name kept its signature but changed what callers see, such as a default, an error format or an output shape.
+A change is breaking when code outside this repo, calling its public interface, stops working or behaves differently after the merge. The public interface is whatever outside code reaches, such as a published API, a library's exported names, a CLI's flags and output, or a file format another program reads. Both kinds of Blast radius line count when the thing changed is public.
 
 Internal changes never count, however large. A renamed private function or a reshaped module isn't breaking, and a repo that publishes nothing has no breaking changes. When you can't tell whether a name is public, mark it breaking and name it in Blast radius. A wrong `!` costs a major bump. A missing one ships a break as a minor update.
 
@@ -47,24 +44,43 @@ Anything but `[false,false,"PR_TITLE"]` lets a merge reach main without the pref
 
 ## Evidence
 
+<details><summary><count> tests pass</summary>
+
 **Before** `<red sha>`, these tests failed.
 **After** `<HEAD sha>`, they pass. <what else ran green, such as the whole suite, 214 tests>
 
 - <behaviour, in the ticket's words> `<test file>::<test name>`
 
+</details>
+
 ## Merge danger
 
 ### Door
-<One-way or two-way>. <optional, one line on why>
+**`<One-way or Two-way>`**. <optional, one line on why>
 
 ### Blast radius (Hyrum's law)
-<One word>.
+**`<one word>`**.
+
+<details><summary>Signature and behaviour, <count> lines</summary>
+
 - Signature: <changed public signature>. <who breaks>
 - Behaviour: <observable change behind an unchanged signature>. <who relied on it>
 
+</details>
+
 ### Untested behaviour (Beyoncé rule)
+<count> untested.
+
+<details><summary>Which ones</summary>
+
 - <behaviour the diff adds or changes>. No test asserts it.
+
+</details>
 ```
+
+Summary and Door show open, because a reviewer needs both before the diff. Door's call and Blast radius's word are bold code, as in **`Two-way`** or **`users`**, with the asterisks outside the backticks. Backticks outside the asterisks show the asterisks as text. Evidence, the Blast radius lines and the Untested behaviour lines sit in folds, which are `<details>` blocks GitHub shows closed with only the `<summary>` label visible. Leave a blank line after the `<summary>` line and before `</details>`, or GitHub won't render the markdown inside. A fold only hides lines. Write every line it holds as you would without it.
+
+An empty Blast radius or Untested behaviour section is the one line `none` with no fold. With no suite in the repo, Evidence's `none, no suite in repo` line shows open with no fold.
 
 Skip preambles and keep prose short. Use the project's terms as `CONTEXT.md` defines them, when the file exists. A reviewer reads the body cold, so never coin a term the code or `CONTEXT.md` doesn't use. Check every line against `unslop`.
 
@@ -151,43 +167,6 @@ A component change:
 +    <SkillResultCard />
 ```
 
-A file layout change:
-
-```diff
- src/
- ├── commands/
-+│   └── show-me.ts       # expands the slash command
- ├── sessions/
--└── transport.ts
-+└── transport/
-+    ├── client.ts
-+    └── stream.ts
-```
-
-A call tree change:
-
-```diff
- submitForm
-   createSession
-     persistPrompt
-+    expandSkillMention
-     launchAgent
--  navigateToSession
-+  navigateToSession
-+    subscribeToEvents
-```
-
-A state or control flow change:
-
-```diff
- on(save)
--  write content
-+  if content is unchanged
-+    return cached result
-+  write new content
-+  invalidate cache
-```
-
 Show a whole code block instead when most of it is new, when cutting context would hide ownership or order, or when the reviewer needs the target shape to copy:
 
 ```ts
@@ -199,10 +178,11 @@ function expandSkill(command: string): string {
 
 ## Evidence
 
-The tests are the evidence. Before is the red commit, where every test the ticket added was watched failing. After is `HEAD`, where the same tests pass.
+The tests are the evidence. On a branch that went through red, Before is the red commit, where every test the ticket added was watched failing. After is `HEAD`, where the same tests pass.
 
-- **On the kanban chain**, the red commit is `Architect #<N>:`. The tests have since moved into the module test files `unit-test-ticket` folded them into, so take each one's file at `HEAD` from the `Tests #<N>: tidy and fold` commit or `unit-test-ticket`'s issue comment. Leave dropped tests out. The whole suite ran green, so say so with its count.
+- **On the kanban chain**, the red commit is `Architect #<N>:`. The tests have since moved into the module test files `unit-test-ticket` folded them into, so take each one's file at `HEAD` from the `Tests #<N>: tidy and fold` commit or `unit-test-ticket`'s comment on the ticket PR, or on the issue for a branch older than the ticket PR. Leave dropped tests out. The whole suite ran green, so say so with its count.
 - **On `execute-ticket`**, the red commit is `Test #<N>:`, and the tests are still where it wrote them. It ran its own tests and the neighbouring tests, not the whole suite, so say exactly that.
+- **On a branch with no red commit**, such as one `review-diff` reviewed, nothing was watched failing. Drop the Before line. After reads `**After** \`<HEAD sha>\`, these pass.` with the whole suite's count. List only the Behaviour lines a test asserts, and put every line checked by hand under Untested behaviour in Merge danger. With no suite in the repo, Evidence is the one line `none, no suite in repo`, and every Behaviour line goes under Untested behaviour.
 
 List one line per test: the behaviour in the ticket's words, then the test's file and name at `HEAD`. Never claim a test passed or failed without a run or a commit that says so.
 
@@ -212,23 +192,52 @@ Three parts, each under its own `###` heading exactly as named below, law names 
 
 ### Door
 
-A two-way door can be walked back by reverting the merge. A one-way door can't: a data migration, a deleted column, a published API or file format, a message sent to users. Say which, and for a one-way door, name what can't be undone.
+A two-way door can be walked back by reverting the merge. A one-way door can't: a data migration, a deleted column, a published API or file format, a message sent to users. Say which in bold code, and for a one-way door, name what can't be undone.
 
 ### Blast radius (Hyrum's law)
 
-One word for how far a bad merge reaches, such as `module`, `service`, `consumers` or `users`. Then one line per thing a caller could notice, in two kinds:
+One word for who a bad merge affects, such as `local`, `callers` or `users`, shown open in bold code. Then one line per thing a caller could notice, in two kinds, inside the fold:
 
 - **Signature.** A public name, parameter, return type or thrown error changed. Name who calls it and breaks.
-- **Behaviour.** The signature stayed the same, but something a caller can observe changed: the order of a returned list, an error message's text, a default value, timing, a file or output format, stored data. With enough callers, someone depends on every observable behaviour, whether or not anyone promised it. These are the ones a reviewer can't spot from the signatures, so look hardest for them.
+- **Behaviour.** The signature stayed the same, but something a caller can observe changed: the order of a returned list, an error message's text, a default value, timing, a file or output format, stored data. These are the ones a reviewer can't spot from the signatures, so look hardest for them.
 
-Think past the diff to what reads its output, such as a config another repo reads or layout on small screens.
+Think past the diff to what reads its output, such as a config another repo reads or layout on small screens. Code outside the ticket's scope that the change breaks goes here, and never in `For the reviewer`.
 
 ### Untested behaviour (Beyoncé rule)
 
-Behaviour with no test is unprotected, and the next change can break it without the suite noticing. List every behaviour the diff adds or changes that no test asserts, one line each.
+List every behaviour the diff adds or changes that no test asserts, one line each.
 
 - **Scope is the diff.** Only code the diff touches. Old gaps elsewhere aren't this PR's to flag.
 - **Use the coverage tool if the project has one.** Run it over the suite and list changed lines no test executed, each named as the behaviour it carries.
 - **Otherwise read.** For each changed path, such as a branch, an error case or a new return value, find a test that asserts it. Executing the line isn't enough. A test has to check the result.
 
-The ticket's own Behaviour lines are already covered by the evidence tests, so what turns up here is usually an extra error path, a guard, or old behaviour the diff changed that never had a test.
+On a branch with no red commit, start with the ticket's Behaviour lines Evidence left out, one line each, ending `Checked by hand.` instead of `No test asserts it.` Otherwise the ticket's own Behaviour lines are already covered by the evidence tests, so what turns up here is usually an extra error path, a guard, or old behaviour the diff changed that never had a test.
+
+## For the reviewer
+
+Sort each item into one of three colour groups. When an item could go in two, pick the higher one, red over yellow over green.
+
+- **Red, bugs found.** The code is wrong, such as a test that failed on the untouched code and was deleted.
+- **Yellow, possible issues.** Something may be wrong and needs the reviewer's call, such as undefined behaviour, design worsened for testability, or a fix a record blocked.
+- **Green, notes.** Nothing to act on, such as an amendment note the user approved or a record a station wrote.
+
+```markdown
+## For the reviewer
+
+> [!CAUTION]
+> **Bugs found**
+> - <item>
+
+> [!WARNING]
+> **Possible issues**
+> - <item>
+
+> [!TIP]
+> <details><summary><count> notes</summary>
+>
+> - <item>
+>
+> </details>
+```
+
+Each group is a GitHub alert, a blockquote opened by `[!CAUTION]`, `[!WARNING]` or `[!TIP]`, which GitHub draws as a red, yellow or green box. Keep a blank line between them, or GitHub merges them into one. Red and yellow show open. Green holds a fold labelled with its count, and every line of the fold, blank ones included, starts with `>`. Leave out a group with no items, and leave out the whole section when no group has any.

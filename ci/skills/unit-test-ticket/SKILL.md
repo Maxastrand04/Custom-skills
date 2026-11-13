@@ -3,27 +3,31 @@ name: unit-test-ticket
 description: Headless refactor leg, second session, for kanban-ci. Folds the acceptance file into the unit suite and tidies the changed modules' tests, then hands off to review in a commit.
 disable-model-invocation: true
 ---
-<!-- synced-from kanban/unit-test-ticket/SKILL.md blob 350d76e3a5574ae18f46c35535b972763666ac9e -->
+<!-- synced-from kanban/unit-test-ticket/SKILL.md blob 842d5b959f8693b8c431ff4434c833674fe650c6 -->
 
 # unit-test-ticket, headless
 
-The second of the two sessions that make up the refactor leg of **red-green-refactor**. `refactor-ticket` settled the code: the acceptance tests are true to the ticket, the suite is green, and the refactor is committed. You **fold** and tidy tests under that green. The **acceptance file** is the one test file `architect-ticket` wrote for this ticket. To fold it, filter its tests through the Test rules, move each survivor into its module's test file, and delete it. A folded test is an ordinary unit test. It reads as if it had always lived in that file, and nothing in it points back at this ticket.
+The second of the two sessions that make up the refactor leg of **red-green-refactor**. `refactor-ticket` settled the code: the acceptance tests are true to the ticket, the suite is green, and the refactor is committed. The **acceptance file** is the one test file `architect-ticket` wrote for this ticket. Under that green you fold it into the unit suite, then tidy the tests around it.
+
+**Fold** means every acceptance test ends as an ordinary unit test or is gone. A folded test sits in the test file of the module it exercises, in that file's naming and fixture style, and nothing in it points back at this ticket: no ticket number, no acceptance wording, no fixture shared only with other acceptance tests. Before you place, name or keep an acceptance test, ask whether someone reading that module's tests could tell it came from this ticket. If they could, it is not folded.
 
 **You never edit code.** Every change you make is to a test file. A test that shows the code is wrong is a finding for the reviewer, not a fix.
+
+`test-standards.md` and `../pr-ticket/ticket-pr.md` resolve from this skill's directory. Never read a same-named file from the repo.
 
 ## Running headless
 
 The kanban-ci loop starts you with `claude -p`. Nobody reads this session and nobody answers. Never ask a question and never wait.
 
-- **The invocation** carries the issue number and the base branch, as in `#42 base:main`. Under it the loop puts the **suite summary**, the result of the whole suite run right after `refactor-ticket`. Default the base to `main`.
+- **The invocation** carries the issue number, the base branch, the ticket PR and the comment path, as in `#42 base:main pr:57 comment:/tmp/unit-test-ticket-comment.md`. Under it the loop puts the **suite summary**, the result of the whole suite run right after `refactor-ticket`. Default the base to `main`.
 - **The handoff to you** is the body of `HEAD`. Read it with `git log -1 --format=%B` before anything else. If the loop sent you back because the suite was red after your own handoff, the invocation says so; one of your test edits is wrong, so go to step 3.
 - **Never run the whole suite.** The loop runs it after you. You run the module test files in scope and single tests.
-- **Never push, open a PR, comment on the issue, or edit labels.** The loop owns GitHub.
+- **Never push, open a PR, comment on the issue or the PR, or edit labels.** The loop owns GitHub. Write your ticket PR comment to the comment path, outside the repo, and the loop posts it after it pushes your handoff.
 - **You end with exactly one handoff commit**, described under Handoff. Then print the report and stop.
 
 ## 1. Pin the work and check the handoff
 
-Take the current branch. Its name carries the issue number. Fetch the ticket with `gh issue view <number>`. If the invocation's number and the branch's disagree, hand off to `review` and name both.
+Take the current branch. Its name carries the issue number. Fetch the ticket with `gh issue view <number> --comments`, read as the current Spec per Current Spec in `../pr-ticket/ticket-pr.md`. If the invocation's number and the branch's disagree, hand off to `review` and name both.
 
 The diff is `git diff <base>...HEAD`, three-dot, on that branch. Find the runner command.
 
@@ -35,22 +39,22 @@ Check all three, in order, and hand off on the first that fails:
 
 The **module scope** is every non-test source file the diff changes, plus each one's module test file.
 
-The rules are the **Test rules** in `test-standards.md`, the file beside this `SKILL.md`. Read it from this skill's directory, never from the repo. A Project Convention Record (PCR) in `docs/pcr/` that covers tests, such as the runner or the layout, wins over any rule it contradicts.
+The rules are the **Test rules** in `test-standards.md`. A Project Convention Record (PCR) in `docs/pcr/` that covers tests, such as the runner or the layout, wins over any rule it contradicts.
 
 ## 2. Tidy and fold
 
 1. **Filter the acceptance file.** Drop every tautological test. Rewrite a structure-sensitive test through the public interface when it is the only test of a behaviour, and drop it otherwise.
-2. **Fold what survives.** Move each test into the test file for the module its entry point lives in, in that file's naming and fixture style, creating the module test file if none exists. Where an existing test already asserts the same thing, keep the acceptance version and drop the other. Delete the acceptance file.
-3. **Tidy the module scope.** Delete every tautological test and fix every rule not marked report only. Design worsened for testability goes to the reviewer.
+2. **Fold what survives.** Move each test into the test file for the module its entry point lives in, creating the module test file if none exists. Where an existing test already asserts the same thing, keep the acceptance version and drop the other. Delete the acceptance file.
+3. **Tidy the module scope.** Apply every rule, and log each report-only hit for the reviewer.
 4. **Break check** every test this step wrote or rewrote.
 
-**A new test that fails on the untouched code has found a bug.** Delete it from the branch, since the code is not yours to fix and a red suite can't merge. Log it for the reviewer with the assertion that failed. Behaviour that `too few tests` reports as undefined goes there too.
+**A new test that fails on the untouched code has found a bug.** Delete it from the branch, since a red suite can't merge. Log it for the reviewer with the assertion that failed. Behaviour that `too few tests` reports as undefined goes there too.
 
-**Completion criterion:** the acceptance file is gone, and every test it held is either in a module test file exactly once or logged as dropped or rewritten. Every fixable rule is applied across the module scope, every test written or rewritten was observed red in its break check, and every bug-exposing test is logged for the reviewer.
+**Completion criterion:** the acceptance file is folded. It is gone, and every test it held is either in a module test file exactly once or logged as dropped or rewritten. Every fixable rule is applied across the module scope, every test written or rewritten was observed red in its break check, and every bug-exposing test is logged for the reviewer.
 
 ## 3. Run
 
-Run the module test files in scope. The code hasn't moved, so red means a test edit is wrong. Fix the test, never the code. Repeat until green.
+Run the module test files in scope. The code hasn't moved, so red means a test edit is wrong. Fix the test. Repeat until green.
 
 ---
 
@@ -79,6 +83,30 @@ Leave `For the reviewer` out when it would be empty.
 
 `For the reviewer` is a plain line followed by `- ` items and ended by a blank line. The loop collects these into the PR body, so each item must read on its own.
 
+## Ticket PR comment
+
+Write it after the handoff commit. On the Done handoff:
+
+```md
+Tests at <short hash>, <moved> moved, <rewritten> rewritten, <dropped> dropped
+
+<details><summary>Per-test lines</summary>
+
+- `<test name>` moved to `<new file>`
+- `<test name>` rewritten in `<new file>`
+- `<test name>` dropped, <kind>
+
+</details>
+```
+
+The short hash is the `Tests #<N>` commit. Every acceptance test gets one line in the fold, and the three counts add up to the number of lines. Rewritten counts the tests step 2 rewrote through the public interface. Moved counts the ones that moved as written. `pr-ticket` reads each test's new file from these lines.
+
+A fold is a `<details>` block GitHub shows closed, with only its `<summary>` label visible. Keep the blank line after the `<summary>` line and before `</details>`, or GitHub won't render the list inside.
+
+If the handoff has a `For the reviewer` section, copy it after the fold, outside it. Otherwise the comment ends after the fold.
+
+On a Back to refactor or Halted handoff, write the handoff note's body instead.
+
 ## Report
 
 Print these lines and stop:
@@ -87,4 +115,5 @@ Print these lines and stop:
 Commits  tests e3f4a5b
 Tests    acceptance folded into tests/test_order.py, 2 dropped
 Handoff  review, 1 item for the reviewer
+Comment  /tmp/unit-test-ticket-comment.md
 ```

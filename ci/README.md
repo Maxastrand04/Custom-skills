@@ -6,15 +6,15 @@ The back half of the kanban board, run by GitHub Actions instead of by me. I arc
 
 ## How a ticket moves
 
-1. `/architect-ticket` commits and pushes the red branch once you approve it.
+1. `/architect-ticket` commits and pushes the red branch once you approve it, and opens the draft **ticket PR**, the one PR the branch keeps from start to merge. The contract is `skills/pr-ticket/ticket-pr.md`, copied from kanban.
 2. `/kanban-ci:launch` adds `Handoff-To: implement-ticket` in an empty commit on top, since the architect commit is already pushed, pushes, and labels the issue `ci:queued`.
-3. The nightly run, or `gh workflow run kanban-ci --ref <branch>`, starts the loop in `scripts/run-chain.sh`.
-4. The loop runs whichever station `HEAD`'s `Handoff-To` trailer names. After each one it pushes, runs the whole suite once, and passes the result to the next station in its prompt.
+3. The nightly run, or `gh workflow run kanban-ci --ref <branch>`, starts the loop in `scripts/run-chain.sh`. It reuses the open ticket PR, or opens a draft on a branch architected before there was one. A branch whose PR merged or closed is skipped.
+4. The loop runs whichever station `HEAD`'s `Handoff-To` trailer names. After each one it pushes, posts the comment the station wrote on the ticket PR, runs the whole suite once, and passes the result to the next station in its prompt. Stations never touch GitHub themselves.
 5. Stations hand off forward, back a station, or early to `review`. Two backward moves per ticket at most. A third ends the chain.
-6. The loop opens a PR that closes the issue on merge. On a finished chain, `pr-ticket` first writes the body's Summary, Evidence and Merge danger sections from the commits, with Merge danger flagging changes callers may rely on and changed behaviour no test protects. A halted chain skips it and gets a draft with a plain body. Every station's `For the reviewer` items are collected into the PR body either way.
-7. `/kanban-ci:review-ticket <PR>` on my laptop goes through those items with me, applies the fixes I approve, and writes the issue comment. My own test workflow checks the PR, and I merge.
+6. The loop rewrites the ticket PR's description. On a finished chain, `pr-ticket` first writes the body's Summary, Evidence, Merge danger and For the reviewer sections from the commits, with Merge danger flagging changes callers may rely on and changed behaviour no test protects, and the loop marks the PR ready. A halted chain skips `pr-ticket`, stays a draft with a plain body listing every station's `For the reviewer` items, and gets a comment naming the halt.
+7. `/kanban-ci:review-ticket <PR>` on my laptop goes through those items with me, applies the fixes I approve, and writes a comment on the ticket PR. My own test workflow checks the PR, and I merge.
 
-Commit bodies are written for the next agent. The issue comment is written for a human, and only the review session writes it.
+Commit bodies are written for the next agent. Station comments on the ticket PR are the same progress notes kanban's stations post. The review session's comment is the one written for a human. The issue gets only the `Ticket PR:` link and Spec amendments, and only the review session proposes amendments, since headless stations have no one to approve them.
 
 ## Setup, once per machine
 
@@ -66,4 +66,4 @@ ci/scripts/sync-from-kanban.sh                         # copy rule files, show s
 ci/scripts/sync-from-kanban.sh --mark refactor-ticket  # after porting by hand
 ```
 
-The rule files, `code-standards.md`, `test-standards.md`, `RECORD-FORMAT.md` and `pr-shape.md`, are copied byte for byte. For skills it prints what changed in kanban since the fork, and porting is a choice made by hand. Changes only flow from kanban to ci, never back.
+The rule files, `code-standards.md`, `test-standards.md`, `RECORD-FORMAT.md`, `pr-shape.md` and `ticket-pr.md`, are copied byte for byte. Where a rule file asks the user something, as `ticket-pr.md` does about a closed PR, the loop or the headless station's `SKILL.md` says what happens instead. For skills it prints what changed in kanban since the fork, and porting is a choice made by hand. Changes only flow from kanban to ci, never back.
