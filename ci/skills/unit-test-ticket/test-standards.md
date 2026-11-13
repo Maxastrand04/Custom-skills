@@ -1,6 +1,6 @@
 # Test standards
 
-Shared contract. The baseline `unit-test-ticket` tidies tests against. `architect-ticket` reads it so it never writes a structure-sensitive test, and `refactor-ticket` reads it at its true-to-spec pass and module halt.
+Shared contract. The baseline `unit-test-ticket` tidies tests against.
 
 ## Test rules
 

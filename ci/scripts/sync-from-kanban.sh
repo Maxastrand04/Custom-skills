@@ -22,6 +22,7 @@ RULE_FILES=(
     "kanban/architect-ticket/RECORD-FORMAT.md:ci/skills/refactor-ticket/RECORD-FORMAT.md"
     "kanban/unit-test-ticket/test-standards.md:ci/skills/unit-test-ticket/test-standards.md"
     "kanban/pr-ticket/pr-shape.md:ci/skills/pr-ticket/pr-shape.md"
+    "kanban/pr-ticket/ticket-pr.md:ci/skills/pr-ticket/ticket-pr.md"
 )
 SKILLS=(implement-ticket refactor-ticket unit-test-ticket pr-ticket)
 

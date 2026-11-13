@@ -3,7 +3,7 @@ name: refactor-ticket
 description: Headless refactor leg, first session, for kanban-ci. Gates the green branch true-to-spec, reconciles the suite from the loop's summary, settles visibility itself, refactors, and hands off to unit-test-ticket in a commit.
 disable-model-invocation: true
 ---
-<!-- synced-from kanban/refactor-ticket/SKILL.md blob 7ded46f80eeca97d19fa9e8eac4646ce714759cc -->
+<!-- synced-from kanban/refactor-ticket/SKILL.md blob e421ca374d4868000f19441017ccf8ec7cc330a0 -->
 
 # refactor-ticket, headless
 
@@ -11,24 +11,24 @@ The first of the two sessions that make up the refactor leg of **red-green-refac
 
 **Refactor** means the behaviour is already right and only the shape changes. Before any edit, ask whether a caller would see a difference. If one would, it is not a refactor. A caller sees more than the signature. With enough callers, someone depends on every observable behaviour, such as the order of a returned list, an error message's text, a default value, or timing, so changing any of those is a behaviour change even when no signature moves. Steps 1 to 4 make the branch safe to refactor, step 5 is the refactor, and the rest records it.
 
-`code-standards.md`, `test-standards.md` and `RECORD-FORMAT.md` resolve from this skill's directory, `test-standards.md` from `../unit-test-ticket/`. Never read a same-named file from the repo.
+`code-standards.md` and `RECORD-FORMAT.md` resolve from this skill's directory, `test-standards.md` from `../unit-test-ticket/` and `ticket-pr.md` from `../pr-ticket/`. Never read a same-named file from the repo.
 
 ## Running headless
 
 The kanban-ci loop starts you with `claude -p`. Nobody reads this session and nobody answers. Never ask a question and never wait. Every place the interactive version asks the user, this file says what you decide or where you hand off.
 
-- **The invocation** carries the issue number and the base branch, as in `#42 base:main`. Under it the loop puts the **suite summary**, the result of the whole suite run right after the previous station. Default the base to `main`.
+- **The invocation** carries the issue number, the base branch, the ticket PR and the comment path, as in `#42 base:main pr:57 comment:/tmp/refactor-ticket-comment.md`. Under it the loop puts the **suite summary**, the result of the whole suite run right after the previous station. Default the base to `main`.
 - **The handoff to you** is the body of `HEAD`, the commit whose `Handoff-To` trailer names you. Read it with `git log -1 --format=%B` before anything else. If the loop sent you back because the suite was red after your own handoff, the invocation says so; treat those failures as your edit changing behaviour, and go to step 7.
 - **Never run the whole suite.** The loop runs it after you. You run only the narrow sets named in each step.
-- **Never push, open a PR, comment on the issue, or edit labels.** The loop owns GitHub.
+- **Never push, open a PR, comment on the issue or the PR, or edit labels.** The loop owns GitHub. Write your ticket PR comment to the comment path, outside the repo, and the loop posts it after it pushes your handoff.
 - **Log every call you made in the user's place** under `For the reviewer` in the handoff commit. The reviewer can only overrule what they can see.
 - **You end with exactly one handoff commit**, described under Handoff. Then print the report and stop.
 
 ## 1. Pin the work and the diff
 
-Take the current branch. Its name carries the issue number. Fetch the ticket with `gh issue view <number>`. If the invocation's number and the branch's disagree, hand off to `review` and name both.
+Take the current branch. Its name carries the issue number. Fetch the ticket with `gh issue view <number> --comments`. If the invocation's number and the branch's disagree, hand off to `review` and name both.
 
-**The spec is two things.** The ticket's **Spec** is the intended bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
+**The spec is two things.** The ticket's current **Spec**, per Current Spec in `ticket-pr.md`, is the intended bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
 
 The diff is `git diff <base>...HEAD`, three-dot, against the merge-base. Confirm the diff is non-empty and adds exactly one acceptance file. If either fails, hand off to `review` and name it. Find the runner command, since you will run named test files and single tests with it.
 
@@ -51,7 +51,7 @@ Zero findings means the spec is settled, so go to step 3.
 
 ### Spec findings
 
-Fix the acceptance **tests** so they're true to the ticket. Only the tests. The ticket body is the single source of truth and is never edited here, and neither is a signature already settled on the branch. Scope creep and a diff that misses a behaviour no test can reach are not test fixes; log them for the reviewer and carry on.
+Fix the acceptance **tests** so they're true to the ticket. Only the tests. The ticket body is never edited here, and neither is a signature already settled on the branch. You never amend the Spec. When a Spec line itself looks wrong, keep the tests true to it as written and log the line for the reviewer with the change you would propose, so `review-ticket` can raise it as an amendment. Scope creep and a diff that misses a behaviour no test can reach are not test fixes; log them for the reviewer and carry on.
 
 Then run the acceptance file:
 
@@ -91,14 +91,12 @@ Log every decision for the reviewer as `<item>: <public|private|deleted|rewritte
 
 ## 5. Refactor
 
-Edit the code directly.
-
 Three tiers, read per `RECORD-FORMAT.md`:
 
 1. **PCRs in `docs/pcr/`** hold the project conventions. A breach is a **hard violation**. Fix the code and never touch the file. A PCR you disagree with is not a finding. It binds until a `/challenge-pcr` session says otherwise, so fix the code to comply and log one line for the reviewer.
 2. **ADRs in `docs/adr/`** hold the design decisions. A breach is a hard violation too. Fix it. Nothing pre-selects them, so take the whole set and judge yourself which the changed files fall under. Read each one's **Decision** for what's required and its **Consequence** for what a breach looks like in a diff.
-   - **Amend an ADR only when it contradicts a signature already settled on this branch.** The architect settled that signature with the user and it is frozen, so the record is what moves. Amend it per the format file and log it for the reviewer. Any other disagreement with an ADR is fixed in the code.
-   - **Write a new ADR when the diff introduces a shape neighbouring code will copy** and no record names it: a new layer, a new kind of module, a dependency direction the first of its kind establishes. Run it through the ADR tests in the format file. Most refactors write none. Log every ADR you write for the reviewer.
+   - **Amend an ADR only when it contradicts a signature already settled on this branch.** The architect settled that signature with the user, so the record is what moves. Amend it per the format file and log it for the reviewer. Any other disagreement with an ADR is fixed in the code.
+   - **Write a new ADR when the diff introduces a shape neighbouring code will copy** and no record names it: a new layer, a new kind of module, a dependency direction the first of its kind establishes. Run it through **What earns an ADR** in the format file. Most refactors write none. Log every ADR you write for the reviewer.
    - **Write a found ADR for every fence comment** the comment smell in `code-standards.md` moves out of the code, per the format file. Delete the comment in the same commit, and log it for the reviewer.
    - If the diff itself adds a file under `docs/adr/` or `docs/pcr/`, it is the architect's and you leave it alone.
    - If neither directory exists, this step runs on the baseline alone.
@@ -155,6 +153,72 @@ An amended ADR adds one line under the body, `Amends ADR-0003: <why, one line>`,
 
 `For the reviewer` is a plain line followed by `- ` items and ended by a blank line. The loop collects these into the PR body, so each item must read on its own.
 
+## Ticket PR comment
+
+Write it after the handoff commit. On the Done handoff it holds eight tables, in this order, same shape throughout. On a Back to implement or Halted handoff, write the handoff note's body instead.
+
+- **Findings only.** No hit, no row. Never narrate what you checked, never wrap a table in prose.
+- **Empty collapses.** A table with no rows becomes one line, `**Code smells** none`. Nothing follows it.
+- **Cap every cell.** Middle column 6 words, last column 8. No sentences, no trailing periods. Truncate a deep path from the left, `.../handlers/order.ts:17`.
+
+**True-to-spec**
+
+| Behaviour | Test | Problem |
+|---|---|---|
+| discount shown per line | `test_discount_rate` | asserts total, not rate |
+| refunds partial orders | none | uncovered |
+
+**Reconciled**
+
+| Test | Verdict | Change |
+|---|---|---|
+| `test_discount_flat` | stale, contra `test_discount_rate` | rewritten to rate |
+| `test_tax_rounding` | regression | fixed `src/tax.py:40` |
+
+**Records**
+
+| File | Record | Fix |
+|---|---|---|
+| `src/order.ts:17` | ADR-0004, no DB in handlers | query moved to `OrderRepository` |
+| `src/order.ts:3` | PCR-0002, no ORM imports | rewritten to `db.query` |
+| `src/repos/` | none | ADR-0009 written, repositories own SQL |
+| `src/sync.ts:31` | fence comment | ADR-0010 found, comment deleted |
+
+With neither `docs/pcr/` nor `docs/adr/`, the table is the one line `**Records** no docs/pcr/ or docs/adr/`.
+
+**Code smells**
+
+| File | Smell | Fix |
+|---|---|---|
+| `src/pricing.ts:42` | duplicated code (6.4) | extracted `applyDiscount`, 2 call sites |
+
+**Architecture**
+
+| File | Issue | Fix |
+|---|---|---|
+| `src/ui/cart.ts:8` | presentation past controller (5.3) | data returned from `CartController` |
+
+**Tests**
+
+Every test change from step 4.
+
+| Test | Rule | Action |
+|---|---|---|
+| `test_cart_items` | structure-sensitive | rewritten to `total()` |
+| `test_apply_rate` | private access | deleted, decided headless |
+
+**Found, not fixed**
+
+| File | Issue | Why |
+|---|---|---|
+| `src/tax.ts:60` | feature envy (6.4) | fix changes behaviour |
+
+**Spec fixes**
+
+| Behaviour | Test | Change |
+|---|---|---|
+| discount shown per line | `test_discount_rate` | added rate assertion |
+
 ## Report
 
 Print these lines and stop:
@@ -165,4 +229,5 @@ Records  ADR-0009 written, ADR-0010 found, ADR-0003 amended
 Docs     CONTEXT.md updated, README.md unchanged
 Commits  fix b0c1d2e, visibility c9d8e7f, refactor a1b2c3d
 Handoff  unit-test-ticket
+Comment  /tmp/refactor-ticket-comment.md
 ```

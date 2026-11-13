@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # The kanban-ci loop. Runs the station named in HEAD's Handoff-To trailer,
-# pushes, runs the whole suite, and repeats until a station hands off to
-# review or a halt fires. Then opens the PR. A finished chain gets a body
-# written by pr-ticket; a halted one gets a plain body and a draft.
+# pushes, posts the station's comment on the ticket PR, runs the whole suite,
+# and repeats until a station hands off to review or a halt fires. Then
+# rewrites the ticket PR. A finished chain gets a body written by pr-ticket
+# and is marked ready; a halted one gets a plain body and stays a draft.
+# The ticket PR contract is ci/skills/pr-ticket/ticket-pr.md.
 #
 # Called by .github/workflows/kanban-ci.yml from inside the project checkout.
 #
@@ -76,11 +78,18 @@ $(tail -n 80 "$out")"
     git reset --hard -q HEAD
 }
 
+# Where a chain station writes its ticket PR comment.
+comment_file() { echo "$LOG_DIR/$1-comment.md"; }
+
 # Runs one station. Returns 0 on a normal exit, 2 on a usage limit, 1 otherwise.
 run_station() {
     local station="$1" note="$2" out rc
     out="$LOG_DIR/$station.json"
-    local prompt="/kanban-ci:$station #$ISSUE base:$BASE"
+    local prompt="/kanban-ci:$station #$ISSUE base:$BASE pr:$PR"
+    if [[ "$station" != pr-ticket ]]; then
+        rm -f "$(comment_file "$station")"
+        prompt="$prompt comment:$(comment_file "$station")"
+    fi
     [[ -n "$note" ]] && prompt="$prompt
 
 $note"
@@ -100,6 +109,60 @@ $note"
     [[ $rc -eq 0 ]] && return 0 || return 1
 }
 
+# Posts a comment on the ticket PR from a file. Never fails the chain.
+pr_comment() {
+    gh pr comment "$PR" --body-file "$1" >/dev/null 2>&1 || log "couldn't comment on PR #$PR"
+}
+
+# Posts the comment a station wrote, if it wrote one. Call after pushing,
+# so the hashes in it point at commits the PR shows.
+post_station_comment() {
+    local f
+    f=$(comment_file "$1")
+    [[ -s "$f" ]] && pr_comment "$f"
+    rm -f "$f"
+}
+
+# Posts a one-line loop note on the ticket PR.
+pr_note() {
+    local f="$LOG_DIR/loop-note.md"
+    printf '%s\n' "$1" >"$f"
+    pr_comment "$f"
+}
+
+# The first PR from the ticket branch in state $1 (OPEN, MERGED or CLOSED), or empty.
+first_pr() {
+    gh pr list --head "$TICKET_BRANCH" --state all --json number,state --jq "[.[] | select(.state == \"$1\")][0].number // empty"
+}
+
+# Finds or opens the ticket PR per ticket-pr.md and sets PR. Returns 1 when
+# the ticket should be skipped. Headless, so a closed PR is never reopened.
+ensure_ticket_pr() {
+    local open merged closed body="$LOG_DIR/pr-draft.md" url
+    open=$(first_pr OPEN) || { log "can't list PRs for $TICKET_BRANCH"; return 1; }
+    merged=$(first_pr MERGED)
+    closed=$(first_pr CLOSED)
+    if [[ -n "$open" ]]; then
+        PR="$open"
+        return 0
+    fi
+    if [[ -n "$merged" ]]; then
+        log "The PR for $TICKET_BRANCH merged as #$merged. More work needs a new ticket and branch. Skipping."
+        return 1
+    fi
+    if [[ -n "$closed" ]]; then
+        log "The PR for $TICKET_BRANCH, #$closed, is closed. Reopen it or open a new draft by hand. Skipping."
+        return 1
+    fi
+    printf '%s\n\n%s\n' \
+        '> *Draft. Development history for this ticket collects in the comments below. The description is rewritten when the branch is ready.*' \
+        "Closes #$ISSUE" >"$body"
+    url=$(gh pr create --draft --base "$BASE" --head "$TICKET_BRANCH" --title "$(plain_title)" --body-file "$body") || { log "can't open a ticket PR for $TICKET_BRANCH. Skipping."; return 1; }
+    PR="${url##*/}"
+    gh issue comment "$ISSUE" --body "Ticket PR: $url" >/dev/null 2>&1 || log "couldn't link PR #$PR on #$ISSUE"
+    log "opened ticket PR #$PR"
+}
+
 # Every station's "For the reviewer" section, oldest first.
 reviewer_items() {
     local sha subject items
@@ -111,9 +174,9 @@ reviewer_items() {
     done
 }
 
-# Has pr-ticket write the Summary, Evidence and Merge danger sections to
+# Has pr-ticket write the Summary, Evidence, Merge danger and For the reviewer sections to
 # $LOG_DIR/pr-summary.md. Leaves no file when the suite is red or the station
-# fails, and open_pr falls back to the plain body.
+# fails, and rewrite_pr falls back to the plain body.
 write_summary() {
     local out="$LOG_DIR/pr-summary.md" title_out="$LOG_DIR/pr-title.txt" before
     rm -f "$out" "$title_out"
@@ -134,9 +197,9 @@ plain_title() {
     gh issue view "$ISSUE" --json title --jq .title
 }
 
-# Opens or updates the PR. $1 is empty when finished, else the halt reason.
-open_pr() {
-    local halt="$1" body="$LOG_DIR/pr-body.md" summary="$LOG_DIR/pr-summary.md" title_file="$LOG_DIR/pr-title.txt" title pr status items
+# Rewrites the ticket PR. $1 is empty when finished, else the halt reason.
+rewrite_pr() {
+    local halt="$1" body="$LOG_DIR/pr-body.md" summary="$LOG_DIR/pr-summary.md" title_file="$LOG_DIR/pr-title.txt" title status items
     rm -f "$summary" "$title_file"
     [[ -z "$halt" ]] && write_summary
     title=""
@@ -149,32 +212,34 @@ open_pr() {
         printf 'Closes #%s\n\n' "$ISSUE"
         printf '**Status** %s\n\n' "$status"
         printf '**Route** %s\n\n' "${ROUTE[*]:-none}"
-        if [[ -s "$summary" ]]; then cat "$summary"; printf '\n'; fi
-        printf '## For the reviewer\n\n'
-        if [[ -n "$items" ]]; then printf '%s\n' "$items"; else printf 'none\n\n'; fi
+        if [[ -s "$summary" ]]; then
+            cat "$summary"
+            printf '\n'
+        else
+            printf '## For the reviewer\n\n'
+            if [[ -n "$items" ]]; then printf '%s\n' "$items"; else printf 'none\n\n'; fi
+        fi
         if [[ -n "$halt" ]]; then
             printf '## Last handoff\n\n```\n%s\n```\n' "$(git log -1 --format=%B HEAD)"
         fi
     } >"$body"
 
-    pr=$(gh pr list --head "$TICKET_BRANCH" --state open --json number --jq '.[0].number // empty')
-    if [[ -n "$pr" ]]; then
-        gh pr edit "$pr" --title "$title" --body-file "$body" >/dev/null
-        if [[ -n "$halt" ]]; then gh pr ready "$pr" --undo >/dev/null 2>&1; else gh pr ready "$pr" >/dev/null 2>&1; fi
+    gh pr edit "$PR" --title "$title" --body-file "$body" >/dev/null
+    if [[ -n "$halt" ]]; then
+        gh pr ready "$PR" --undo >/dev/null 2>&1
+        pr_note "kanban-ci halted: $halt"
     else
-        local draft=""
-        [[ -n "$halt" ]] && draft="--draft"
-        gh pr create --base "$BASE" --head "$TICKET_BRANCH" --title "$title" --body-file "$body" $draft >/dev/null
-        pr=$(gh pr list --head "$TICKET_BRANCH" --state open --json number --jq '.[0].number // empty')
+        gh pr ready "$PR" >/dev/null 2>&1
     fi
     gh issue edit "$ISSUE" --remove-label "$QUEUE_LABEL" >/dev/null 2>&1 || true
-    log "PR #$pr, $status"
+    log "PR #$PR, $status"
 }
 
 # Runs one ticket branch to the end. Returns 2 when the usage limit stopped it.
 run_ticket() {
     TICKET_BRANCH="$1"
     ISSUE="${TICKET_BRANCH%%-*}"
+    PR=""
     ROUTE=()
     SUITE_SUMMARY="" SUITE_GREEN=0
     log "ticket #$ISSUE on $TICKET_BRANCH"
@@ -188,6 +253,7 @@ run_ticket() {
         log "HEAD has no Handoff-To trailer. Run /kanban-ci:launch on the branch first. Skipping."
         return 1
     fi
+    ensure_ticket_pr || return 1
 
     # Resuming mid-chain, as after a usage limit: the station still needs
     # the suite result it would normally get from the run before it.
@@ -198,7 +264,7 @@ run_ticket() {
 
     while [[ "$next" != review ]]; do
         if [[ $(rank "$next") -eq 0 ]]; then
-            open_pr "unknown station in Handoff-To: $next"
+            rewrite_pr "unknown station in Handoff-To: $next"
             return 0
         fi
         ROUTE+=("$next")
@@ -210,25 +276,29 @@ run_ticket() {
             log "usage limit hit in $next. Leaving #$ISSUE queued; the next run resumes from the newest commit."
             git reset --hard -q HEAD
             git push -q origin "$TICKET_BRANCH"
+            pr_note "kanban-ci paused: usage limit hit in $next. The next run resumes from the newest commit."
             return 2
         fi
 
         if [[ "$(git rev-parse HEAD)" == "$before" ]]; then
             git push -q origin "$TICKET_BRANCH"
-            open_pr "$next made no handoff commit. It crashed, hit its turn limit, or timed out. See the workflow log."
+            post_station_comment "$next"
+            rewrite_pr "$next made no handoff commit. It crashed, hit its turn limit, or timed out. See the workflow log."
             return 0
         fi
         if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
             git push -q origin "$TICKET_BRANCH"
-            open_pr "$next left uncommitted changes to tracked files after its handoff. See the workflow log."
+            post_station_comment "$next"
+            rewrite_pr "$next left uncommitted changes to tracked files after its handoff. See the workflow log."
             return 0
         fi
         git push -q origin "$TICKET_BRANCH"
+        post_station_comment "$next"
 
         to=$(trailer Handoff-To)
         from=$(trailer Handoff-From)
         if [[ -z "$to" ]]; then
-            open_pr "$next's last commit has no Handoff-To trailer."
+            rewrite_pr "$next's last commit has no Handoff-To trailer."
             return 0
         fi
         [[ "$from" != "$next" ]] && log "warning: Handoff-From is '$from', expected '$next'"
@@ -244,7 +314,7 @@ run_ticket() {
         [[ "$next" == unit-test-ticket && "$to" == review ]] && claims_done=1
         if [[ $SUITE_GREEN -eq 0 && $claims_done -eq 1 ]]; then
             if [[ "$retried" == "$next" ]]; then
-                open_pr "$next handed off as done twice, and the suite was red both times."
+                rewrite_pr "$next handed off as done twice, and the suite was red both times."
                 return 0
             fi
             retried="$next"
@@ -257,7 +327,7 @@ $SUITE_SUMMARY"
         if [[ "$to" != review && $(rank "$to") -lt $(rank "$next") ]]; then
             back=$((back + 1))
             if [[ $back -gt $MAX_BACK_MOVES ]]; then
-                open_pr "more than $MAX_BACK_MOVES backward moves. Last: $next sent the work back to $to."
+                rewrite_pr "more than $MAX_BACK_MOVES backward moves. Last: $next sent the work back to $to."
                 return 0
             fi
         fi
@@ -268,9 +338,9 @@ $SUITE_SUMMARY"
     done
 
     if [[ $(trailer Handoff-From) == unit-test-ticket ]]; then
-        open_pr ""
+        rewrite_pr ""
     else
-        open_pr "$(trailer Handoff-From) handed off to review early. See its commit."
+        rewrite_pr "$(trailer Handoff-From) handed off to review early. See its commit."
     fi
     return 0
 }

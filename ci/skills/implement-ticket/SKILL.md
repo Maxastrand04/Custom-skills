@@ -3,7 +3,7 @@ name: implement-ticket
 description: Headless green leg for kanban-ci. Fills in the stub bodies on a red branch until the acceptance file passes, then hands off to refactor-ticket in a commit.
 disable-model-invocation: true
 ---
-<!-- synced-from kanban/implement-ticket/SKILL.md blob 75eac30f4e3cbe85bd487beb6a8b928a4723bf65 -->
+<!-- synced-from kanban/implement-ticket/SKILL.md blob 2a5d9f57e101f5376ee737de2025fba035ada0db -->
 
 # implement-ticket, headless
 
@@ -19,10 +19,10 @@ You are the green leg of red-green-refactor. `architect-ticket` committed the pu
 
 The kanban-ci loop starts you with `claude -p`. Nobody reads this session and nobody answers. Never ask a question and never wait. Every place a human would be asked, you either decide or hand off.
 
-- **The invocation** carries the issue number and the base branch, as in `#42 base:main`. It may carry a note from the loop under it, such as a suite summary. Default the base to `main`.
+- **The invocation** carries the issue number, the base branch, the ticket PR and the comment path, as in `#42 base:main pr:57 comment:/tmp/implement-ticket-comment.md`. It may carry a note from the loop under it, such as a suite summary. Default the base to `main`.
 - **The handoff to you** is the body of `HEAD`, the commit whose `Handoff-To` trailer names you. Read it with `git log -1 --format=%B` before anything else.
 - **Never run the whole suite.** The loop runs it after you finish.
-- **Never push, open a PR, comment on the issue, or edit labels.** The loop owns GitHub.
+- **Never push, open a PR, comment on the issue or the PR, or edit labels.** The loop owns GitHub. Write your ticket PR comment to the comment path, outside the repo, and the loop posts it after it pushes your handoff.
 - **You end with exactly one handoff commit**, described under Handoff. Then print the report and stop.
 
 ---
@@ -30,7 +30,7 @@ The kanban-ci loop starts you with `claude -p`. Nobody reads this session and no
 ## Pin the work
 
 1. **The branch.** The current branch. Its name carries the issue number, as in `42-oauth-admin-login`. If the invocation's number and the branch's number disagree, hand off to `review` and name both.
-2. **The ticket.** `gh issue view <number> --json title,body`. Read Goal, Spec, and Out of scope. It tells you whether a green test actually shipped the feature.
+2. **The ticket.** `gh issue view <number> --comments`. Read Goal, Out of scope, and the current Spec per Current Spec in `../pr-ticket/ticket-pr.md`. It tells you whether a green test actually shipped the feature.
 3. **The diff.** `git diff <base>...HEAD`, three-dot, against the merge-base.
 
 ### Precondition
@@ -49,14 +49,14 @@ Read it once, in full, before writing anything. Three things come out of it, and
 
 - **The stubs.** Every signature and docstring. The docstring is the contract: the errors it names, the invariants it promises, the edge cases it describes. All of that is work you owe, whether or not a test covers it.
 - **The tests.** Each test's name and docstring is one acceptance criterion. The assertions are the exact bar.
-- **The surrounding code.** Read the region you're about to change, not the whole file. Grep to locate, then read with an offset and a limit.
+- **The surrounding code.** Read the region you're about to change, not the whole file.
 
 ---
 
 ## The green loop
 
 1. **Implement.** Fill in the stub bodies, plus whatever private code they need.
-2. **Run the acceptance file.** Not the whole suite.
+2. **Run the acceptance file.**
 3. **Read every failure before fixing any of them.** Fixing one at a time invites a fix that breaks a sibling.
 4. **Repeat until green.**
 
@@ -75,6 +75,42 @@ Each of these ends the session with a handoff to `review`, because none is yours
 - **You are weighing a decision.** A module boundary, a dependency direction, a data owner, anything a future reader could undo by accident. Those were the architect's to settle, and one left open is a contract gap. Name it. Do not settle it in code.
 
 On any exit, commit the work as it stands, partial bodies included. The reviewer reads the branch, so half-done work is evidence. The handoff note says which test, the evidence, and your best guess at the cause, stated as a guess.
+
+---
+
+## Ticket PR comment
+
+Write it after the handoff commit, so the short hash exists.
+
+**Green:**
+
+```md
+Green at <short hash>, <count> acceptance tests passing in <acceptance file>
+
+<details><summary>Per-test lines</summary>
+
+- `<test name>` green
+
+</details>
+```
+
+**Exit:**
+
+```md
+Exit at pass <n>, <passing> of <total> acceptance tests passing in <acceptance file>
+
+- `<red test>`: <evidence>. Guess: <cause>.
+
+<the exit, one line, when it names a stub, test, record or decision>
+
+<details><summary><passing> passing</summary>
+
+- `<test name>` green
+
+</details>
+```
+
+A fold is a `<details>` block GitHub shows closed, with only its `<summary>` label visible. Keep the blank line after the `<summary>` line and before `</details>`, or GitHub won't render the list inside. Every red test stays outside the fold, one line each. With no test passing yet, leave the fold out.
 
 ---
 
@@ -115,4 +151,5 @@ Tests     tests/test_acceptance.py, 6 green
 Files     src/auth/oauth.py, src/auth/session.py
 Handoff   refactor-ticket
 Commit    d4e5f6a
+Comment   /tmp/implement-ticket-comment.md
 ```
