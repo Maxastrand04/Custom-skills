@@ -12,17 +12,13 @@ That commit is the whole handoff. `implement-ticket` takes it **green** and `ref
 
 **The user owns the contract; the implementer owns everything behind it.** You settle the names, parameters, return values, and documented behaviour of every entry point the change adds or alters.
 
-**The tests are the acceptance criteria.** The ticket's Behaviour lines are the bar; you convert them into named test functions, and each test's name and docstring is the criterion it enforces. Never write an AC list beside the tests it duplicates.
+**The tests are the acceptance criteria.** The ticket's Behaviour lines are the bar; you convert them into named test functions. Never write an AC list beside the tests it duplicates.
 
 **They all land in one acceptance file.** One new file at the root of the test tree, named in the project's style, `tests/test_acceptance.py` or `tests/acceptance.test.ts`, holding this ticket's tests and nothing else. It lives only on this branch; `unit-test-ticket` folds it into the module test files before the branch merges.
 
 ---
 
-## Phase 1: Grill session
-
-You are a developer grilling a project leader about code structure. Every question in this phase runs through the code grill. Invoke the `grilling` skill, then read `CODE-GRILL.md`, the file beside this `SKILL.md`, for how to ask each question.
-
-The phase runs as **one continuous session, ending in agreement on the contract**. Draft as you go and present work back only when something is open.
+## Phase 1: Setup
 
 ### Resolve the ticket
 
@@ -32,13 +28,11 @@ This skill starts from a ticket. Resolve one of:
 2. **A ticket published in this session** by `new-ticket` or `map-epic`. Confirm with the user before adopting it.
 3. **Neither.** Ask which issue this is, and point at `/new-ticket` if none exists. Do not architect from a conversation.
 
-Then read the ticket in full with `gh issue view <ref> --comments`, read as the current Spec per `../pr-ticket/ticket-pr.md`. Take **Goal**, **Spec**, and **Out of scope** as given. They are the WHAT and were settled when the ticket was filed. Spec's **Interface** lines name the pieces without naming them in code, and its **Behaviour** lines trace the flow between them. Naming those pieces, and everything else in this phase, is yours.
+Then read the ticket in full with `gh issue view <ref> --comments`, read as the current Spec per `../pr-ticket/ticket-pr.md`. Take **Goal**, **Spec**, and **Out of scope** as given. Spec's **Interface** lines name the pieces without naming them in code, and its **Behaviour** lines trace the flow between them. Naming those pieces is this session's work.
 
-Settle the **branch name**, which is `<issue-number>-<slug>`. Take the slug from the ticket's `## Branch` section when it has one. Otherwise derive it from the title: 2 to 4 words, kebab-case, no articles, no issue number.
+Pick the **branch name**, which is `<issue-number>-<slug>`. Take the slug from the ticket's `## Branch` section when it has one. Otherwise derive it from the title: 2 to 4 words, kebab-case, no articles, no issue number.
 
 ### Exploration, runs before any question
-
-Ground the grill in what exists:
 
 1. **Project-level reads**, where present: `CONTEXT.md`, top-level `README.md`, the project root listing, and every file in `docs/pcr/` and `docs/adr/`.
 2. **Change-specific reads.** Grep and read the modules the change will touch, their neighbours, and the **existing public interface** the new one sits beside: signatures, naming, error types, module layout.
@@ -46,86 +40,94 @@ Ground the grill in what exists:
 
 Emit a short **"What I found"** summary covering the relevant modules, the conventions in the affected area, the interface the change plugs into, and the runner command. **Wait for the user to correct misreads.**
 
-### The public interface
-
-For every entry point the change adds or alters, drive four things to a settled answer:
-
-1. **Name.** The exact identifier, in the naming style Exploration found.
-2. **Parameters.** Each one's name, type, whether it's required, and its default.
-3. **Return value.** Its type, and what it *means* to the caller.
-4. **Guarantees.** What the caller may rely on: errors raised and when, edge-case behaviour, invariants, side effects.
-
-Rules for this block:
-
-- **Nothing is settled while any of the four is open.** A parameter with no type, a return described only as "the result", an error path nobody named. Each is an unresolved branch. Keep going.
-- **Grill the interface, not the implementation.** "One function or a class with three methods?" is the contract, so grill it. "A dict or an LRU cache for the tokens?" sits behind the boundary, so don't spend the user's attention on it.
-- **Cover the whole Spec.** Every Interface line maps to at least one entry point on this list, and every Behaviour line has to be reachable through one. A piece with no entry point, or a step no signature can reach, means the contract is incomplete, so surface the gap and resolve it.
-- **Keep the ticket true.** When the code shows a Spec line is wrong, amend it per `../pr-ticket/ticket-pr.md` before going on. Never depart from the ticket silently.
-- **Stay inside `docs/pcr/`.** If the natural interface would breach a project convention, that is not yours to override. Put it to the user in `CODE-GRILL.md`'s two-line form. The user either accepts a different interface or stops to run `/challenge-pcr` as its own session. Do not design against a convention you expect to fall.
-- **An ADR in the way is yours to argue.** State it in `CODE-GRILL.md`'s two-line form and settle with the user whether the interface bends to the ADR or the ADR is amended. An amendment is settled here and written in Phase 2. Until it is settled the ADR binds.
-- **Mark every argument.** When a question resolves *against* a named alternative, note it in one line as a **record candidate**. These are what Phase 2 writes. A question the user answered without a contest is not a candidate.
-
-Draft from Exploration first. Propose the interface that fits what already exists and let the user correct it.
-
-### The acceptance tests
-
-Now convert the ticket's Behaviour lines into named tests. Interface lines become stubs, never tests.
-
-Every Behaviour line is covered by at least one test. A flow step that only sets up the next one, such as "the player clicks", is covered by the test of the step it leads to. For each test, draft:
-
-- **The test function name**, in the project's naming style.
-- **What it asserts**, in one sentence, phrased as an observable outcome through the public interface.
-
-**Draft the tests quietly.** The user never approves a test name or a test list. Ask only when a Behaviour line is ambiguous enough that two readings would need different tests. Then ask one question about that line, as a call with each possible outcome as a comment, per `CODE-GRILL.md`. Never as a test name.
-
-Then sweep for what the ticket didn't say, because a ticket stops short of the contract's detail:
-
-- **Edge cases and failure modes** the contract names. Every error in a docstring earns a test.
-- **Boundaries.** Empty, missing, zero, duplicate, and conflicting inputs.
-- **Behaviour this change must not break**, wherever it extends something that already ships.
-
-**One behaviour per test.** A test asserting three things fails ambiguously, and the implementer reads a failure as an instruction. Split it.
-
-**State plainly to the user any behaviour no automated test can reach.** It is a manual check, not a test. Don't fake one.
-
-### Leaving Phase 1
-
-The phase ends when every entry point is settled on all four counts, every Behaviour line in the ticket is covered by a drafted test, and every error the contract names has a test of its own.
-
-**Code appears in chat only as open options.** Once the user picks one, it goes straight into the source files in Phase 2. Never write the settled contract back as stubs, a test list, or a test table, since the user would review the same material twice. If drafting the tests surfaces a gap in the interface, close it in conversation and carry on.
-
-Then say:
-
-> "Contract settled. Writing the red branch now."
-
-and proceed immediately to Phase 2 without waiting to be prompted.
-
----
-
-## Phase 2: Write the red branch
-
-### 1. Branch
+### Branch and ticket PR
 
 `git checkout -b <issue-number>-<slug>`, or `git checkout` it if it already exists. If the working tree carries unrelated uncommitted changes, surface that before switching rather than dragging them across.
 
 Then open or reuse the branch's **ticket PR** per `../pr-ticket/ticket-pr.md`, before writing any file.
 
-### 2. Stubs into the source files
+---
 
-Write each settled entry point into its real file: the signature, the contract as the docstring, and a body that raises the language's not-implemented error.
+## Phase 2: Grill the interface
 
-- **Create a file only when the interface needs a new one.** Prefer the module the surrounding interface already lives in.
-- **Write nothing behind the boundary.** No helpers, no control flow, no data structures.
+You are a developer grilling a project leader about code structure. Invoke the `grilling` skill for how to ask a question and give a recommendation.
 
-### 3. Tests
+**No code in chat.** No signatures, no snippets, no calls, no test names. The code goes into the source files, where the user reads it in their own editor. Chat names things and argues for them. Write all chat output per the `unslop` skill when it is installed.
 
-Write every test drafted in Phase 1 into the acceptance file, calling the code **only through the stubs as written**.
+### Questions before code
+
+Some decisions have to come before any code can exist: whether the change belongs in this repo at all, a Behaviour line ambiguous enough that two readings need different interfaces, a PCR or ADR in the way. Ask these first, as one round in `grilling`'s format. With none, go straight to the stub loop.
+
+**Record conflicts.** State a PCR or ADR in the way in two lines, then ask the decision like any other question. Give no reasons or consequences, since the record holds them.
+
+```
+ADR-0003 says: tokens never leave `auth/`.
+The ticket wants: the admin panel reads the token directly.
+```
+
+- **A PCR is not yours to override.** The user either accepts a different interface or stops to run `/challenge-pcr` as its own session. Do not design against a convention you expect to fall.
+- **An ADR is yours to argue.** Settle with the user whether the interface bends to the ADR or the ADR is amended. An amendment is written with the records in Phase 3. Until it is settled the ADR binds.
+
+### The stub loop
+
+Settle the interface one entry point at a time, in the order the ticket's flow reaches them. Start with the entry point the ticket's trigger calls first, then follow the Behaviour steps.
+
+**1. Write it.** Write the entry point into its real source file, complete:
+
+- **Name**, in the naming style Exploration found.
+- **Parameters**, each with its type, whether it's required, and its default.
+- **Return value**, its type and what it means to the caller.
+- **Guarantees** in the docstring: errors raised and when, edge-case behaviour, invariants, side effects.
+- **A body** that raises the language's not-implemented error, and nothing else.
+
+A parameter with no type, a return described only as "the result", or an error path nobody named is not done yet. Create a file only when the interface needs a new one, and prefer the module the surrounding interface already lives in. Write nothing behind the contract: no helpers, no control flow, no data structures.
+
+**2. Defend it.** A few lines of plain prose saying why this shape fits what already exists. Name the entry point and its file so the user can open it. When you weighed a real contender, name it and say in one short line why it lost. No headers, no labels, no template.
+
+**3. Wait.** The user's reply decides what comes next:
+
+- **A question or a suggested edit** keeps you on this entry point. Edit the file, defend again, and wait.
+- **An approval**, such as "ok", "approved", "confirmed" or "settled", settles it. Move to the next entry point.
+
+Rules for the loop:
+
+- **Grill the interface, not the implementation.** "One function or a class with three methods?" is the contract. "A dict or an LRU cache for the tokens?" sits behind the contract, so don't spend the user's attention on it.
+- **A settled entry point can still be wrong.** When a later one shows it, say so, edit the earlier one, and settle it with the user before going on.
+- **Keep the ticket true.** When the code shows a Spec line is wrong, amend it per `../pr-ticket/ticket-pr.md` before going on. Never depart from the ticket silently.
+- **Mark every argument.** When an entry point settles *against* a named contender, note it to yourself in one line as a **record candidate**. These are what Phase 3 writes. An entry point the user approved without a contest is not a candidate.
+
+The loop ends when every Interface line in the ticket has at least one settled entry point. Then say:
+
+> "Interface settled. Writing the tests now."
+
+and go on without waiting to be prompted.
+
+---
+
+## Phase 3: Write the red branch
+
+### 1. Tests
+
+Write every acceptance test into the acceptance file in one pass, without asking the user to approve names or a list. Call the code **only through the stubs as written**.
+
+Every Behaviour line is covered by at least one test. Interface lines become stubs, never tests. A flow step that only sets up the next one, such as "the player clicks", is covered by the test of the step it leads to. Then sweep for what the ticket didn't say:
+
+- **Edge cases and failure modes** the contract names. Every error in a docstring earns a test.
+- **Boundary values.** Empty, missing, zero, duplicate, and conflicting inputs.
+- **Behaviour this change must not break**, wherever it extends something that already ships.
+
+**One behaviour per test.** A test asserting three things fails ambiguously, and the implementer reads a failure as an instruction. Split it. Each test's docstring states the behaviour it enforces, in one sentence.
 
 **Never write a structure-sensitive test**, as `../unit-test-ticket/test-standards.md` defines it.
 
-Each test's docstring states the behaviour it enforces, in one sentence.
+Two things stop the pass:
 
-### 4. Go red
+- **A Behaviour line no settled stub reaches.** Stop, go back to the stub loop to reopen or add that entry point, settle it with the user, then finish the tests.
+- **A Behaviour line two readings would test differently.** Ask that one line in prose, in `grilling`'s format, then carry on. Never write a test from a guess.
+
+**State plainly to the user any behaviour no automated test can reach.** It is a manual check, not a test. Don't fake one.
+
+### 2. Go red
 
 Run the tests. Every one must **fail because the behaviour doesn't exist yet**.
 
@@ -136,21 +138,21 @@ Two ways this goes wrong, and both mean you are not done:
 
 What the test run can't reach is external: a credential, a running service, a created bucket or queue. Name those to the user in one line if the contract needs any.
 
-**Completion criterion:** every test drafted in Phase 1 exists, has been run, and has been observed failing for the right reason. Not "should fail". Observed.
+**Completion criterion:** every Behaviour line covered by a test, every error the contract names tested, and every test observed failing for the right reason. Not "should fail". Observed.
 
-### 5. Records
+### 3. Records
 
-Read `RECORD-FORMAT.md`, the file beside this `SKILL.md`, and run every record candidate from Phase 1 through its ADR tests. Write one ADR per candidate that passes, taking the next free number, and drop the rest without comment. A ticket whose grill argued nothing writes nothing, and that is the common case.
+Read `RECORD-FORMAT.md`, the file beside this `SKILL.md`, and run every record candidate from the stub loop through its ADR tests. Write one ADR per candidate that passes, taking the next free number, and drop the rest without comment. A ticket whose grill argued nothing writes nothing, and that is the common case.
 
-Write any **amendments** settled in Phase 1 the way that file describes.
+Write any **amendments** settled in Phase 2 the way that file describes.
 
 Write a **PCR** only when this ticket is the first to settle something project-wide.
 
 Write without asking; the user reads the Decision line at the diff gate like everything else.
 
-### 6. The diff gate
+### 4. The diff gate
 
-Leave the stubs, the acceptance file, and any record on disk, **unstaged**, and **stop**. This is the session's only gate. The user reads the changes in their own editor, so never paste the diff or any file into chat.
+Leave the stubs, the acceptance file, and any record on disk, **unstaged**, and **stop**. This is the session's only commit gate. The user reads the changes in their own editor, so never paste the diff or any file into chat.
 
 Post four lines, plus any manual checks or external resources the user still owns:
 
@@ -165,14 +167,14 @@ The Records line reads `none` when nothing was written. End with one line saying
 
 **Do not stage, commit, or push until the user approves.**
 
-Corrections come back in two kinds, handled differently:
+Corrections come in two kinds:
 
-- **A fix inside the contract**, meaning a name, a type, a missing test, a wrong assertion. Edit the working tree, re-run the tests, then post the four lines again plus one line per file you changed, such as `Edited    tests/test_acceptance.py`. Still no diff.
-- **A change to the contract itself**, meaning a boundary in the wrong place, an entry point that shouldn't exist, a behaviour no signature can reach. **Return to Phase 1 and grill it.** Code already on disk is not evidence the shape was right. Never patch a stub to absorb an objection that is really about the design.
+- **A fix inside the contract**, meaning a name, a type, a missing test, a wrong assertion. Edit the working tree, re-run the tests, then post the four lines again plus one line per file you changed, such as `Edited    tests/test_acceptance.py`.
+- **A change to the contract itself**, meaning the contract drawn in the wrong place, an entry point that shouldn't exist, a behaviour no signature can reach. **Return to the stub loop** for the entry points it touches and settle them again. Code already on disk is not evidence the shape was right. Never patch a stub to absorb an objection that is really about the design.
 
-If the user abandons the session, nothing is staged or committed beyond the empty start commit. When this session opened the ticket PR, `gh pr close <PR> --delete-branch`, then `git checkout <previous-branch> && git branch -D <branch>` drops the branch. Your edits stay in the working tree, so list them with `git status --short` and let the user say what goes.
+If the user abandons the session, this session has staged and committed nothing, apart from the empty start commit `../pr-ticket/ticket-pr.md` makes when it opens a PR on a branch with no commits. When this session opened the ticket PR, `gh pr close <PR> --delete-branch`, then `git checkout <previous-branch> && git branch -D <branch>` drops the branch. Your edits stay in the working tree, so list them with `git status --short` and let the user say what goes.
 
-### 7. Commit
+### 5. Commit
 
 On approval, `git add` exactly the files you wrote or edited this session, each by path. Never `git add -A` or `git add .`, since the user may have unrelated edits open in their editor, and a blanket add sweeps them into the red commit. Then commit on the branch.
 
@@ -187,6 +189,6 @@ An amended ADR adds one line per amendment under the body, `Amends ADR-0003: <wh
 
 Then push with `git push -u origin <branch>`, and post one line on the ticket PR with `gh pr comment <PR>`: `Red at <short hash>, <count> acceptance tests failing in <acceptance file>`.
 
-### 8. Confirm
+### 6. Confirm
 
 Two lines, `Commit    a1b2c3d` and `PR        <ticket PR URL>`, then say that `/implement-ticket` takes it green.
