@@ -38,7 +38,7 @@ Branches started before this contract keep their earlier notes on the issue. Whe
 
 ## Current Spec
 
-The ticket's Spec, plus every amendment note on the issue, applied in the order they were posted. Notes in either older look, first line `## Spec amendment` or `# Spec amendment`, count the same as notes in the current look. Read the Spec this way wherever a station says "the ticket", never the body alone.
+The ticket's Spec, plus every amendment note on the issue, applied in the order they were posted. Notes in any older look, first line `###### Spec amendment`, `# Spec amendment` or `## Spec amendment`, count the same as notes in the current look. Read the Spec this way wherever a station says "the ticket", never the body alone.
 
 ## Amendments
 
@@ -57,7 +57,7 @@ Fill in the template below.
 - Nothing else goes outside the fold.
 
 ````md
-###### Spec amendment
+##### Spec amendment
 
 <section>: <added, removed or rewritten>
 
@@ -73,12 +73,14 @@ Why: <one sentence>
 </details>
 ````
 
-The first line is always `###### Spec amendment`, exactly. That is how a station finds one.
+The first line is always `##### Spec amendment`, exactly. That is how a station finds one.
 
 To read a note in the current look, take the section and `n` from the `@@` line, the old line from the `-` row, and the new line from the `+` row, each minus its `- ` or `+ ` prefix. Then:
 
 - **Both rows.** Replace line `n` of that section with the new line.
 - **Only a `-` row.** Remove line `n`.
 - **Only a `+` row.** Insert the new line at position `n`, moving the line there and every one after it down by one.
+
+A note whose first line is `###### Spec amendment` has the same shape. Read it the same way, and never post a new one with that heading.
 
 Older notes start `# Spec amendment` or `## Spec amendment`. Neither carries a position, so find the line they change by its text: the `-` row under **Full lines** in the first, the `Original:` line in the second. Skip caret rows, which start with two spaces. An added line in either look has no old line, so put it at the end of the section its heading or `Change:` line names. Read both looks, and never post a new note in either.
