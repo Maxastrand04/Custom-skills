@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CATEGORIES = ("kanban", "developer-tools", "behaviour", "schoolwork")
+CATEGORIES = ("kanban", "developer-tools", "behaviour", "schoolwork", "vim-bindings")
 SIBLING_FILE = re.compile(r"\.\./([a-z0-9-]+)/([a-zA-Z0-9_./-]+\.md)")
 
 
