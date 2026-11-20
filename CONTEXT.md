@@ -11,7 +11,7 @@ A directory containing a `SKILL.md` plus any files that `SKILL.md` references. L
 _Avoid_: extension, command
 
 **Category**:
-A top-level directory grouping Skills by purpose: `kanban/` (the workflow chain), `developer-tools/` (Skills off the chain, including the **eli Skills**), `behaviour/` (Skills that shape how Claude talks rather than what it builds, borrowed by Skills in any other Category), `schoolwork/` (study and comprehension Skills, for when I'm the learner), `archive/` (retired, never installed). Repo-level metadata only, so it never appears in a Skill's name or invocation. Adding one means adding it to the `CATEGORIES` array in `install.sh`.
+A top-level directory grouping Skills by purpose: `kanban/` (the workflow chain), `developer-tools/` (Skills off the chain, including the **eli Skills**), `behaviour/` (Skills that shape how Claude talks rather than what it builds, borrowed by Skills in any other Category), `schoolwork/` (study and comprehension Skills, for when I'm the learner), `vim-bindings/` (prompts that Zed keys run through `claude -p`), `archive/` (retired, never installed). Repo-level metadata only, so it never appears in a Skill's name or invocation. Adding one means adding it to the `CATEGORIES` array in `install.sh`.
 _Avoid_: group, namespace, section, folder
 
 **SKILL.md**:

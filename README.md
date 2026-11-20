@@ -165,7 +165,7 @@ Skill names on the command line skip the menu and only add, never remove. `--cla
 ### Making it your own
 
 - To edit a skill, change its `SKILL.md` and commit to your fork. No reinstall needed.
-- To add a skill, create a folder with a `SKILL.md` inside `kanban/`, `developer-tools/`, `behaviour/`, or `schoolwork/` and run `./install.sh <name>`. The frontmatter needs a `name` that matches the folder and a `description`, and names must be unique across folders.
+- To add a skill, create a folder with a `SKILL.md` inside `kanban/`, `developer-tools/`, `behaviour/`, `schoolwork/`, or `vim-bindings/` and run `./install.sh <name>`. The frontmatter needs a `name` that matches the folder and a `description`, and names must be unique across folders.
 - To remove one of mine, untick it in the menu, or delete the folder and run `./install.sh` to clear the leftover link.
 
 ### Getting my updates
@@ -197,6 +197,7 @@ kanban/            the ticket workflow
 developer-tools/   coding and explanation skills used as needed
 behaviour/         wording and interview rules other skills borrow
 schoolwork/        study skills, install.sh only
+vim-bindings/      prompts run by Zed keys, install.sh only
 archive/           retired, never installed
 config/            my settings, hooks, and instruction files, reference only
 ```

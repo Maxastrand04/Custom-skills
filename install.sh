@@ -14,7 +14,7 @@ CODEX_BUILD_DIR="$REPO_DIR/.codex-build/skills"
 
 # Live categories. `archive/` is deliberately absent — archived Skills are kept
 # for reference and are never installed.
-declare -a CATEGORIES=(kanban developer-tools behaviour schoolwork)
+declare -a CATEGORIES=(kanban developer-tools behaviour schoolwork vim-bindings)
 
 failure=0
 
