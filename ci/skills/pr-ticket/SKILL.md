@@ -3,7 +3,7 @@ name: pr-ticket
 description: Headless last station for kanban-ci. Writes the PR title and the Summary, Evidence, Merge danger and For the reviewer sections of the PR body from the branch's commits, into files the loop rewrites the ticket PR with.
 disable-model-invocation: true
 ---
-<!-- synced-from kanban/pr-ticket/SKILL.md blob e7a3bf35c0fa78acc9edc7bc3630190c99bb446a -->
+<!-- synced-from kanban/pr-ticket/SKILL.md blob 261b92303a0c2aa6a54d06edb924231beac4e878 -->
 
 # pr-ticket, headless
 
@@ -27,7 +27,7 @@ The loop starts you with `claude -p`. Nobody reads this session and nobody answe
 - **The ticket.** `gh issue view <N> --comments`, read as the current Spec in `ticket-pr.md`, for the why and its words.
 - **The ticket PR.** `gh pr view <PR> --comments`, for each station's comment.
 - **The commits.** `git log <base>..HEAD --format='%h %s%n%b'`. The `Architect #<N>:` commit is Before. The `Tests #<N>: tidy and fold` commit, or `unit-test-ticket`'s comment on the ticket PR, maps each acceptance test to its file at `HEAD`.
-- **Reviewer items.** Every `For the reviewer` section in the commit bodies. Add one line per amendment note on the issue, naming the Spec line it changed and linking the note. An item about code outside the ticket's scope that the change breaks moves to Blast radius instead.
+- **Reviewer items.** Every `For the reviewer` section in the commit bodies. Add one line per amendment note on the issue, naming the Spec lines it changed and linking the note. An item about code outside the ticket's scope that the change breaks moves to Blast radius instead.
 - **The diff.** `git diff <base>...HEAD`, read in full, so the Summary describes the code and not the commit messages.
 - **`CONTEXT.md`**, if the repo has one, for the terms the Summary should use.
 

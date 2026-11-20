@@ -111,7 +111,7 @@ The one draft pull request a **Ticket**'s branch carries from the moment a stati
 _Avoid_: draft, work PR, tracking PR
 
 **Spec amendment**:
-A dated note, posted on both the **Ticket** and its **Ticket PR** once the user approves it, that replaces one **Spec** line or adds one. The Ticket body is never edited, so the current Spec is the original plus every amendment in date order. Its first line is `# Spec amendment`, or `## Spec amendment` on notes posted before the current look.
+A note, posted on both the **Ticket** and its **Ticket PR** once the user approves it, that rewrites, removes, or adds **Spec** lines in one section. It shows a `### Spec amendment` title, a one-sentence `**Why**:`, and a fold labelled with the section and the change, like `Interface: rewritten`. The fold holds a diff with one block per changed line, each headed by the line's position, like `@@ Behaviour 4 @@`, with the old line as a `-` row and the new one as a `+` row. The Ticket body is never edited, so the current Spec is the original plus every amendment in the order posted. Notes in older looks, at other heading levels, still count, but no station posts them.
 _Avoid_: spec edit, change request, intentional drift
 
 **Spec**:
