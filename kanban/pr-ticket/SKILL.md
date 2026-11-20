@@ -44,7 +44,7 @@ Keep the suite's pass count for Evidence. Run the squash merge check from `pr-sh
 - **The diff.** `git diff <base>...HEAD`, read in full, so the Summary describes the code and not the commit messages.
 - **The fold**, on `major` or `medium`, found as `pr-shape.md`'s Evidence says.
 - **The review note**, on `minor` or `trivial`. Its Suite line, Fixes and Found, not fixed rows, and any records it wrote or amended.
-- **Reviewer items.** Every `For the reviewer` line in the issue and ticket PR comments: bugs found and deleted, undefined behaviour, design worsened for testability. Add one line per amendment note, naming the Spec line it changed and linking the note. An item about code outside the ticket's scope that the change breaks moves to Blast radius instead.
+- **Reviewer items.** Every `For the reviewer` line in the issue and ticket PR comments: bugs found and deleted, undefined behaviour, design worsened for testability. Add one line per amendment note, naming the Spec lines it changed and linking the note. An item about code outside the ticket's scope that the change breaks moves to Blast radius instead.
 
 ## 3. Write the body
 

@@ -38,51 +38,47 @@ Branches started before this contract keep their earlier notes on the issue. Whe
 
 ## Current Spec
 
-The ticket's Spec, plus every amendment note on the issue, applied in date order. Notes in the old look, first line `## Spec amendment`, count the same as notes in the current look. An amendment replaces the Spec line it quotes. Read the Spec this way wherever a station says "the ticket", never the body alone.
+The ticket's Spec, plus every amendment note on the issue, applied in the order they were posted. A note is any comment whose first line is a heading reading `Spec amendment`, at any level. Notes in older looks count the same as notes in the current look. Read the Spec this way wherever a station says "the ticket", never the body alone.
 
 ## Amendments
 
 The ticket body never changes. When a Spec line has to:
 
 1. Propose it to the user: the line as written, the change, and the reason. Wait.
-2. On approval, post the same amendment note on the issue and on the ticket PR, then continue. Before the ticket PR exists, as in `architect-ticket`'s grill, post it on the issue now and on the ticket PR the moment it opens.
+2. On approval, post the same amendment note on the issue and on the ticket PR, then continue.
 3. On refusal, the Spec line stands.
 
-Fill in the template below.
+Fill in the template below. One note changes lines in one section.
 
-- The `##` heading names the Spec line and the change in a few words.
-- The short diff holds only the changed clause, a few words either side, with the change in git word-diff markers: `[-removed-]` and `{+added+}`.
-- Under **Full lines**, the `-` row is the Spec line verbatim and the `+` row is the approved line verbatim. Under each row that has an unchanged part, a caret row marks the changed part with `^`, starting in the column where it starts. A caret row starts with two spaces, so it is never a `-` or `+` row.
-- For an added line, both diffs hold only a `+` row with the whole line, and the heading ends `new line`. For a removed line, only a `-` row, and the heading ends `removed`. Neither gets a caret row.
+- `**Why**:` is one sentence.
+- The fold label names the section, `Interface`, `Behaviour` or `Out of scope`, and the change, `added`, `removed` or `rewritten`. A note that mixes kinds of change is `rewritten`.
+- The diff has one block per changed line. A block's first line is the position, `@@ <section> <n> @@`. `n` counts the lines of that section from 1, top to bottom, so Behaviour's edge-case bullets carry on from its last numbered step. Every block in a note counts against the current Spec before that note, and no two blocks share a position. For an added line, `n` is where the new line goes.
+- Under its position, a block has the Spec line verbatim as a `-` row and the approved line verbatim as a `+` row. An added line has only a `+` row, and a removed line only a `-` row.
+- Nothing else goes outside the fold.
 
 ````md
-# Spec amendment
+### Spec amendment
 
-## <Spec line, like Behaviour 4>: <old words> → <new words>
+**Why**: <one sentence>
 
-```diff
-! <changed clause, like: /grill-docs once{+ per session+}, and asks>
-```
-
-## Why
-
-<one line>
-
-## Date
-
-<YYYY-MM-DD>
-
-<details><summary>Full lines</summary>
+<details><summary><section>: <added, removed or rewritten></summary>
 
 ```diff
+@@ <section> <n> @@
 - <the Spec line, verbatim>
-  <spaces, then ^ under the changed part>
 + <the approved line, verbatim>
-  <spaces, then ^ under the changed part>
 ```
 </details>
 ````
 
-The first line is always `# Spec amendment`, exactly. That is how a station finds one. Older notes start `## Spec amendment` and use `Date:`, `Original:`, `Change:` and `Reason:` lines. Read them too, and never post a new one in that look.
+Post the first line as `### Spec amendment`, exactly, and never at another level.
 
-To read a note in the current look, take the old line from the `-` row and the new line from the `+` row under **Full lines**, minus the `- ` or `+ ` prefix. Skip caret rows. No `-` row means an added line, and no `+` row means a removed one.
+To read a note with `@@` lines, take each block's section and `n`, the old line from its `-` row, and the new line from its `+` row, each minus its `- ` or `+ ` prefix. Apply the blocks from the highest `n` to the lowest, so each position still points at the line it named:
+
+- **Both rows.** Replace line `n` of that section with the new line.
+- **Only a `-` row.** Remove line `n`.
+- **Only a `+` row.** Insert the new line at position `n`, moving the line there and every one after it down by one.
+
+This covers every note with `@@` lines, whatever its heading level or fold label.
+
+A note without `@@` lines is an older look, first line `# Spec amendment` or `## Spec amendment`. It carries no position, so find the line it changes by its text: the `-` row under **Full lines** in the first, the `Original:` line in the second. Skip caret rows, which start with two spaces. An added line in either has no old line, so put it at the end of the section its heading or `Change:` line names.
