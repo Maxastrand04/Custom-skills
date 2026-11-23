@@ -9,7 +9,7 @@ The review for a branch however it was built: by hand, in an ordinary session, o
 
 **A smell or record fix never changes behaviour.** Before any such edit, ask whether a caller would see a difference. If one would, it is not a cleanup. A drift fix is the one edit here that changes behaviour, and it changes it only toward the ticket, with the user's approval. Wherever a step names no stop for the user, decide and act.
 
-`review-note.md` resolves from this skill's directory, and so do `../refactor-ticket/code-standards.md`, `../unit-test-ticket/test-standards.md` and `../architect-ticket/RECORD-FORMAT.md`. Never read a same-named file from the repo.
+`review-note.md` resolves from this skill's directory, and so do `../refactor-ticket/code-standards.md`, `../unit-test-ticket/test-standards.md` and `../grill-docs/RECORD-FORMAT.md`. Never read a same-named file from the repo.
 
 Word every question and report per the `gloss-me` skill.
 
@@ -56,7 +56,7 @@ No intentional finding means no amendment.
 
 ## 5. Smells and records
 
-Edit the code directly. Read every file in the review scope against three tiers, read per `../architect-ticket/RECORD-FORMAT.md`:
+Edit the code directly. Read every file in the review scope against three tiers, read per `../grill-docs/RECORD-FORMAT.md`:
 
 1. **PCRs in `docs/pcr/`.** A breach is a hard violation. Fix the code and cite `PCR-NNNN`. You never write, amend, or retire a PCR. When a PCR blocks a fix, leave the code, and put the item in Found, not fixed with ``run `$max:challenge-pcr` `` as the reason.
 2. **ADRs in `docs/adr/`.** A breach is a hard violation too. Fix it and cite `ADR-NNNN`. Nothing pre-selects them, so take the whole set and judge which the changed files fall under. Read each one's **Decision** for what's required and its **Consequence** for what a breach looks like in a diff.

@@ -27,16 +27,16 @@ class PackagingTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def build_brainstorming(self):
-        builder.sync(self.root, builder.build_files(["brainstorming"], builder.live_skills()), False)
+    def build_challenge_pcr(self):
+        builder.sync(self.root, builder.build_files(["challenge-pcr"], builder.live_skills()), False)
 
     def test_excluded_skill_can_supply_shared_files(self):
-        self.build_brainstorming()
-        self.assertTrue((self.root / "brainstorming/../architect-ticket/RECORD-FORMAT.md").is_file())
+        self.build_challenge_pcr()
+        self.assertTrue((self.root / "challenge-pcr/../grill-docs/RECORD-FORMAT.md").is_file())
 
     def test_excluded_skill_supplying_shared_files_is_not_available(self):
-        self.build_brainstorming()
-        self.assertEqual(list(self.root.glob("*/SKILL.md")), [self.root / "brainstorming/SKILL.md"])
+        self.build_challenge_pcr()
+        self.assertEqual(list(self.root.glob("*/SKILL.md")), [self.root / "challenge-pcr/SKILL.md"])
 
     def test_codex_skill_drops_the_claude_invocation_key(self):
         files = builder.build_files(["brainstorming"], builder.live_skills())
@@ -52,11 +52,11 @@ class PackagingTests(unittest.TestCase):
 
     def test_skill_mentions_become_codex_mentions(self):
         files = builder.build_files(["brainstorming"], builder.live_skills())
-        self.assertIn(b"$grilling", files["brainstorming/SKILL.md"])
+        self.assertIn(b"$new-ticket", files["brainstorming/SKILL.md"])
 
     def test_marketplace_skill_mentions_carry_the_plugin_prefix(self):
         files = builder.build_files(["brainstorming"], builder.live_skills(), "max:")
-        self.assertIn(b"$max:grilling", files["brainstorming/SKILL.md"])
+        self.assertIn(b"$max:new-ticket", files["brainstorming/SKILL.md"])
 
     def build_then_drop_pro_con(self):
         skills = builder.live_skills()
@@ -131,8 +131,8 @@ class PackagingTests(unittest.TestCase):
 
     def test_installed_skill_reaches_shared_files(self):
         repo, target = self.installer()
-        self.install(repo, target, "brainstorming")
-        self.assertTrue((target / "brainstorming/../architect-ticket/RECORD-FORMAT.md").is_file())
+        self.install(repo, target, "challenge-pcr")
+        self.assertTrue((target / "challenge-pcr/../grill-docs/RECORD-FORMAT.md").is_file())
 
     def test_reinstall_brings_source_edits_to_codex(self):
         repo, target = self.installer()

@@ -50,13 +50,13 @@ Then open or reuse the branch's **ticket PR** per `../pr-ticket/ticket-pr.md`, b
 
 ## Phase 2: Grill the interface
 
-You are a developer grilling a project leader about code structure. Invoke the `grilling` skill for how to ask a question and give a recommendation.
+You are a developer grilling a project leader about code structure. Invoke the `grill-docs` skill for how to ask a question and give a recommendation. It also writes any `CONTEXT.md` term, ADR, or PCR the grill settles, as it settles, so this skill writes no record of its own.
 
 **No code in chat.** No signatures, no snippets, no calls, no test names. The code goes into the source files, where the user reads it in their own editor. Chat names things and argues for them. Write all chat output per the `unslop` skill when it is installed.
 
 ### Questions before code
 
-Some decisions have to come before any code can exist: whether the change belongs in this repo at all, a Behaviour line ambiguous enough that two readings need different interfaces, a PCR or ADR in the way. Ask these first, as one round in `grilling`'s format. With none, go straight to the stub loop.
+Some decisions have to come before any code can exist: whether the change belongs in this repo at all, a Behaviour line ambiguous enough that two readings need different interfaces, a PCR or ADR in the way. Ask these first, as one round in `grill-docs`'s format. With none, go straight to the stub loop.
 
 **Record conflicts.** State a PCR or ADR in the way in two lines, then ask the decision like any other question. Give no reasons or consequences, since the record holds them.
 
@@ -66,7 +66,7 @@ The ticket wants: the admin panel reads the token directly.
 ```
 
 - **A PCR is not yours to override.** The user either accepts a different interface or stops to run `/challenge-pcr` as its own session. Do not design against a convention you expect to fall.
-- **An ADR is yours to argue.** Settle with the user whether the interface bends to the ADR or the ADR is amended. An amendment is written with the records in Phase 3. Until it is settled the ADR binds.
+- **An ADR is yours to argue.** Settle with the user whether the interface bends to the ADR or the ADR is amended. `grill-docs` writes an amendment when it settles. Until then the ADR binds.
 
 ### The stub loop
 
@@ -94,7 +94,7 @@ Rules for the loop:
 - **Grill the interface, not the implementation.** "One function or a class with three methods?" is the contract. "A dict or an LRU cache for the tokens?" sits behind the contract, so don't spend the user's attention on it.
 - **A settled entry point can still be wrong.** When a later one shows it, say so, edit the earlier one, and settle it with the user before going on.
 - **Keep the ticket true.** When the code shows a Spec line is wrong, amend it per `../pr-ticket/ticket-pr.md` before going on. Never depart from the ticket silently.
-- **Mark every argument.** When an entry point settles *against* a named contender, note it to yourself in one line as a **record candidate**. These are what Phase 3 writes. An entry point the user approved without a contest is not a candidate.
+- **Every argument is a record candidate.** When an entry point settles *against* a named contender, `grill-docs` runs it through the record tests then. An entry point the user approved without a contest is not a candidate.
 
 The loop ends when every Interface line in the ticket has at least one settled entry point. Then say:
 
@@ -123,7 +123,7 @@ Every Behaviour line is covered by at least one test. Interface lines become stu
 Two things stop the pass:
 
 - **A Behaviour line no settled stub reaches.** Stop, go back to the stub loop to reopen or add that entry point, settle it with the user, then finish the tests.
-- **A Behaviour line two readings would test differently.** Ask that one line in prose, in `grilling`'s format, then carry on. Never write a test from a guess.
+- **A Behaviour line two readings would test differently.** Ask that one line in prose, in `grill-docs`'s format, then carry on. Never write a test from a guess.
 
 **State plainly to the user any behaviour no automated test can reach.** It is a manual check, not a test. Don't fake one.
 
@@ -142,13 +142,7 @@ What the test run can't reach is external: a credential, a running service, a cr
 
 ### 3. Records
 
-Read `RECORD-FORMAT.md`, the file beside this `SKILL.md`, and run every record candidate from the stub loop through its ADR tests. Write one ADR per candidate that passes, taking the next free number, and drop the rest without comment. A ticket whose grill argued nothing writes nothing, and that is the common case.
-
-Write any **amendments** settled in Phase 2 the way that file describes.
-
-Write a **PCR** only when this ticket is the first to settle something project-wide.
-
-Write without asking; the user reads the Decision line at the diff gate like everything else.
+Collect what `grill-docs` wrote during Phase 2: new and amended ADRs, new PCRs, and `CONTEXT.md` changes. They go on the diff gate's Records line and into the red commit. Write nothing here. A ticket whose grill argued nothing has no records, and that is the common case.
 
 ### 4. The diff gate
 

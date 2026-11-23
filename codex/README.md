@@ -39,9 +39,9 @@ These are review findings, separate from the packaging changes applied here.
 
 Keep each skill's existing scope and completion checks.
 
-### Delegation in grilling and prune-skill
+### Delegation in grill-docs and prune-skill
 
-`grilling` requires fact-finding subagents. Some Codex sessions do not provide them, and `map-epic` requires work in the main conversation. Replace the unconditional delegation sentence with:
+`grill-docs` requires fact-finding subagents. Some Codex sessions do not provide them, and `map-epic` requires work in the main conversation. Replace the unconditional delegation sentence with:
 
 > Find facts yourself. Delegate independent checks only when subagents are available and the active workflow allows them. Otherwise investigate in the main conversation before asking questions that depend on the results.
 

@@ -3,7 +3,7 @@ name: refactor-ticket
 description: Headless refactor leg, first session, for kanban-ci. Gates the green branch true-to-spec, reconciles the suite from the loop's summary, settles visibility itself, refactors, and hands off to unit-test-ticket in a commit.
 disable-model-invocation: true
 ---
-<!-- synced-from kanban/refactor-ticket/SKILL.md blob e421ca374d4868000f19441017ccf8ec7cc330a0 -->
+<!-- synced-from kanban/refactor-ticket/SKILL.md blob 09057767ab90f67083acf720eb2df634e5cc7710 -->
 
 # refactor-ticket, headless
 

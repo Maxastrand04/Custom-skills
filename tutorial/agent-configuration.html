@@ -120,7 +120,6 @@
   <a href="#glossary">How gloss-me works</a>
   <a href="#config">The config folder</a>
   <a href="#how">Model invocation</a>
-  <a href="#grilling">grilling</a>
   <a href="#unslop">unslop</a>
   <a href="#gloss-me">gloss-me</a>
   <a href="#talk-to-middleschooler">talk-to-middleschooler</a>
@@ -467,21 +466,8 @@
 <p class="muted">Reasons for each setting are in <a href="https://github.com/Maxastrand04/Custom-skills/blob/main/config/README.md">config/README.md</a>.</p>
 
 <h2 id="how">Model invocation</h2>
-<p>Every skill outside behaviour waits for you to type its name. Behaviour skills are model-invoked, meaning Claude loads them itself. Each one's short description sits in Claude's context window on every turn. When the conversation matches it, Claude loads the full skill. The kanban skills borrow them mid-run too, like <code>architect-ticket</code> using <code>grilling</code> for its interview.</p>
+<p>Every skill outside behaviour waits for you to type its name. Behaviour skills are model-invoked, meaning Claude loads them itself. Each one's short description sits in Claude's context window on every turn. When the conversation matches it, Claude loads the full skill. Other skills borrow them mid-run too. One kanban skill works the same way. <code>grill-docs</code> is model-invoked so that <code>new-ticket</code>, <code>map-epic</code>, <code>architect-ticket</code> and <code>brainstorming</code> can borrow it for their interviews, and so that saying "grill me" starts it. Its card is on the <a href="skills-tutorial.html#grill-docs">skills page</a>.</p>
 <p>That description costs tokens every turn, so only skills that shape work already running get one. You can still call them by name, or ask in plain words. "Explain it simply" is enough to pull in <code>talk-to-middleschooler</code>.</p>
-
-<section class="card" id="grilling">
-  <header><h3>grilling</h3><span class="tag">interviews</span></header>
-  <p class="muted">Original by Matt Pocock, from <a href="https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md">mattpocock/skills</a>.</p>
-  <p>The interview loop behind most of the board. Claude maps your plan as a tree of decisions and asks every question it can answer now in one numbered round, each with its recommended answer. Questions that depend on an open answer wait for a later round. It looks up facts in the code itself instead of asking you, and it stops when no branch is left unvisited.</p>
-  <dl>
-    <dt>You call it</dt><dd><code>/grilling</code>, or say "grill me".</dd>
-    <dt>Starts when</dt><dd>You say "grill me", ask it to stress-test a plan, or a board skill reaches its interview.</dd>
-    <dt>You do</dt><dd>Answer by question number. A letter picks an option, "agree" takes the recommendation, and anything else is a tweak. See <a href="skills-tutorial.html#grill">a grilling round</a>.</dd>
-  </dl>
-  <pre>/grilling my plan for moving auth to a separate service
-grill me on whether we need a cache at all</pre>
-</section>
 
 <section class="card" id="unslop">
   <header><h3>unslop</h3><span class="tag">all writing</span></header>
@@ -501,7 +487,7 @@ grill me on whether we need a cache at all</pre>
   <p>A reply that defined anything ends with one line asking which new terms you're comfortable with. Name them and they go on the list, so you never see those definitions again. Say a term didn't land and Claude offers synonyms, a simpler definition, or a rewrite without the term, then picks up where it stopped. Say nothing and nothing is added.</p>
   <dl>
     <dt>You call it</dt><dd><code>/gloss-me</code> with nothing else going on fills the list one field at a time. Claude shows 30 to 50 common terms and you name the ones you don't know.</dd>
-    <dt>Starts when</dt><dd>Any reply written for you to read. <code>grilling</code>, <code>pro-con</code> and both <code>talk-to-*</code> skills borrow it.</dd>
+    <dt>Starts when</dt><dd>Any reply written for you to read. <code>grill-docs</code>, <code>pro-con</code> and both <code>talk-to-*</code> skills borrow it.</dd>
     <dt>To make it stick</dt><dd>Add the <code>gloss-me</code> line from <a href="https://github.com/Maxastrand04/Custom-skills/tree/main/config/claude">config/claude</a>'s <code>CLAUDE.md</code> to your own. Without it, a plain question that no skill started won't get definitions.</dd>
   </dl>
   <p class="muted">Walkthrough in <a href="#glossary">How gloss-me works</a>.</p>

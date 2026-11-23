@@ -39,7 +39,7 @@ Two parts. Three communication rules up top, then a section on how to work in a 
 
 A long global instruction file is a tax on every session, and the model follows the first half of it and forgets the rest. That is why the communication rules come first and stay at three lines. They apply to literally every turn.
 
-The first line is the one I would keep if I could keep only one. Without it the default is to agree and start writing, and I get a confident implementation of the thing I asked for rather than the thing I meant. With it I get a question first. Most of `kanban/` and all of `grilling` build on the same instinct, so the global file and the skills push the same direction.
+The first line is the one I would keep if I could keep only one. Without it the default is to agree and start writing, and I get a confident implementation of the thing I asked for rather than the thing I meant. With it I get a question first. Most of `kanban/` and all of `grill-docs` build on the same instinct, so the global file and the skills push the same direction.
 
 The third is there for sessions no skill started. A quick question in some repo is where I meet the most terms I don't know, and nothing else would load `gloss-me` there. The glossary lives in `~/.claude/` so both agents read the same list, and it only records terms I already know, so a missing entry costs me one extra gloss rather than a word I can't follow. The second sentence is there because an agent that has read a project's `CONTEXT.md` tends to treat its terms as shared vocabulary. The project knowing a word doesn't mean I do.
 
@@ -64,7 +64,7 @@ Claude Code ships with more than I want loaded. Everything I disable is in one t
 | `disableClaudeAiConnectors` | Connected services put a run's inputs outside the repo, where I cannot hold them still. |
 | `disableRemoteControl` | No driving this session from elsewhere. |
 | `EnterPlanMode`, `ExitPlanMode` | Plan mode overlaps with what my skills already do, and does it more vaguely. `architect-ticket` writes the plan as stubs and failing tests in real files, which is a better artifact than a plan I approve and then watch drift. |
-| `AskUserQuestion` | Multiple-choice popups. `grilling` is one question at a time with a recommended answer and room to argue back, which is the interaction I actually want. |
+| `AskUserQuestion` | Multiple-choice popups. `grill-docs` asks in numbered rounds with a recommended answer and room to argue back, which is the interaction I actually want. |
 | `NotebookEdit` | I do not work in notebooks. |
 | `DesignSync` | Not part of how I work. |
 | `SendMessage` | No subagent chatter. Skills in this repo hand off through artifacts, never by messaging each other, so nothing needs it. |

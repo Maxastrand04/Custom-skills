@@ -96,7 +96,7 @@ Each of these is a halt, raised before step 6. Name the test, the evidence, and 
 
 ## 5. Refactor
 
-Shape only, never behaviour. Behaviour includes what callers can observe behind an unchanged signature, such as the order of a returned list, an error message's text, a default value, or timing. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`. A record overrides the baseline. Tests are exempt. A diff that needs a new or amended record is the record halt in step 4. The one record this step writes is a found ADR, per `../architect-ticket/RECORD-FORMAT.md`, for each fence comment the comment smell moves out of the code. Delete the comment in the same commit.
+Shape only, never behaviour. Behaviour includes what callers can observe behind an unchanged signature, such as the order of a returned list, an error message's text, a default value, or timing. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`. A record overrides the baseline. Tests are exempt. A diff that needs a new or amended record is the record halt in step 4. The one record this step writes is a found ADR, per `../grill-docs/RECORD-FORMAT.md`, for each fence comment the comment smell moves out of the code. Delete the comment in the same commit.
 
 Re-run the tests from step 3 plus the neighbouring tests. Back to red means the edit changed behaviour, so revert it. Then commit once:
 
