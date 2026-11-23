@@ -64,7 +64,7 @@ Alongside the rounds, do four things whenever they come up:
 Check the plan against the records too:
 
 - **A plan that breaks an ADR** is a question. Either the plan changes or the ADR does. If the user argues the ADR should change and names a reason the record didn't anticipate, amend it in step 3.
-- **A plan that breaks a PCR** stops at the PCR. Name it and what it blocks, in one line. Point the user at `$max:challenge-pcr` and don't run it for them. Until that session returns a verdict, the PCR stands, so carry on with the rest of the grill on that assumption.
+- **A plan that breaks a PCR** stops at the PCR. Name it and what it blocks, in one line. Load `amend-pcr` for it. Until the user approves an amendment there, the PCR stands, so carry on with the rest of the grill on that assumption.
 
 The grill is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Do not act on it until the user confirms you have reached a shared understanding.
 
@@ -76,7 +76,7 @@ Write each change when its decision settles, not in a batch at the end. A change
 
 **ADRs.** A decision the grill argued against a named alternative is a candidate. Run it through the record format's tests and the spine test. Write one that passes, taking the next free number, and drop the rest without comment. Most grills settle most things without argument, and those produce nothing. Amend an ADR the same way the format describes: keep the number, rewrite Decision, Reason, and Consequence together, bump the Date. Retire one whose code is gone. The reason for an amendment goes to the user in the session and nowhere in the file.
 
-**PCRs.** Write a new one when this session is the first to settle something project-wide, such as the first test runner or naming style in a repo with no `docs/pcr/` entry for it. Never edit, reword, retire, or delete an existing PCR. That takes `$max:challenge-pcr`.
+**PCRs.** Write a new one when this session is the first to settle something project-wide, such as the first test runner or naming style in a repo with no `docs/pcr/` entry for it. Never edit, reword, retire, or delete an existing PCR. That takes `amend-pcr` and the user's approval.
 
 Create `docs/adr/` or `docs/pcr/` only when the first record lands in it. Write without asking, then say what changed in one line in the next round, for example `Docs  CONTEXT.md: Invoice added. ADR-0004 written.` Never stage or commit. A borrowed grill leaves that to the skill that invoked it, and a started grill leaves it to the user.
 

@@ -1,10 +1,9 @@
 [
+  "amend-pcr/SKILL.md",
   "architect-ticket/SKILL.md",
   "architect-ticket/agents/openai.yaml",
   "brainstorming/SKILL.md",
   "brainstorming/agents/openai.yaml",
-  "challenge-pcr/SKILL.md",
-  "challenge-pcr/agents/openai.yaml",
   "eli10/SKILL.md",
   "eli10/agents/openai.yaml",
   "eli5/SKILL.md",

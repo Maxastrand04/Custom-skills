@@ -5,7 +5,7 @@ Shared contract. The single source of truth for every ADR and PCR this system wr
 Two kinds of record, one shape, two blast radii:
 
 - **An ADR (Architecture Decision Record)** binds one region of the codebase: a module's purpose and shape, what a future implementation inside it may and may not do, a public interface chosen over a real alternative. Lives in `docs/adr/`.
-- **A PCR (Project Convention Record)** binds the whole project: tech stack, allowed libraries, naming, comment convention, OOP or not, test suite. Lives in `docs/pcr/`. Changing one ripples through every file, which is why only a dedicated `$max:challenge-pcr` session may.
+- **A PCR (Project Convention Record)** binds the whole project: tech stack, allowed libraries, naming, comment convention, OOP or not, test suite. Lives in `docs/pcr/`. Changing one ripples through every file, which is why only `amend-pcr` may, and only once the user approves.
 
 Both are `NNNN-slug.md`, numbered sequentially within their own directory. Create the directory lazily, when the first record is written.
 
@@ -94,8 +94,8 @@ The filename slug is the decision's shorthand. Pick it so the directory reads as
 
 **PCRs.** `grill-docs` writes a new one when its grill is the first to settle a project-wide convention, for example the first grill that picks a test runner. Nothing else writes one.
 
-**Changing or retiring a PCR takes a full `$max:challenge-pcr` session, and there is no other route.** No skill edits a file in `docs/pcr/` in passing, not to fix drift, not to reword, not to retire, and no skill deletes one. So when a PCR blocks the work in front of you:
+**Changing or retiring a PCR goes through `amend-pcr`, and there is no other route.** No skill edits a file in `docs/pcr/` in passing, not to fix drift, not to reword, not to retire, and no skill deletes one. So when a PCR blocks the work in front of you:
 
 1. **Stop at the PCR.** Name it, and name what it blocks, in one line.
-2. **Hand it to the user** to run `$max:challenge-pcr`. You do not run it for them, and you do not run it as part of the current session.
-3. **Assume it stands.** Until that session returns a verdict, the convention binds. Never write code, or an interface, on the assumption that the challenge will succeed.
+2. **Load `amend-pcr` in this session.** It ranks the ripple, gives a verdict, and asks the user. Only the user approves an amendment, and `amend-pcr` writes nothing before they do.
+3. **Assume it stands.** Until the user approves an amendment, the convention binds. Never write code, or an interface, on the assumption that the amendment will pass.

@@ -67,7 +67,7 @@ These stop the loop and go to the user, because none is yours to fix:
 - **A record blocks the implementation.** The contract was architected against `docs/pcr/` and `docs/adr/`, so a PCR or ADR that the only workable implementation would breach means the contract has a gap. Name the record and what it blocks. Do not code around it, and never edit one; this skill writes no records.
 - **You are weighing a decision.** A module boundary, a dependency direction, a data owner, anything a future reader could undo by accident. Those were the architect's to settle, and one left open is a contract gap. Name it. Do not settle it in code.
 
-On any exit, describe the failure in plain English: which test, the evidence, and your best guess at the cause, stated as a guess. Then ask what should happen next and offer the real options: a hint from them, a contract amendment back through `$max:architect-ticket`, a `$max:challenge-pcr` session when a PCR is the block, or stopping here. Post the same description on the ticket PR with `gh pr comment <PR> --body-file <file>`, so the next session finds it, in this shape:
+On any exit, describe the failure in plain English: which test, the evidence, and your best guess at the cause, stated as a guess. Then ask what should happen next and offer the real options: a hint from them, a contract amendment back through `$max:architect-ticket`, loading `amend-pcr` when a PCR is the block, or stopping here. Post the same description on the ticket PR with `gh pr comment <PR> --body-file <file>`, so the next session finds it, in this shape:
 
 ```md
 Exit at pass <n>, <passing> of <total> acceptance tests passing in <acceptance file>
