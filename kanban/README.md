@@ -14,6 +14,7 @@ The ticket workflow. Each skill leaves an artifact the next one reads, and GitHu
 | `review-diff` | Reviews any branch against its ticket, fixes code smells and record breaches, and leaves a review note on the PR or the issue. For branches that skipped `refactor-ticket`. |
 | `pr-ticket` | Checks what the ticket's effort level asks of the branch, then rewrites its ticket PR and marks it ready. |
 | `execute-ticket` | Runs red, green, and refactor in one unattended session for a ticket labelled `effort:minor`, then opens a PR. |
+| `amend-pcr` | Loads when a convention in `docs/pcr/` blocks the work. Ranks the ripple, gives a verdict, and amends or retires the PCR only after you approve the listed changes. The only skill that edits `docs/pcr/`. Model-invoked. |
 
 Run `map-epic` or `new-ticket` first. The ticket's effort label then picks the route, per `new-ticket/ticket-shapes.md`:
 

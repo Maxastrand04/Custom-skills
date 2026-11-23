@@ -41,7 +41,7 @@ Only if it holds. Name one route and state the reason, so the user can override 
 
 | The surviving idea | Route |
 |---|---|
-| Is blocked by a convention recorded in `docs/pcr/` | `/challenge-pcr`, and nothing else happens until that session does |
+| Is blocked by a convention recorded in `docs/pcr/` | `amend-pcr`, loaded now, and nothing else happens until the user approves or rejects an amendment |
 | Is one change with one test suite and no architecture question | Implement inline, in this session, once the user says go |
 | Is one coherent behaviour, and no epic covers it | `/new-ticket` |
 | Is a goal that has to be sliced into several tickets | `/map-epic`, which files the epic first if none covers it |

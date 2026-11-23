@@ -59,7 +59,7 @@ No intentional finding means no amendment.
 
 Edit the code directly. Read every file in the review scope against three tiers, read per `../grill-docs/RECORD-FORMAT.md`:
 
-1. **PCRs in `docs/pcr/`.** A breach is a hard violation. Fix the code and cite `PCR-NNNN`. You never write, amend, or retire a PCR. When a PCR blocks a fix, leave the code, and put the item in Found, not fixed with ``run `/challenge-pcr` `` as the reason.
+1. **PCRs in `docs/pcr/`.** A breach is a hard violation. Fix the code and cite `PCR-NNNN`. You never write, amend, or retire a PCR outside `amend-pcr`. When a PCR blocks a fix, leave the code and load `amend-pcr`. If the user approves an amendment, make the fix under the new wording. If not, put the item in Found, not fixed with `PCR stands` as the reason.
 2. **ADRs in `docs/adr/`.** A breach is a hard violation too. Fix it and cite `ADR-NNNN`. Nothing pre-selects them, so take the whole set and judge which the changed files fall under. Read each one's **Decision** for what's required and its **Consequence** for what a breach looks like in a diff.
    - **When an ADR blocks a fix**, propose an amendment: show the user the rewritten Decision, Reason and Consequence, with your reason, and wait. On yes, amend it per the format file and make the fix. On no, the item goes in Found, not fixed.
    - **Write a new ADR when the diff introduces a shape neighbouring code will copy** and no record names it, such as a new layer, a new kind of module, or a dependency direction the first of its kind establishes. Run it through the ADR tests in the format file. Most reviews write none.

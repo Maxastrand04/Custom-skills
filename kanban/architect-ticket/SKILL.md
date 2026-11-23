@@ -65,7 +65,7 @@ ADR-0003 says: tokens never leave `auth/`.
 The ticket wants: the admin panel reads the token directly.
 ```
 
-- **A PCR is not yours to override.** The user either accepts a different interface or stops to run `/challenge-pcr` as its own session. Do not design against a convention you expect to fall.
+- **A PCR is not yours to override.** Load `amend-pcr` in this session, and the user either approves an amendment there or accepts a different interface. Do not design against a convention you expect to fall.
 - **An ADR is yours to argue.** Settle with the user whether the interface bends to the ADR or the ADR is amended. `grill-docs` writes an amendment when it settles. Until then the ADR binds.
 
 ### The stub loop

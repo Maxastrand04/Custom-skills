@@ -48,7 +48,7 @@ Suite: <green, 142 passed | none in repo, check each fix by hand>
 
 | File | Issue | Why |
 |---|---|---|
-| `src/tax.ts:60` | PCR-0002, no ORM imports | run `/challenge-pcr` |
+| `src/tax.ts:60` | PCR-0002, no ORM imports | PCR stands, amendment rejected |
 | `src/cart.ts:12` | feature envy (6.4) | breaks `test_cart_total` |
 
 Left untracked: `notes.txt`, `scratch.py`

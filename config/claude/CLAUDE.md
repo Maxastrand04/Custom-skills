@@ -12,7 +12,7 @@ Each rule applies only where its condition holds. Branch rules need git, ticket 
 - Before changing code, read every ADR in `docs/adr/` and every PCR in `docs/pcr/`. Both are binding.
 - Read `CONTEXT.md` if it exists and use its terms for domain concepts.
 - Never edit a PCR. Never write or amend an ADR. A decision worth recording goes to /grill-docs.
-- If a PCR blocks the work, name the PCR and what it blocks, hand the user /challenge-pcr, and treat the PCR as standing.
+- If a PCR blocks the work, name the PCR and what it blocks, load amend-pcr, and treat the PCR as standing until the user approves an amendment.
 
 ### Layout
 - Put a new file where a PCR says. With no PCR covering it, follow the repo's existing pattern, point the user at /grill-docs once per session, and ask before creating a new top-level directory.

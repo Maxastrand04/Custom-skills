@@ -27,16 +27,16 @@ class PackagingTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def build_challenge_pcr(self):
-        builder.sync(self.root, builder.build_files(["challenge-pcr"], builder.live_skills()), False)
+    def build_amend_pcr(self):
+        builder.sync(self.root, builder.build_files(["amend-pcr"], builder.live_skills()), False)
 
     def test_excluded_skill_can_supply_shared_files(self):
-        self.build_challenge_pcr()
-        self.assertTrue((self.root / "challenge-pcr/../grill-docs/RECORD-FORMAT.md").is_file())
+        self.build_amend_pcr()
+        self.assertTrue((self.root / "amend-pcr/../grill-docs/RECORD-FORMAT.md").is_file())
 
     def test_excluded_skill_supplying_shared_files_is_not_available(self):
-        self.build_challenge_pcr()
-        self.assertEqual(list(self.root.glob("*/SKILL.md")), [self.root / "challenge-pcr/SKILL.md"])
+        self.build_amend_pcr()
+        self.assertEqual(list(self.root.glob("*/SKILL.md")), [self.root / "amend-pcr/SKILL.md"])
 
     def test_codex_skill_drops_the_claude_invocation_key(self):
         files = builder.build_files(["brainstorming"], builder.live_skills())
@@ -131,8 +131,8 @@ class PackagingTests(unittest.TestCase):
 
     def test_installed_skill_reaches_shared_files(self):
         repo, target = self.installer()
-        self.install(repo, target, "challenge-pcr")
-        self.assertTrue((target / "challenge-pcr/../grill-docs/RECORD-FORMAT.md").is_file())
+        self.install(repo, target, "amend-pcr")
+        self.assertTrue((target / "amend-pcr/../grill-docs/RECORD-FORMAT.md").is_file())
 
     def test_reinstall_brings_source_edits_to_codex(self):
         repo, target = self.installer()
@@ -232,7 +232,7 @@ class PackagingTests(unittest.TestCase):
     def test_interactive_menu_links_a_picked_skill(self):
         target = self.menu_target()
         self.menu(target, "none\n1\n\ny\n")
-        self.assertTrue((target / "architect-ticket").is_symlink())
+        self.assertTrue((target / "amend-pcr").is_symlink())
 
     def test_interactive_menu_removes_a_stale_link_owned_by_this_repo(self):
         target = self.menu_target()
