@@ -7,7 +7,7 @@ description: Test whether a project convention record still stands, and amend or
 
 **A PCR stands until a challenge beats it.** You are not here to update a document, you are here to find out whether a project-wide convention someone chose still holds, and most of the time it does.
 
-This is the only way a PCR in `docs/pcr/` changes or retires, and it takes a whole session to do it. Read [`../architect-ticket/RECORD-FORMAT.md`](../architect-ticket/RECORD-FORMAT.md) before writing anything.
+This is the only way a PCR in `docs/pcr/` changes or retires, and it takes a whole session to do it. Read [`../grill-docs/RECORD-FORMAT.md`](../grill-docs/RECORD-FORMAT.md) before writing anything.
 
 **The burden is on the challenge, and it is heavy.** A PCR binds every file in the project, so moving one is a project adaption, not an edit: swapping a stack for a better fit, a comment convention that has proven unreadable, a naming rule the whole team trips on. "This is inconvenient", "the current code doesn't do this", and "I'd have chosen differently" are not arguments, they are the friction the PCR was written to create. Overturning one takes a case that the whole project gets better and that the ripple is worth paying. Anything else and the PCR stands.
 

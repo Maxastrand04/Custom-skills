@@ -13,7 +13,7 @@ Size is not a factor. A one-line refactor and a brand-new product run the same l
 
 ## 1. Grill to kill
 
-Run `$max:grilling` on the idea. That skill owns the interview mechanics.
+Invoke the `grill-docs` skill on the idea. That skill owns the interview mechanics, and writes any `CONTEXT.md` term or record the grill settles.
 
 Three things this grill does that a plain grill does not:
 
@@ -34,18 +34,7 @@ Binary. State it outright, in the user's face, before anything else.
 
 No hedged third outcome. If it half-holds, the half that holds is the idea and the rest is out of scope. Say so in the paragraph.
 
-## 3. Propose what to document
-
-The grill usually settles something worth keeping. Propose it, and never write silently:
-
-- A rule that constrains future work becomes a **new** ADR in `docs/adr/`, per [`../architect-ticket/RECORD-FORMAT.md`](../architect-ticket/RECORD-FORMAT.md), which you read at runtime. Existing records are not yours to touch; a PCR in the way goes to the route table below.
-- A term the grill pinned down or renamed becomes an entry in `CONTEXT.md`.
-
-Propose nothing when the grill settled nothing durable; a killed idea can still be worth an ADR recording why not.
-
-Write only on approval.
-
-## 4. Route
+## 3. Route
 
 Only if it holds. Name one route and state the reason, so the user can override it:
 
@@ -55,7 +44,7 @@ Only if it holds. Name one route and state the reason, so the user can override 
 | Is one change with one test suite and no architecture question | Implement inline, in this session, once the user says go |
 | Is one coherent behaviour, and no epic covers it | `$max:new-ticket` |
 | Is a goal that has to be sliced into several tickets | `$max:map-epic`, which files the epic first if none covers it |
-| Is a whole new product, or the repo has no `CONTEXT.md` yet | `$max:grill-docs` to seed `CONTEXT.md`, then `$max:map-epic` per epic |
+| Is a whole new product | `$max:map-epic`, once per epic |
 
 Route to the smallest thing that fits. "This is one file and one test, no ticket earns its keep here" is a complete justification.
 

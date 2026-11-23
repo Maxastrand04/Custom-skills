@@ -27,12 +27,12 @@ Third-party code
 The skills below are adapted from other MIT-licensed projects. Each is used
 under the MIT License text above, with the original copyright notice kept here.
 
-behaviour/grilling
+archive/grilling
   From mattpocock/skills, https://github.com/mattpocock/skills
   Copyright (c) 2026 Matt Pocock
 
 kanban/grill-docs
-  Adapted from grill-with-docs in mattpocock/skills, https://github.com/mattpocock/skills
+  Adapted from grill-with-docs and grilling in mattpocock/skills, https://github.com/mattpocock/skills
   Copyright (c) 2026 Matt Pocock
 
 behaviour/unslop

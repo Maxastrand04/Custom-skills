@@ -41,7 +41,7 @@ The answer picks the **grill agenda** below and the type on the published title,
 
 ## The grill, WHAT only
 
-You are a developer grilling a product owner about product requirements. Invoke the `grilling` skill for the interview mechanics, and work the agenda one topic at a time.
+You are a developer grilling a product owner about product requirements. Invoke the `grill-docs` skill for the interview mechanics, and work the agenda one topic at a time.
 
 **Feat agenda:**
 
@@ -80,7 +80,7 @@ You are a developer grilling a product owner about product requirements. Invoke 
 - Rollout order, migration strategy, feature flags
 - Library, dependency, or tooling choices
 
-**Read whatever you need during the grill.** `grilling`'s explore-before-asking rule applies in full here, **source files included**. The WHAT/HOW line governs what lands in the ticket, not what you're allowed to read. If exploration turns up a HOW decision the ticket seems to need, that's a signal for `architect-ticket`, not a section to add here.
+**Read whatever you need during the grill.** `grill-docs`'s rule that finding facts is your job applies in full here, **source files included**. The WHAT/HOW line governs what lands in the ticket, not what you're allowed to read. If exploration turns up a HOW decision the ticket seems to need, that's a signal for `architect-ticket`, not a section to add here.
 
 ---
 

@@ -43,12 +43,12 @@ Non-interactive (SKILL arguments given, or no terminal):
   Add-only. Links the named skills, or every live skill when none are named.
   Never removes anything. Stale links are reported, not removed.
 
-Skills are bare names ('grilling') or category-qualified ('behaviour/grilling').
+Skills are bare names ('unslop') or category-qualified ('behaviour/unslop').
 
 Examples:
   ./install.sh                             # menu (or install-all without a tty)
   ./install.sh --agy                       # menu for Antigravity only
-  ./install.sh grilling unslop             # add two skills to Claude Code
+  ./install.sh grill-docs unslop           # add two skills to Claude Code
   ./install.sh --claude kanban/map-epic    # add one skill to Claude Code
   ./install.sh --codex                     # menu for Codex only
 EOF

@@ -12,7 +12,7 @@ Each run does one of three jobs:
 - **Charting** turns a skeleton's goal into a GitHub-native **map**. The epic issue holds the destination and a running decision log, and its **tickets**, native GitHub sub-issues typed `task`, `research`, or `prototype`, are wired together with native blocking. Anything not yet specifiable is written down as fog.
 - **Graduating** revisits a charted epic once tickets have closed, and turns fog that is now specifiable into tickets.
 
-This skill owns every epic and every epic-linked ticket end to end. `new-ticket` is only for standalone tickets with no epic. Invoke the `grilling` skill for interview mechanics throughout.
+This skill owns every epic and every epic-linked ticket end to end. `new-ticket` is only for standalone tickets with no epic. Invoke the `grill-docs` skill for interview mechanics throughout.
 
 Read these at runtime. Do not assume their contents from this document:
 
@@ -62,9 +62,7 @@ gh api repos/{owner}/{repo}/issues/<epic-issue-number>/sub_issues --jq 'length'
 
 ### Step 4: Grill the epic goal
 
-If no `CONTEXT.md` exists at the project root, say once that `/grill-docs` can seed one, then carry on. It is not a precondition.
-
-Read `CONTEXT.md` if it exists, and the Destination line of every open epic, so the new goal neither overlaps one nor redefines a term. Grill the user, via the `grilling` skill, until the **epic goal** is one sentence stating the observable outcome when the epic is done.
+Read `CONTEXT.md` if it exists, and the Destination line of every open epic, so the new goal neither overlaps one nor redefines a term. Grill the user, via the `grill-docs` skill, until the **epic goal** is one sentence stating the observable outcome when the epic is done.
 
 The epic must be a **vertical slice**, delivering working, demonstrable functionality end to end rather than one layer. "Backend for CSV import" is a layer; "users can import their data from a CSV file" is a slice. If the goal is really one ticket's worth, say so, point at `/new-ticket`, and stop unless the user still wants an epic.
 
@@ -97,7 +95,7 @@ Read the epic issue body with `gh issue view <epic-issue-number> --json body`. E
 
 ### Step 7: Breadth-first grill
 
-Grill the user, via the `grilling` skill, across the **whole epic scope at once**. Fan out, and don't go deep on any one item yet.
+Grill the user, via the `grill-docs` skill, across the **whole epic scope at once**. Fan out, and don't go deep on any one item yet.
 
 For each item that surfaces, classify it:
 
@@ -170,7 +168,7 @@ Epic tickets take the `epic:` label scope.
    ```
    - [<ticket title>](<url>): <one-line gist of the answer or outcome>
    ```
-3. With these resolutions in hand, grill the user, via the `grilling` skill, on this question: **"Given this, what from Not yet specified is now specifiable?"** Fan out across the fog section only, not the whole epic again.
+3. With these resolutions in hand, grill the user, via the `grill-docs` skill, on this question: **"Given this, what from Not yet specified is now specifiable?"** Fan out across the fog section only, not the whole epic again.
 4. Whatever graduates goes through Step 10 unchanged, typing, publish flow, `(N.M)` ids, and wiring. Remove graduated lines from **Not yet specified**; anything still too vague stays in the fog.
 5. Update the epic issue body with `gh issue edit <epic-issue-number> --body "..."`, carrying the refreshed Decisions so far and Not yet specified sections.
 

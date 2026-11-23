@@ -10,7 +10,7 @@ The first of the two sessions that make up the refactor leg of **red-green-refac
 
 **Refactor** means the behaviour is already right and only the shape changes. Before any edit, ask whether a caller would see a difference. If one would, it is not a refactor. A caller sees more than the signature. With enough callers, someone depends on every observable behaviour, such as the order of a returned list, an error message's text, a default value, or timing, so changing any of those is a behaviour change even when no signature moves. Steps 1 to 4 make the branch safe to refactor, step 5 is the refactor, and the rest records it. Wherever a step names no stop for the user, decide and act.
 
-`code-standards.md`, `../unit-test-ticket/test-standards.md`, `../architect-ticket/RECORD-FORMAT.md` and `../pr-ticket/ticket-pr.md` resolve from this skill's directory. Never read a same-named file from the repo.
+`code-standards.md`, `../unit-test-ticket/test-standards.md`, `../grill-docs/RECORD-FORMAT.md` and `../pr-ticket/ticket-pr.md` resolve from this skill's directory. Never read a same-named file from the repo.
 
 Word every question and report per the `gloss-me` skill.
 
@@ -82,7 +82,7 @@ With the answers, apply every test change, break check each rewrite per `test-st
 
 ## 5. Refactor
 
-Three tiers, read per `../architect-ticket/RECORD-FORMAT.md`:
+Three tiers, read per `../grill-docs/RECORD-FORMAT.md`:
 
 1. **PCRs in `docs/pcr/`** hold the project conventions. A breach is a **hard violation**. Fix the code, cite `PCR-NNNN` in the report, and never touch the file. A PCR you disagree with is not a finding. It binds until a `/challenge-pcr` session says otherwise, so comply, say so in one line, and point the user at `/challenge-pcr` as separate work.
 2. **ADRs in `docs/adr/`** hold the design decisions. A breach is a hard violation too. Fix it and cite `ADR-NNNN`. Nothing pre-selects them, so take the whole set and judge yourself which the changed files fall under. Read each one's **Decision** for what's required and its **Consequence** for what a breach looks like in a diff.

@@ -15,12 +15,12 @@ Use `install.sh` for your personal selection. It offers every live skill, includ
 Pick skills in the menu, review the plan, and apply it. To add specific skills without the menu:
 
 ```bash
-./install.sh --codex grilling unslop gloss-me
+./install.sh --codex grill-docs unslop gloss-me
 ```
 
 Codex reads the links in `~/.agents/skills/`. Those links point to Codex copies generated inside this clone. The copies use Codex's invocation settings and `$skill-name` mentions, and put the skill folders beside one another so shared-file links resolve. Source files remain in their category folders. Python 3.12 or newer is required.
 
-After editing a source skill or pulling updates, run `./install.sh --codex` again to refresh the copies. Codex detects changes automatically. Restart it if a skill does not appear. Use `/skills` or mention a skill as `$grilling` in Codex CLI and the editor extension. [Official skill documentation](https://learn.chatgpt.com/docs/build-skills)
+After editing a source skill or pulling updates, run `./install.sh --codex` again to refresh the copies. Codex detects changes automatically. Restart it if a skill does not appear. Use `/skills` or mention a skill as `$grill-docs` in Codex CLI and the editor extension. [Official skill documentation](https://learn.chatgpt.com/docs/build-skills)
 
 Without a target flag, the script installs to Claude Code. Use `--codex` to select Codex, or combine target flags. `CUSTOM_SKILLS_CODEX_DIR` can override the Codex destination.
 
@@ -37,7 +37,7 @@ codex plugin add max@custom-skills-codex
 
 For local testing before pushing, replace the first command with `codex plugin marketplace add /absolute/path/to/Custom-skills`.
 
-Marketplace skills have the `max:` prefix. Mention `$max:grilling`, for example, or select the skill in Codex's skill picker.
+Marketplace skills have the `max:` prefix. Mention `$max:grill-docs`, for example, or select the skill in Codex's skill picker.
 
 Install one Codex route per machine to avoid duplicate skills. Marketplace installs are cached copies. After a release, run `codex plugin marketplace upgrade custom-skills-codex`, then `codex plugin add max@custom-skills-codex` to refresh the installed package. [Official plugin documentation](https://developers.openai.com/plugins/build/plugins)
 
@@ -71,7 +71,7 @@ claude plugin marketplace add Maxastrand04/Custom-skills#release
 claude plugin install max@custom-skills
 ```
 
-Restart Claude Code or run `/reload-plugins`. Every skill carries the `max:` prefix, so you type `/max:grilling` or `/max:map-epic`. The tutorial writes them without the prefix.
+Restart Claude Code or run `/reload-plugins`. Every skill carries the `max:` prefix, so you type `/max:grill-docs` or `/max:map-epic`. The tutorial writes them without the prefix.
 
 You get the kanban chain, the developer tools, and the behaviour skills, 19 in all. Run `/plugin marketplace update custom-skills` to pick up a new release, and `/plugin uninstall max@custom-skills` to remove it.
 
@@ -140,7 +140,7 @@ Before changing anything it prints a plan and asks:
 
 ```
 Plan for Claude Code (~/.claude/skills):
-  + grilling
+  + grill-docs
   + map-epic
   − old-skill  (stale: archived)
 Apply? [y/N]
@@ -148,18 +148,18 @@ Apply? [y/N]
 
 Unticked skills get unlinked. The script only ever removes links that point into this repo, so skills from anywhere else are safe.
 
-**4. Restart the agent.** In Claude Code, check with `/skills`. In Antigravity, type a skill name as a slash command, such as `/grilling`.
+**4. Restart the agent.** In Claude Code, check with `/skills`. In Antigravity, type a skill name as a slash command, such as `/grill-docs`.
 
 ### Without the menu
 
 Skill names on the command line skip the menu and only add, never remove. `--claude`, `--agy`, and `--codex` pick the agent. Without a flag it installs to Claude Code only.
 
 ```bash
-./install.sh grilling unslop
+./install.sh grill-docs unslop
 ```
 
 ```bash
-./install.sh --agy grilling
+./install.sh --agy grill-docs
 ```
 
 ### Making it your own

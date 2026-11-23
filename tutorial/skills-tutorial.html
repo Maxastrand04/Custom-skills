@@ -547,8 +547,8 @@
 <table class="pick">
   <tr><th>Where</th><th>Holds</th><th>Written by</th><th>Read by</th></tr>
   <tr><td><code>CONTEXT.md</code></td><td>Domain terms and the words to avoid</td><td><code>/grill-docs</code>, whenever a grill settles a term. refactor and execute update terms</td><td>map-epic, architect, refactor, execute, brainstorming</td></tr>
-  <tr><td><code>docs/adr/</code></td><td>One decision per file. A module's shape, a dependency direction, an interface that beat a real alternative</td><td>architect and grill-docs, one per design argument. refactor, when new code sets a pattern others will copy</td><td>All four code stations</td></tr>
-  <tr><td><code>docs/pcr/</code></td><td>One convention per file. Stack, allowed libraries, naming, test runner</td><td>architect or grill-docs adds one when its session settles something project-wide. Only <code>/challenge-pcr</code> changes one</td><td>All four code stations</td></tr>
+  <tr><td><code>docs/adr/</code></td><td>One decision per file. A module's shape, a dependency direction, an interface that beat a real alternative</td><td>grill-docs, one per design argument, including the ones architect's interview settles. refactor, when new code sets a pattern others will copy</td><td>All four code stations</td></tr>
+  <tr><td><code>docs/pcr/</code></td><td>One convention per file. Stack, allowed libraries, naming, test runner</td><td>grill-docs adds one when a grill settles something project-wide. Only <code>/challenge-pcr</code> changes one</td><td>All four code stations</td></tr>
   <tr><td><code>README.md</code></td><td>How to run and configure</td><td>You. refactor and execute, when a run step changes</td><td>architect, refactor, execute</td></tr>
   <tr><td>Acceptance file</td><td>This ticket's tests</td><td>architect</td><td>implement, refactor. unit-test folds it into module tests and deletes it</td></tr>
   <tr><td>GitHub issues</td><td>Epics, tickets, decisions so far, fog</td><td>map-epic, new-ticket</td><td>Every station</td></tr>
@@ -659,7 +659,7 @@
   <text x="20" y="296" fill="#8c8c8c" font-size="12" letter-spacing="1">USE ANY TIME</text>
   <a href="#side">
     <text x="20" y="324" fill="#cfcfcf" font-size="13">brainstorming</text>
-    <text x="140" y="324" fill="#cfcfcf" font-size="13">grilling</text>
+    <text x="140" y="324" fill="#cfcfcf" font-size="13">grill-docs</text>
     <text x="230" y="324" fill="#cfcfcf" font-size="13">pro-con</text>
     <text x="320" y="324" fill="#cfcfcf" font-size="13">challenge-pcr</text>
   </a>
@@ -833,14 +833,16 @@
 
 <section class="card" id="grill-docs">
   <header><h3>grill-docs</h3><span class="tag">beside the board</span></header>
-  <p>For when you don't want the whole chain but still want the docs to look the way the chain leaves them. Bring a plan, an idea, or a ticket. What you do after the interview is up to you.</p>
+  <p>The interview behind every grill in this repo. Start it yourself with a plan, an idea, or a ticket, or say "grill me". <code>new-ticket</code>, <code>map-epic</code>, <code>architect-ticket</code> and <code>brainstorming</code> borrow it for their interviews, so the docs get updated whichever skill asked the questions. Claude maps your plan as a tree of decisions and asks every question it can answer now in one numbered round, each with its recommended answer. It looks up facts in the code itself instead of asking you.</p>
+  <p class="muted">Adapted from <code>grilling</code> and <code>grill-with-docs</code> by Matt Pocock, in <a href="https://github.com/mattpocock/skills">mattpocock/skills</a>.</p>
   <dl>
     <dt>It does</dt><dd>Reads <code>CONTEXT.md</code>, <code>docs/adr/</code>, <code>docs/pcr/</code> and the code around your topic, then interviews you. It points out when you use a word differently from <code>CONTEXT.md</code> or when the plan breaks a record. As each decision settles it adds the term to <code>CONTEXT.md</code> and writes or amends an ADR, or writes a new PCR. It never changes an existing PCR. That still takes <code>/challenge-pcr</code>.</dd>
-    <dt>Stops for you</dt><dd>After "What I found", and at every interview round.</dd>
-    <dt>Leaves behind</dt><dd>Updated <code>CONTEXT.md</code> and records, uncommitted, plus a list of what changed.</dd>
+    <dt>Stops for you</dt><dd>At every interview round.</dd>
+    <dt>Leaves behind</dt><dd>Updated <code>CONTEXT.md</code> and records, uncommitted. Started by you, it ends with a list of what changed. Borrowed by another skill, it hands back to that skill, which commits the docs with its own work.</dd>
   </dl>
   <pre>/grill-docs I want to add refunds to the order flow
-/grill-docs 42</pre>
+/grill-docs 42
+grill me on whether we need a cache at all</pre>
 </section>
 
 <section class="card" id="architect-ticket">
@@ -946,14 +948,6 @@ rename refresh_session to renew_session, keep the rest</pre>
   <header><h3>brainstorming</h3></header>
   <p>For a raw idea you aren't sure about. Claude tries hard to kill it, reshapes it every time it breaks, and ends with "killed" or "holds" plus which skill should take it next.</p>
   <pre>/brainstorming cache search results per user so repeat searches are faster</pre>
-</section>
-
-<section class="card">
-  <header><h3>grilling</h3></header>
-  <p>The interview engine the other skills use. On its own it stress-tests any plan. It's also the one skill here that starts from plain words, no slash command needed. More on the <a href="agent-configuration.html#grilling">agent configuration page</a>.</p>
-  <p class="muted">Original by Matt Pocock, from <a href="https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md">mattpocock/skills</a>.</p>
-  <pre>/grilling my plan for splitting the API into two services
-grill me on whether we should drop the cache</pre>
 </section>
 
 <section class="card">

@@ -1,5 +1,4 @@
 [
-  "architect-ticket/RECORD-FORMAT.md",
   "architect-ticket/SKILL.md",
   "architect-ticket/agents/openai.yaml",
   "brainstorming/SKILL.md",
@@ -15,10 +14,8 @@
   "gloss-me/SKILL.md",
   "grill-docs/CONTEXT-FORMAT.md",
   "grill-docs/LICENSE",
+  "grill-docs/RECORD-FORMAT.md",
   "grill-docs/SKILL.md",
-  "grill-docs/agents/openai.yaml",
-  "grilling/LICENSE",
-  "grilling/SKILL.md",
   "implement-ticket/SKILL.md",
   "implement-ticket/agents/openai.yaml",
   "map-epic/SKILL.md",
