@@ -232,7 +232,7 @@ class PackagingTests(unittest.TestCase):
     def test_interactive_menu_links_a_picked_skill(self):
         target = self.menu_target()
         self.menu(target, "none\n1\n\ny\n")
-        self.assertTrue((target / "architect-ticket").is_symlink())
+        self.assertTrue((target / "amend-pcr").is_symlink())
 
     def test_interactive_menu_removes_a_stale_link_owned_by_this_repo(self):
         target = self.menu_target()
