@@ -84,7 +84,7 @@ With the answers, apply every test change, break check each rewrite per `test-st
 
 Three tiers, read per `../grill-docs/RECORD-FORMAT.md`:
 
-1. **PCRs in `docs/pcr/`** hold the project conventions. A breach is a **hard violation**. Fix the code, cite `PCR-NNNN` in the report, and never touch the file. A PCR you disagree with is not a finding. It binds until a `/challenge-pcr` session says otherwise, so comply, say so in one line, and point the user at `/challenge-pcr` as separate work.
+1. **PCRs in `docs/pcr/`** hold the project conventions. A breach is a **hard violation**. Fix the code, cite `PCR-NNNN` in the report, and never touch the file. A PCR you disagree with is not a finding. It binds until the user approves an amendment through `amend-pcr`, so comply, say so in one line, and load `amend-pcr` only if the user wants to take it on now.
 2. **ADRs in `docs/adr/`** hold the design decisions. A breach is a hard violation too. Fix it and cite `ADR-NNNN`. Nothing pre-selects them, so take the whole set and judge yourself which the changed files fall under. Read each one's **Decision** for what's required and its **Consequence** for what a breach looks like in a diff.
    - **Amend an ADR only when it contradicts a signature already settled on this branch.** The architect settled that signature with the user, so the record is what moves. Amend it per the format file. Any other disagreement with an ADR is fixed in the code and reported, not amended.
    - **Write a new ADR when the diff introduces a shape neighbouring code will copy** and no record names it: a new layer, a new kind of module, a dependency direction the first of its kind establishes. Run it through **What earns an ADR** in the format file. Most refactors write none.

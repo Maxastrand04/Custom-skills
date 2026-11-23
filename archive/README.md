@@ -17,5 +17,6 @@ Skills I've stopped using. Kept because the thinking in them is still worth raid
 | `directory-tree` | Standalone tree renderer. `project-planning` used to invoke it to fill a Directory tree section of `project_plan.md`; both the plan file and that section are gone. |
 | `project-planning` | Ran once per project: a grill over problem, user, success criteria, scope and domain language, then `CONTEXT.md`, seeded PCRs, and a batch of `(N) [epic]` skeleton issues. I ran it too rarely to keep, and having to run it before I could file one new epic was friction. Filing moved into `map-epic`, which files one epic at a time from a goal. `CONTEXT.md` seeding goes to `grill-with-docs`. PCRs now come only from `architect-ticket`, as each ticket settles a convention. |
 | `grilling` | The interview mechanics every grill borrowed: rounds, a frontier, a recommended answer per question. Merged into `grill-docs`, which Claude can now invoke on its own, so every grill also records the terms and decisions it settles. |
+| `challenge-pcr` | Judged in its own user-invoked session whether a PCR should change. Replaced by `amend-pcr`, which the blocked session loads on the spot. It ranks the ripple and writes nothing until the user approves the listed changes. |
 
 To bring one back: move it into a live category and re-run `./install.sh <name>`.

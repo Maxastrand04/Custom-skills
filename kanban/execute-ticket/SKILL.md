@@ -88,7 +88,7 @@ Once every test you wrote is green, run the **neighbouring tests**, meaning ever
 
 ### Loop exits
 
-Each of these is a halt, raised before step 6. Name the test, the evidence, and your best guess at the cause, stated as a guess. Then offer the options: a hint from the user, a spec amendment per `../pr-ticket/ticket-pr.md` when the ticket itself is wrong, relabelling to the effort level the failure points at, a `/challenge-pcr` session when a PCR is the block, or stopping here.
+Each of these is a halt, raised before step 6. Name the test, the evidence, and your best guess at the cause, stated as a guess. Then offer the options: a hint from the user, a spec amendment per `../pr-ticket/ticket-pr.md` when the ticket itself is wrong, relabelling to the effort level the failure points at, loading `amend-pcr` when a PCR is the block, or stopping here.
 
 - **No progress.** The same test fails with the same evidence two passes running.
 - **The ticket contradicts itself.** Two behaviours can't both be true.

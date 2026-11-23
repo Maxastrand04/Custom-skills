@@ -45,7 +45,7 @@ The third is there for sessions no skill started. A quick question in some repo 
 
 The repo section is the part that made the file grow. The kanban skills already know to read the ADRs and PCRs, work on a branch, and keep commits in Conventional Commits. A session with no skill loaded knew none of it. Nothing stopped a quick fix from landing straight on `main`, a new file from going wherever, or an ADR from getting amended because the change seemed to call for it. Those are the sessions I watch least, so they are the ones where a wrong move costs the most.
 
-So the section states only what an ordinary session may and may not do. It reads the records and treats them as binding, never edits a PCR, never writes an ADR, and hands anything bigger to `/grill-docs`, `/challenge-pcr` or `/new-ticket`. It is not a copy of the kanban skills. Every rule is conditional, so a question in a repo with no git, no remote and no records triggers none of it. A PCR or the project's own instruction file beats it on conventions, and an active skill beats it on what that skill says it may do.
+So the section states only what an ordinary session may and may not do. It reads the records and treats them as binding, never edits a PCR, never writes an ADR, and hands anything bigger to `/grill-docs`, `amend-pcr` or `/new-ticket`. It is not a copy of the kanban skills. Every rule is conditional, so a question in a repo with no git, no remote and no records triggers none of it. A PCR or the project's own instruction file beats it on conventions, and an active skill beats it on what that skill says it may do.
 
 The same section sits word for word in `agy/AGENTS.md`, so both agents follow one set of repo rules.
 
