@@ -1,11 +1,11 @@
 ---
 name: new-ticket
-description: Beside the board, for standalone work no epic covers. Grills a ticket down to WHAT, never HOW, sets its effort level, publishes it as a GitHub issue, and splits it into sub-issues if it is too big. For epic-linked work, use map-epic.
+description: For standalone work no epic covers. Grills a ticket down to WHAT, never HOW, sets its effort level, publishes it as a GitHub issue, and splits it into sub-issues if it is too big. For epic-linked work, use map-epic.
 ---
 
 # new-ticket
 
-Grill the user into a single, well-scoped GitHub ticket covering **WHAT** changes, meaning the pieces of the solution, how control flows between them, and scope, and never **HOW**, meaning names, files, signatures, and tests. Publish via `gh`. Optionally split into vertical-slice sub-issues. Give every task ticket an effort level, which decides how much of the user the ticket needs and which route solves it.
+Grill the user into a single, well-scoped GitHub ticket covering **WHAT** changes, meaning the pieces of the solution, how control flows between them, and scope, and never **HOW**, meaning names, files, signatures, and tests. Publish via `gh`. Optionally split into vertical-slice sub-issues. Give every task ticket an effort level, which says how much of the user the ticket needs.
 
 The published body is deliberately thin. The grill is not. Everything the grill surfaces must land as a **Spec** line, an Out-of-scope line, or be consciously dropped.
 
@@ -70,9 +70,9 @@ You are a developer grilling a product owner about product requirements. Invoke 
 
 **The Spec is the user's picture of the solution.** They read it and check it mirrors how they expect the goal to be reached. Write it like pseudocode: concrete enough to trace through the code, short enough to read at a glance.
 
-**Describe pieces, never name them.** "A session check runs before each page load" and "Expired sessions send the user back to login" belong here. "`refresh_token` raises `AuthError` on an expired token" does not, however true it turns out to be. If you catch yourself reaching for a symbol name to say it precisely, the precision belongs to `architect-ticket`.
+**Describe pieces, never name them.** "A session check runs before each page load" and "Expired sessions send the user back to login" belong here. "`refresh_token` raises `AuthError` on an expired token" does not, however true it turns out to be. If you catch yourself reaching for a symbol name to say it precisely, that precision belongs to the implementation session, not this one.
 
-**Never settled in this ticket.** These are HOW topics, and they defer to `architect-ticket`:
+**Never settled in this ticket.** These are HOW topics. Implementing the code is out of scope for this session, so they wait for whoever implements the ticket:
 
 - File paths, module names, function or class names, function signatures
 - Schema design, database tables, API contract shapes
@@ -80,7 +80,7 @@ You are a developer grilling a product owner about product requirements. Invoke 
 - Rollout order, migration strategy, feature flags
 - Library, dependency, or tooling choices
 
-**Read whatever you need during the grill.** `grill-docs`'s rule that finding facts is your job applies in full here, **source files included**. The WHAT/HOW line governs what lands in the ticket, not what you're allowed to read. If exploration turns up a HOW decision the ticket seems to need, that's a signal for `architect-ticket`, not a section to add here.
+**Read whatever you need during the grill.** `grill-docs`'s rule that finding facts is your job applies in full here, **source files included**. The WHAT/HOW line governs what lands in the ticket, not what you're allowed to read. If exploration turns up a HOW decision the ticket seems to need, leave it for the implementation session rather than adding a section here.
 
 ---
 
@@ -109,13 +109,3 @@ For a split, publish **parent first**, so sub-issues have something to attach to
 3. Re-run the two-tier coverage check on the approved list.
 4. Publish each sub-issue in dependency order, one full publish loop each, wiring it to the parent as it lands.
 
----
-
-## Handoff
-
-Close by naming the next step for each published task ticket, by its effort level:
-
-- **`minor`.** `$max:execute-ticket <N>`.
-- **`trivial`.** Open an ordinary session with the ticket, let the agent make the change, and check what no test reaches before merging.
-- **`medium`.** `$max:architect-ticket <N>`, then `/kanban-ci:launch`.
-- **`major`.** `$max:architect-ticket <N>`, then `$max:implement-ticket` and `$max:refactor-ticket`.
