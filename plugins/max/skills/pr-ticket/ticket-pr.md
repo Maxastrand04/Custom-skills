@@ -1,10 +1,10 @@
 # Ticket PR
 
-Shared contract. Every ticket branch has one **ticket PR**, a draft pull request opened when the branch is created and kept through review. The ticket holds the spec. The ticket PR holds everything that happens to the branch after that: progress, review notes, findings, handoffs. `pr-ticket`, or `execute-ticket` on its own route, rewrites its description and marks it ready at the end.
+Shared contract. Every ticket branch has one **ticket PR**, a draft pull request opened when the branch is created and kept through review. The ticket holds the spec. The ticket PR holds everything that happens to the branch after that: progress, review notes, findings, handoffs. `pr-ticket` rewrites its description and marks it ready at the end.
 
 ## Open or reuse it
 
-Every station runs this once the branch is checked out and before it changes anything else. A station that creates the branch runs it straight after `git checkout -b`.
+Every skill that works on a ticket branch runs this once the branch is checked out and before it changes anything else. A skill that creates the branch runs it straight after `git checkout -b`.
 
 ```
 gh pr list --head <branch> --state all --json number,state,url
@@ -26,7 +26,7 @@ gh pr list --head <branch> --state all --json number,state,url
 Closes #<N>
 ```
 
-If any of these commands fails, halt with its error and change nothing more. No station develops on a branch without a ticket PR.
+If any of these commands fails, halt with its error and change nothing more. Nothing develops on a branch without a ticket PR.
 
 **Completion criterion:** the PR number of one open ticket PR, and the issue carries a `Ticket PR:` comment linking it.
 
@@ -38,7 +38,7 @@ Branches started before this contract keep their earlier notes on the issue. Whe
 
 ## Current Spec
 
-The ticket's Spec, plus every amendment note on the issue, applied in the order they were posted. A note is any comment whose first line is a heading reading `Spec amendment`, at any level. Notes in older looks count the same as notes in the current look. Read the Spec this way wherever a station says "the ticket", never the body alone.
+The ticket's Spec, plus every amendment note on the issue, applied in the order they were posted. A note is any comment whose first line is a heading reading `Spec amendment`, at any level. Notes in older looks count the same as notes in the current look. Read the Spec this way wherever a skill says "the ticket", never the body alone.
 
 ## Amendments
 
