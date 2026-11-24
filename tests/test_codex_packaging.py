@@ -42,6 +42,10 @@ class PackagingTests(unittest.TestCase):
         files = builder.build_files(["brainstorming"], builder.live_skills())
         self.assertNotIn(b"disable-model-invocation:", files["brainstorming/SKILL.md"])
 
+    def test_codex_skill_drops_the_claude_subagent_keys(self):
+        files = builder.build_files(["pr-ticket"], builder.live_skills())
+        self.assertNotRegex(files["pr-ticket/SKILL.md"], rb"(?m)^(context|agent|model):")
+
     def test_skill_hidden_from_the_model_stays_hidden_on_codex(self):
         files = builder.build_files(["brainstorming"], builder.live_skills())
         self.assertIn(b"allow_implicit_invocation: false", files["brainstorming/agents/openai.yaml"])

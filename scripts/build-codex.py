@@ -34,7 +34,7 @@ def live_skills():
 def convert(text, names, skill=False, prefix=""):
     if skill:
         _, settings, body = text.split("---", 2)
-        settings = re.sub(r"^disable-model-invocation:.*\n", "", settings, flags=re.M)
+        settings = re.sub(r"^(disable-model-invocation|context|agent|model):.*\n", "", settings, flags=re.M)
         text = "---" + settings + "---" + body
     for name in sorted(names, key=len, reverse=True):
         text = re.sub(rf"(?<![\w./])/{re.escape(name)}(?![\w/-])", f"${prefix}{name}", text)

@@ -1,6 +1,6 @@
 ---
 name: execute-ticket
-description: Executes an effort:minor ticket unattended, red-green-refactor in one session, and opens a PR for review. Takes the ticket reference as its argument.
+description: Executes an effort:minor ticket unattended, red-green-refactor in one session, and hands the branch to pr-ticket for review. Takes the ticket reference as its argument.
 disable-model-invocation: true
 ---
 
@@ -112,49 +112,18 @@ Update `CONTEXT.md` if the branch shifted a domain term and the file exists, and
 
 **Completion criterion:** every changed non-test file read against `docs/pcr/`, `docs/adr/`, and the baseline, each finding fixed, affected tests green, one commit.
 
-## 6. Push and mark the PR ready
+## 6. Hand off to pr-ticket
 
-Rewrite the ticket PR's description from scratch and mark it ready for review:
-
-```
-git push -u origin <branch>
-gh pr edit <PR> --title "<PR title>" --body-file <file>
-gh pr ready <PR>
-```
-
-PR body, this shape:
-
-```
-> *This was implemented unattended by AI with execute-ticket. Review the diff before merging.*
-
-Closes #<N>
-
-## Summary
-...
-
-## Evidence
-...
-
-## Merge danger
-...
-
-## For the reviewer
-...
-```
-
-Write the title, Summary, Evidence and Merge danger per `../pr-ticket/pr-shape.md`. List every amendment note under `For the reviewer`, one line each, linking the note, in the green group per the same file. Run the squash merge check from the same file for the report. Check the body against `unslop`. Write it to a temp file outside the repo and pass it with `--body-file`.
+`git push -u origin <branch>`, then invoke the `pr-ticket` skill with the issue number as its argument. It writes the PR body from the branch, marks the PR ready or leaves it a draft, and returns its report. It reads your `Test #<N>:` commit as the red commit and the amendment notes from the comments, so post nothing extra for it. If it halts, pass the halt on word for word and stop.
 
 Do not close the issue. `Closes #<N>` closes it on merge, and merging is the review.
 
 ## 7. Report
 
-Close with these lines and nothing after them. When the squash merge check fails, the Merge line says what it found.
+Close with these lines, then every line of `pr-ticket`'s report from `Title` on, and nothing after them.
 
 ```
 Branch    42-fix-expired-session
 Tests     3 added green, 5 neighbouring green
 Commits   5
-Title     fix: Expire sessions after idle timeout
-PR        https://github.com/owner/repo/pull/57
-Merge     squash with PR title
 ```

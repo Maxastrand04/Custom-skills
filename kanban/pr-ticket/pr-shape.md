@@ -1,6 +1,6 @@
 # PR shape
 
-Shared contract. The title, the three sections of a PR body, and the layout of `For the reviewer`, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` and `execute-ticket` both write them. The header lines and which items go in `For the reviewer` come from the station's own `SKILL.md`, so they aren't here.
+Shared contract. The title, the three sections of a PR body, and the layout of `For the reviewer`, for a reviewer who hasn't read the ticket or the commits. `pr-ticket` writes them, and other skills may borrow them. The header line and which items go in `For the reviewer` come from the writing skill's own `SKILL.md`, so they aren't here.
 
 ## Title
 
@@ -31,7 +31,7 @@ The prefix only reaches main if the repo squash-merges with the PR title as the 
 gh api repos/{owner}/{repo} --jq '[.allow_merge_commit, .allow_rebase_merge, .squash_merge_commit_title]'
 ```
 
-Anything but `[false,false,"PR_TITLE"]` lets a merge reach main without the prefix. Say so in the station's report, and never change the repo settings yourself.
+Anything but `[false,false,"PR_TITLE"]` lets a merge reach main without the prefix. Say so in the report, and never change the repo settings yourself.
 
 ## Body
 
@@ -82,7 +82,7 @@ Summary and Door show open, because a reviewer needs both before the diff. Door'
 
 An empty Blast radius or Untested behaviour section is the one line `none` with no fold. With no suite in the repo, Evidence's `none, no suite in repo` line shows open with no fold.
 
-Skip preambles and keep prose short. Use the project's terms as `CONTEXT.md` defines them, when the file exists. A reviewer reads the body cold, so never coin a term the code or `CONTEXT.md` doesn't use. Check every line against `unslop`.
+Skip preambles and keep prose short. Use the project's terms as `CONTEXT.md` defines them, when the file exists. A reviewer reads the body cold, so never coin a term the code or `CONTEXT.md` doesn't use.
 
 ## Summary
 
@@ -178,11 +178,18 @@ function expandSkill(command: string): string {
 
 ## Evidence
 
-The tests are the evidence. On a branch that went through red, Before is the red commit, where every test the ticket added was watched failing. After is `HEAD`, where the same tests pass.
+The tests are the evidence. Before is a commit where tests the branch added were run and failed. After is `HEAD`, where the same tests pass. Read the commits to find them, whatever workflow built the branch:
 
-- **On the kanban chain**, the red commit is `Architect #<N>:`. The tests have since moved into the module test files `unit-test-ticket` folded them into, so take each one's file at `HEAD` from the `Tests #<N>: tidy and fold` commit or `unit-test-ticket`'s comment on the ticket PR, or on the issue for a branch older than the ticket PR. Leave dropped tests out. The whole suite ran green, so say so with its count.
-- **On `execute-ticket`**, the red commit is `Test #<N>:`, and the tests are still where it wrote them. It ran its own tests and the neighbouring tests, not the whole suite, so say exactly that.
-- **On a branch with no red commit**, such as one `review-diff` reviewed, nothing was watched failing. Drop the Before line. After reads `**After** \`<HEAD sha>\`, these pass.` with the whole suite's count. List only the Behaviour lines a test asserts, and put every line checked by hand under Untested behaviour in Merge danger. With no suite in the repo, Evidence is the one line `none, no suite in repo`, and every Behaviour line goes under Untested behaviour.
+1. **List the branch's tests.** Every test `git diff <base>...HEAD` adds or changes.
+2. **Find the red commit.** Walk `git log <base>..HEAD --reverse` for the first commit where some of those tests exist but the code they call doesn't do what they assert yet, such as tests committed ahead of their implementation. When no commit fits, there is none.
+3. **Run them there.** Check the red commit out in a temporary worktree outside the repo, `git worktree add <tmp> <sha>`, run only those tests, then `git worktree remove <tmp>`. The tests that failed there and pass at `HEAD` turned green on this branch. Those are the evidence.
+4. **Find each one at `HEAD`.** Tests can move or be renamed after the red commit. Match them by name, or by a comment on the ticket PR that says where they went. Leave out a test you can't find at `HEAD`.
+
+Then write Evidence by what you found:
+
+- **Tests that turned green.** Before and After as the template shows, with the whole suite's count on the After line.
+- **No red commit, or none of its tests failed, or they wouldn't run there.** Nothing was watched failing. Drop the Before line. After reads `**After** \`<HEAD sha>\`, these pass.` with the whole suite's count. List only the Behaviour lines a test asserts, and put every line checked by hand under Untested behaviour in Merge danger.
+- **No suite in the repo.** Evidence is the one line `none, no suite in repo`, and every Behaviour line goes under Untested behaviour.
 
 List one line per test: the behaviour in the ticket's words, then the test's file and name at `HEAD`. Never claim a test passed or failed without a run or a commit that says so.
 
@@ -219,7 +226,7 @@ Sort each item into one of three colour groups. When an item could go in two, pi
 
 - **Red, bugs found.** The code is wrong, such as a test that failed on the untouched code and was deleted.
 - **Yellow, possible issues.** Something may be wrong and needs the reviewer's call, such as undefined behaviour, design worsened for testability, or a fix a record blocked.
-- **Green, notes.** Nothing to act on, such as an amendment note the user approved or a record a station wrote.
+- **Green, notes.** Nothing to act on, such as an amendment note the user approved or a record the branch wrote.
 
 ```markdown
 ## For the reviewer

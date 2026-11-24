@@ -1,6 +1,6 @@
 # Review note
 
-Shared contract. The shape of the note `review-diff` leaves on the ticket PR, and the marker `pr-ticket` looks for when a ticket's effort level asks for a review.
+Shared contract. The shape of the note `review-diff` leaves on the ticket PR, and the heading `pr-ticket` recognises as a review note.
 
 ## Finding it
 
