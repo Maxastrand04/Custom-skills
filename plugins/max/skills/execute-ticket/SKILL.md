@@ -17,7 +17,7 @@ Every `../` path resolves from this skill's directory. Never search the repo for
 
 Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHub issue URL. No argument means ask which issue, and stop until told. Never take a ticket from conversation.
 
-`gh issue view <number> --json title,body,labels,comments`. Read Goal, Spec, Out of scope, and Branch. Take Spec as the current Spec per `../pr-ticket/ticket-pr.md`. Spec's Interface lines tell you which pieces to build, and you name them in the project's style.
+`gh issue view <number> --json title,body,labels,comments`. Read Goal, Spec, Out of scope, and Branch. Take Spec as the current Spec per `../helper-skill/ticket-pr.md`. Spec's Interface lines tell you which pieces to build, and you name them in the project's style.
 
 **Precondition.** The labels must carry `effort:minor`. Otherwise halt:
 
@@ -28,7 +28,7 @@ Settle two things, and state both to the user in one line, then continue:
 - **Branch.** `<issue-number>-<slug>`, slug from the ticket's `## Branch` section, or derived from the title when absent: 2 to 4 words, kebab-case, no articles.
 - **Base.** The repo's default branch, unless the user named one at invocation.
 
-Then `git checkout -b <branch>` from the base. Surface unrelated uncommitted changes before switching. Never drag them across. Open the branch's **ticket PR** per `../pr-ticket/ticket-pr.md` straight away.
+Then `git checkout -b <branch>` from the base. Surface unrelated uncommitted changes before switching. Never drag them across. Open the branch's **ticket PR** per `../helper-skill/ticket-pr.md` straight away.
 
 Every halt below also goes on the ticket PR, word for word, with `gh pr comment <PR>`, so the history survives the session.
 
@@ -40,7 +40,7 @@ Read the region you will change, not the whole repo. Grep for the symbols the ti
 
 ### The qualifying check
 
-The `effort:minor` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **effort criteria** in `../new-ticket/ticket-shapes.md`. Any major check holding, a public interface change, a needed ADR or PCR, or a Behaviour line no automated test reaches means the ticket was mislabelled, and this session halts with nothing committed beyond the start commit:
+The `effort:minor` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **effort criteria** in `../helper-skill/ticket-shapes.md`. Any major check holding, a public interface change, a needed ADR or PCR, or a Behaviour line no automated test reaches means the ticket was mislabelled, and this session halts with nothing committed beyond the start commit:
 
 > #<N> needs a decision I shouldn't make unattended: <which check, one line>. Relabel it to the effort level that check gives and take that route.
 
@@ -87,7 +87,7 @@ Once every test you wrote is green, run the **neighbouring tests**, meaning ever
 
 ### Loop exits
 
-Each of these is a halt, raised before step 6. Name the test, the evidence, and your best guess at the cause, stated as a guess. Then offer the options: a hint from the user, a spec amendment per `../pr-ticket/ticket-pr.md` when the ticket itself is wrong, relabelling to the effort level the failure points at, loading `amend-pcr` when a PCR is the block, or stopping here.
+Each of these is a halt, raised before step 6. Name the test, the evidence, and your best guess at the cause, stated as a guess. Then offer the options: a hint from the user, a spec amendment per `../helper-skill/ticket-pr.md` when the ticket itself is wrong, relabelling to the effort level the failure points at, loading `amend-pcr` when a PCR is the block, or stopping here.
 
 - **No progress.** The same test fails with the same evidence two passes running.
 - **The ticket contradicts itself.** Two behaviours can't both be true.
@@ -95,7 +95,7 @@ Each of these is a halt, raised before step 6. Name the test, the evidence, and 
 
 ## 5. Refactor
 
-Shape only, never behaviour. Behaviour includes what callers can observe behind an unchanged signature, such as the order of a returned list, an error message's text, a default value, or timing. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`. A record overrides the baseline. Tests are exempt. A diff that needs a new or amended record is the record halt in step 4. The one record this step writes is a found ADR, per `../grill-docs/RECORD-FORMAT.md`, for each fence comment the comment smell moves out of the code. Delete the comment in the same commit.
+Shape only, never behaviour. Behaviour includes what callers can observe behind an unchanged signature, such as the order of a returned list, an error message's text, a default value, or timing. Read every changed non-test file against the whole `docs/pcr/` and `docs/adr/` sets and against `../refactor-ticket/code-standards.md`. A record overrides the baseline. Tests are exempt. A diff that needs a new or amended record is the record halt in step 4. The one record this step writes is a found ADR, per `../helper-skill/RECORD-FORMAT.md`, for each fence comment the comment smell moves out of the code. Delete the comment in the same commit.
 
 Re-run the tests from step 3 plus the neighbouring tests. Back to red means the edit changed behaviour, so revert it. Then commit once:
 

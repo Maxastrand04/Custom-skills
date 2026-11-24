@@ -11,13 +11,13 @@ The second of the two sessions that make up the refactor leg of **red-green-refa
 
 **You never edit code.** Every change you make is to a test file. A test that shows the code is wrong is a finding for the reviewer, not a fix.
 
-`test-standards.md` and `../pr-ticket/ticket-pr.md` resolve from this skill's directory. Never read a same-named file from the repo.
+`test-standards.md` and `../helper-skill/ticket-pr.md` resolve from this skill's directory. Never read a same-named file from the repo.
 
 Word every halt, question, and report per the `gloss-me` skill.
 
 ## 1. Pin the work and check the handoff
 
-The branch carries its **GitHub issue number** in the name. Take the current branch, or the one the user names, extract the number, and fetch the ticket with `gh issue view <number> --comments`, read as the current Spec in `../pr-ticket/ticket-pr.md`. If the name carries no number, ask the user which issue this is. Then open or reuse the branch's **ticket PR** per the same file.
+The branch carries its **GitHub issue number** in the name. Take the current branch, or the one the user names, extract the number, and fetch the ticket with `gh issue view <number> --comments`, read as the current Spec in `../helper-skill/ticket-pr.md`. If the name carries no number, ask the user which issue this is. Then open or reuse the branch's **ticket PR** per the same file.
 
 The diff is `git diff main...HEAD`, three-dot, on that branch. Substitute the base the user names if it isn't `main`. Find the runner command for the whole suite.
 
