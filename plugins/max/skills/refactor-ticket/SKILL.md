@@ -9,7 +9,7 @@ The first of the two sessions that make up the refactor leg of **red-green-refac
 
 **Refactor** means the behaviour is already right and only the shape changes. Before any edit, ask whether a caller would see a difference. If one would, it is not a refactor. A caller sees more than the signature. With enough callers, someone depends on every observable behaviour, such as the order of a returned list, an error message's text, a default value, or timing, so changing any of those is a behaviour change even when no signature moves. Steps 1 to 4 make the branch safe to refactor, step 5 is the refactor, and the rest records it. Wherever a step names no stop for the user, decide and act.
 
-`code-standards.md`, `../unit-test-ticket/test-standards.md`, `../grill-docs/RECORD-FORMAT.md` and `../pr-ticket/ticket-pr.md` resolve from this skill's directory. Never read a same-named file from the repo.
+`code-standards.md`, `../unit-test-ticket/test-standards.md`, `../helper-skill/RECORD-FORMAT.md` and `../helper-skill/ticket-pr.md` resolve from this skill's directory. Never read a same-named file from the repo.
 
 Word every question and report per the `gloss-me` skill.
 
@@ -17,10 +17,10 @@ Word every question and report per the `gloss-me` skill.
 
 The branch carries its GitHub issue number in the name, following the branch-naming convention every ticket publishes. Take the current branch, or the one the user names, extract the number, and fetch the ticket with `gh issue view <number> --comments`.
 
-**The spec is two things.** The ticket's current **Spec**, per `../pr-ticket/ticket-pr.md`, is the intended bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
+**The spec is two things.** The ticket's current **Spec**, per `../helper-skill/ticket-pr.md`, is the intended bar. The **acceptance file** is the exact bar. Each test's name and docstring is one criterion. Step 2 asks whether the second is true to the first.
 
 - If the branch name carries no issue number, the convention was skipped. Ask the user which issue this closes.
-- Open or reuse the branch's **ticket PR** per `../pr-ticket/ticket-pr.md`.
+- Open or reuse the branch's **ticket PR** per `../helper-skill/ticket-pr.md`.
 
 The diff is `git diff main...HEAD`, three-dot, against the merge-base, on that branch. Substitute the base the user names if it isn't `main`. Confirm the branch resolves, the diff is non-empty, and the diff adds exactly one acceptance file. If one fails, stop and name it. Find the runner command for the whole suite.
 
@@ -45,7 +45,7 @@ Zero findings means the spec is settled, so go to step 3. Any finding goes to th
 
 ### Spec findings
 
-Print the findings as the **True-to-spec** table from step 8 and nothing else, then ask the user whether to fix the acceptance **tests** so they're true to the ticket. Only the tests. The ticket body is never edited here, and neither is a signature already settled on the branch. When the user says the Spec line itself is wrong, propose an amendment per `../pr-ticket/ticket-pr.md` instead, and fix the tests to the amended line once it is approved.
+Print the findings as the **True-to-spec** table from step 8 and nothing else, then ask the user whether to fix the acceptance **tests** so they're true to the ticket. Only the tests. The ticket body is never edited here, and neither is a signature already settled on the branch. When the user says the Spec line itself is wrong, propose an amendment per `../helper-skill/ticket-pr.md` instead, and fix the tests to the amended line once it is approved.
 
 With their go-ahead, fix the tests and run the acceptance file:
 
@@ -81,7 +81,7 @@ With the answers, apply every test change, break check each rewrite per `test-st
 
 ## 5. Refactor
 
-Three tiers, read per `../grill-docs/RECORD-FORMAT.md`:
+Three tiers, read per `../helper-skill/RECORD-FORMAT.md`:
 
 1. **PCRs in `docs/pcr/`** hold the project conventions. A breach is a **hard violation**. Fix the code, cite `PCR-NNNN` in the report, and never touch the file. A PCR you disagree with is not a finding. It binds until the user approves an amendment through `amend-pcr`, so comply, say so in one line, and load `amend-pcr` only if the user wants to take it on now.
 2. **ADRs in `docs/adr/`** hold the design decisions. A breach is a hard violation too. Fix it and cite `ADR-NNNN`. Nothing pre-selects them, so take the whole set and judge yourself which the changed files fall under. Read each one's **Decision** for what's required and its **Consequence** for what a breach looks like in a diff.
