@@ -28,7 +28,7 @@ This skill starts from a ticket. Resolve one of:
 2. **A ticket published in this session** by `new-ticket` or `map-epic`. Confirm with the user before adopting it.
 3. **Neither.** Ask which issue this is, and point at `/new-ticket` if none exists. Do not architect from a conversation.
 
-Then read the ticket in full with `gh issue view <ref> --comments`, read as the current Spec per `../pr-ticket/ticket-pr.md`. Take **Goal**, **Spec**, and **Out of scope** as given. Spec's **Interface** lines name the pieces without naming them in code, and its **Behaviour** lines trace the flow between them. Naming those pieces is this session's work.
+Then read the ticket in full with `gh issue view <ref> --comments`, read as the current Spec per `../helper-skill/ticket-pr.md`. Take **Goal**, **Spec**, and **Out of scope** as given. Spec's **Interface** lines name the pieces without naming them in code, and its **Behaviour** lines trace the flow between them. Naming those pieces is this session's work.
 
 Pick the **branch name**, which is `<issue-number>-<slug>`. Take the slug from the ticket's `## Branch` section when it has one. Otherwise derive it from the title: 2 to 4 words, kebab-case, no articles, no issue number.
 
@@ -44,7 +44,7 @@ Emit a short **"What I found"** summary covering the relevant modules, the conve
 
 `git checkout -b <issue-number>-<slug>`, or `git checkout` it if it already exists. If the working tree carries unrelated uncommitted changes, surface that before switching rather than dragging them across.
 
-Then open or reuse the branch's **ticket PR** per `../pr-ticket/ticket-pr.md`, before writing any file.
+Then open or reuse the branch's **ticket PR** per `../helper-skill/ticket-pr.md`, before writing any file.
 
 ---
 
@@ -93,7 +93,7 @@ Rules for the loop:
 
 - **Grill the interface, not the implementation.** "One function or a class with three methods?" is the contract. "A dict or an LRU cache for the tokens?" sits behind the contract, so don't spend the user's attention on it.
 - **A settled entry point can still be wrong.** When a later one shows it, say so, edit the earlier one, and settle it with the user before going on.
-- **Keep the ticket true.** When the code shows a Spec line is wrong, amend it per `../pr-ticket/ticket-pr.md` before going on. Never depart from the ticket silently.
+- **Keep the ticket true.** When the code shows a Spec line is wrong, amend it per `../helper-skill/ticket-pr.md` before going on. Never depart from the ticket silently.
 - **Every argument is a record candidate.** When an entry point settles *against* a named contender, `grill-docs` runs it through the record tests then. An entry point the user approved without a contest is not a candidate.
 
 The loop ends when every Interface line in the ticket has at least one settled entry point. Then say:
@@ -166,7 +166,7 @@ Corrections come in two kinds:
 - **A fix inside the contract**, meaning a name, a type, a missing test, a wrong assertion. Edit the working tree, re-run the tests, then post the four lines again plus one line per file you changed, such as `Edited    tests/test_acceptance.py`.
 - **A change to the contract itself**, meaning the contract drawn in the wrong place, an entry point that shouldn't exist, a behaviour no signature can reach. **Return to the stub loop** for the entry points it touches and settle them again. Code already on disk is not evidence the shape was right. Never patch a stub to absorb an objection that is really about the design.
 
-If the user abandons the session, this session has staged and committed nothing, apart from the empty start commit `../pr-ticket/ticket-pr.md` makes when it opens a PR on a branch with no commits. When this session opened the ticket PR, `gh pr close <PR> --delete-branch`, then `git checkout <previous-branch> && git branch -D <branch>` drops the branch. Your edits stay in the working tree, so list them with `git status --short` and let the user say what goes.
+If the user abandons the session, this session has staged and committed nothing, apart from the empty start commit `../helper-skill/ticket-pr.md` makes when it opens a PR on a branch with no commits. When this session opened the ticket PR, `gh pr close <PR> --delete-branch`, then `git checkout <previous-branch> && git branch -D <branch>` drops the branch. Your edits stay in the working tree, so list them with `git status --short` and let the user say what goes.
 
 ### 5. Commit
 

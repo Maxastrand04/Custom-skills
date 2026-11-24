@@ -19,9 +19,9 @@ You are the green leg of red-green-refactor. `architect-ticket` committed the pu
 ## Pin the work
 
 1. **The branch.** Take the current branch, or the one the user names. Its name carries the issue number, as in `42-oauth-admin-login`. If the branch name has no number, ask which issue this implements before reading anything.
-2. **The ticket.** `gh issue view <number> --comments`. Read Goal, Out of scope, and the current Spec per `../pr-ticket/ticket-pr.md`. It tells you whether a green test actually shipped the feature.
+2. **The ticket.** `gh issue view <number> --comments`. Read Goal, Out of scope, and the current Spec per `../helper-skill/ticket-pr.md`. It tells you whether a green test actually shipped the feature.
 3. **The diff.** `git diff main...HEAD`, three-dot, against the merge-base. Substitute the base the user names if it isn't `main`.
-4. **The ticket PR.** Open or reuse it per `../pr-ticket/ticket-pr.md`.
+4. **The ticket PR.** Open or reuse it per `../helper-skill/ticket-pr.md`.
 
 Confirm the branch, issue, and ticket PR with the user in one line before writing code.
 

@@ -14,6 +14,7 @@ The ticket workflow. Each skill leaves an artifact the next one reads, and GitHu
 | `review-diff` | Reviews any branch against its ticket, fixes code smells and record breaches, and leaves a review note on the PR or the issue. For branches that skipped `refactor-ticket`. |
 | `pr-ticket` | Checks the branch is committed and green, then rewrites its ticket PR from the commits and diff. It marks the PR ready only when `For the reviewer` has no red or yellow items, and otherwise leaves it a draft for you to flip. Runs in a fresh subagent, and Claude starts it on its own whenever a ticket branch needs its PR. Works without the kanban. |
 | `execute-ticket` | Runs red, green, and refactor in one unattended session for a ticket labelled `effort:minor`, then hands the branch to `pr-ticket`. |
+| `helper-skill` | Carries copies of the base files the stations read, so the kanban works when the base ships as a separate plugin. Nobody runs it. Edit the originals and run `scripts/sync-helper-skill.py`. |
 | `amend-pcr` | Loads when a convention in `docs/pcr/` blocks the work. Ranks the ripple, gives a verdict, and amends or retires the PCR only after you approve the listed changes. The only skill that edits `docs/pcr/`. Model-invoked. |
 
 Run `map-epic` or `new-ticket` first. They label each ticket with how much of you it needs, per `new-ticket/ticket-shapes.md`. The label then picks the route:
@@ -24,7 +25,7 @@ Run `map-epic` or `new-ticket` first. They label each ticket with how much of yo
 
 ## Every branch has a ticket PR
 
-Whichever station creates a ticket's branch opens a draft PR for it straight away, and every later station writes its notes there. The ticket keeps the spec, and the PR keeps the history. `review-diff` opens the draft on branches built in an ordinary session. Spec changes go on both as dated amendment notes, once you approve them. The contract is `pr-ticket/ticket-pr.md`.
+Whichever station creates a ticket's branch opens a draft PR for it straight away, and every later station writes its notes there. The ticket keeps the spec, and the PR keeps the history. `review-diff` opens the draft on branches built in an ordinary session. Spec changes go on both as dated amendment notes, once you approve them. The contract is `pr-ticket/ticket-pr.md`, which the stations read through `helper-skill`.
 
 ## Every branch ends at pr-ticket
 

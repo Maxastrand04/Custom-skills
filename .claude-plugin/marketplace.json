@@ -26,6 +26,7 @@
         "./kanban/pr-ticket",
         "./kanban/execute-ticket",
         "./kanban/amend-pcr",
+        "./kanban/helper-skill",
         "./developer-tools/brainstorming",
         "./developer-tools/pro-con",
         "./developer-tools/eli5",

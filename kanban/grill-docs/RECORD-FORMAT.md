@@ -78,7 +78,7 @@ Then the spine test. An ADR names something with structure behind it: what a mod
 
 A convention that holds across the whole project and that a single ticket must never move: the stack, the libraries a file may import, how identifiers are named, how comments are written, whether the code is object-oriented, which test runner and layout the suite uses. The test is ripple. If changing it means touching every file, it is a PCR. If it only touches one region, it is an ADR.
 
-A PCR that overlaps `refactor-ticket`'s `code-standards.md` or `unit-test-ticket`'s `test-standards.md` baseline wins. A PCR saying the project is not object-oriented switches off every entry marked `(OO only)`.
+A PCR that overlaps a baseline a skill ships, such as a list of code or test standards, wins. A PCR saying the project is not object-oriented switches off every entry marked `(OO only)`.
 
 ## One decision per file
 
@@ -88,9 +88,9 @@ The filename slug is the decision's shorthand. Pick it so the directory reads as
 
 ## Who writes, who changes
 
-**ADRs.** `grill-docs` writes one per argument its grill had, as each settles, whether the user started the grill or a skill such as `architect-ticket` borrowed it. `refactor-ticket` and `review-diff` each write one when the diff introduces a shape neighbouring code will copy, and a found ADR for each fence comment they move out of the code. `execute-ticket` writes found ADRs and no other kind. No other skill writes one; a station that finds itself weighing an ADR-worthy call is a station that was handed an incomplete contract, and it halts.
+**ADRs.** `grill-docs` writes one per argument its grill had, as each settles, whether the user started the grill or another skill borrowed it. Any other skill writes an ADR, or a found ADR, only when its own `SKILL.md` says so. A skill with no such line that finds itself weighing an ADR-worthy call was handed an incomplete contract, and it halts.
 
-`grill-docs` and `refactor-ticket` may **amend** an existing ADR when the work in front of it has a reason the record did not anticipate. `review-diff` may too, but only after the user approves the proposed amendment. Keep the number, rewrite Decision, Reason, and Consequence together so the file reads as one current decision, and bump the Date. **The reasoning for the change does not go in the file.** State it to the user in the session and put it in the commit message, or hand it to the user for theirs when the skill doesn't commit. The ADR stays a clean statement of what binds now. **Retire** an ADR the same way, by setting `Status: retired` and bumping the Date, when the code it governed is gone. Never delete one.
+`grill-docs` may **amend** an existing ADR when the work in front of it has a reason the record did not anticipate, and so may any skill whose `SKILL.md` says so, on the terms it sets. Keep the number, rewrite Decision, Reason, and Consequence together so the file reads as one current decision, and bump the Date. **The reasoning for the change does not go in the file.** State it to the user in the session and put it in the commit message, or hand it to the user for theirs when the skill doesn't commit. The ADR stays a clean statement of what binds now. **Retire** an ADR the same way, by setting `Status: retired` and bumping the Date, when the code it governed is gone. Never delete one.
 
 **PCRs.** `grill-docs` writes a new one when its grill is the first to settle a project-wide convention, for example the first grill that picks a test runner. Nothing else writes one.
 
