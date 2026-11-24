@@ -12,10 +12,10 @@ Every ticket is one of two bodies, and nothing else.
 
   **Spec** is how the developer pictures the solution working, written like pseudocode: concrete enough to follow through the code, with nothing named. One claim per line, no prose. It has two parts:
 
-  - **Interface** lists the pieces the change adds or alters and what each one carries, in plain words. "A reusable button component" belongs here. `Button(color, width)` does not. `architect-ticket` turns these lines into the real names, signatures, and stubs. They never become tests.
+  - **Interface** lists the pieces the change adds or alters and what each one carries, in plain words. "A reusable button component" belongs here. `Button(color, width)` does not. Whoever implements the ticket turns these lines into the real names and signatures. They never become tests.
   - **Behaviour** is the happy path as numbered steps, read like a sequence diagram in text: who acts, on what, and what happens next. Edge cases and failure modes follow as unnumbered bullets. Every Behaviour line is covered by at least one test, except on an `effort:trivial` ticket, where the user checks the lines no test reaches.
 
-  Spec never names a function, class, file, type, or test. Naming is HOW, and `architect-ticket` settles it with the code open.
+  Spec never names a function, class, file, type, or test. Naming is HOW, and the implementation session settles it with the code open.
 
   **Out of scope** is a bullet list.
 - **Question ticket**, `template_question_ticket.md`. A Question and nothing more. Used for research and prototype tickets, which exist to be answered in their own session, not implemented.
@@ -45,7 +45,7 @@ Every ticket carries a `<scope>:<type>` label. Scope records where the ticket ca
 
 `feat` and `fix` both label as `task`. The title's type carries that distinction.
 
-Every task ticket also carries one `effort:<level>` label, and the level picks the route. Question tickets carry none, since nothing is implemented from them. Decide the level with the effort criteria below, once per task ticket, at publish time.
+Every task ticket also carries one `effort:<level>` label, saying how much of the user the ticket needs. Question tickets carry none, since nothing is implemented from them. Decide the level with the effort criteria below, once per task ticket, at publish time.
 
 Labels must exist before use, so create the ones this session needs, idempotently, once:
 
@@ -64,35 +64,38 @@ gh label create effort:major --color D93F0B || true
 
 ## Effort criteria
 
-Effort measures how much of the user the ticket needs, not how big the diff is. A one-line change to a name other modules call needs the user to settle it. A large swap behind a stable interface doesn't, because the tests decide whether it's right.
+Effort measures how much of the user the ticket needs, not how big the diff is. A one-line change to a name half the codebase calls needs the user at every step, because getting it wrong breaks those callers. A large swap behind a stable interface needs only a review, because the tests decide whether it's right.
 
-Judge the ticket against three checks:
+A module here is one file. A public interface is any name, parameter, or return value that code outside its own file calls or could call.
 
-1. **No public signature changes.** Nothing outside the files the ticket touches calls a name, parameter, or return value the change adds or alters. Internals are free.
-2. **No record is touched or needed.** No decision in `docs/pcr/` or `docs/adr/` is in the way, and the change makes no call a future reader could undo by accident.
-3. **`git revert` of the merged PR undoes it completely.** No migration, no external resource, no data written that a revert leaves behind.
+**Major checks.** The ticket is `major` if any of these hold:
 
-Then take the first level that matches:
+1. **It needs a new module.** The work adds a file rather than changing existing ones.
+2. **It changes the behaviour of more than one module.** Callers that only follow a renamed or reshaped interface don't count.
+3. **It changes a public interface that more than one other module already calls.** An interface with no callers yet, or one caller, can still change cheaply. One the system depends on breaks in many places when it's wrong.
+4. **`git revert` of the merged PR can't undo it completely.** A migration, an external resource, or data written that a revert leaves behind.
 
-| Level | When | Route | The user's part |
-|---|---|---|---|
-| `effort:major` | Check 2 or 3 fails | `architect-ticket`, `implement-ticket`, `refactor-ticket`, run by hand | At every station |
-| `effort:medium` | Only check 1 fails, and the project has kanban-ci | `architect-ticket` by hand, then `/kanban-ci:launch` runs the rest overnight | Settles the interface and tests, reviews the PR |
-| `effort:trivial` | All three pass, the change is a few lines, and a Behaviour line no automated test can reach | An ordinary session, the user and an agent together | Watches the agent stay inside the ticket and checks what no test reaches |
-| `effort:minor` | All three pass, and automated tests reach every Behaviour line | `execute-ticket`, unattended, opens a PR | Reviews the PR |
+**Everything else** stays inside one module and reverts cleanly. Pick the first level that matches:
 
-A project has kanban-ci when `.github/workflows/kanban-ci.yml` exists on its default branch. Without it, a ticket that would be `medium` is `major`.
+| Level | When | The user's part |
+|---|---|---|
+| `effort:major` | Any major check holds | Takes part in every step, from settling the interface to reviewing the code |
+| `effort:medium` | The ticket changes a public interface, or needs an ADR or PCR in `docs/adr/` or `docs/pcr/` | Settles the interface, tests, and any record, then reviews the finished change |
+| `effort:trivial` | Implementation only, a few lines, and a Behaviour line no automated test can reach | Works alongside the agent, keeps it inside the ticket, and checks what no test reaches |
+| `effort:minor` | Implementation only, and automated tests reach every Behaviour line | Reviews the finished change |
+
+Implementation only means no public interface changes and no record is needed.
 
 A ticket with an untestable Behaviour line that is more than a few lines of work fits no level. Split the untestable part into its own `trivial` ticket.
 
-Small refactors, bug fixes, and implementation swaps behind a stable interface are usually `minor`. The level is a guess made before anyone read the code, so `execute-ticket` re-checks a `minor` ticket and halts if it was wrong.
+Small refactors, bug fixes, and implementation swaps behind a stable interface are usually `minor`. The level is a guess made before anyone read the code, so whoever implements a `minor` ticket should re-check it and stop if it was wrong.
 
 ## Branch slug
 
-**The ticket names its own branch.** Fill `## Branch` on every task ticket before its first preview. `architect-ticket` and `execute-ticket` derive a slug from the title when a ticket arrives without one, so filling it here is what keeps the slug deliberate rather than guessed. Question tickets have no branch, since nothing is implemented from them.
+**The ticket names its own branch.** Fill `## Branch` on every task ticket before its first preview. A ticket without one gets a slug guessed from its title, so filling it here keeps the slug deliberate. Question tickets have no branch, since nothing is implemented from them.
 
 - **2 to 4 words, kebab-case, no articles**, derived from the title. `feat: Add OAuth login for admin dashboard` gives `oauth-admin-login`.
-- **Slug only.** No issue number, since the issue does not exist yet and the station that opens the branch prepends it. No `feature/` prefix, no type prefix.
+- **Slug only.** No issue number, since the issue does not exist yet and whoever opens the branch prepends it. No `feature/` prefix, no type prefix.
 
 ## AI disclaimer
 

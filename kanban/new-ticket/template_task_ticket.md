@@ -23,4 +23,4 @@
 
 ## Branch
 
-Implement on `<this issue's number>-{BRANCH_SLUG}`. The station that opens the branch prepends the number.
+Implement on `<this issue's number>-{BRANCH_SLUG}`. Whoever opens the branch prepends the number.
