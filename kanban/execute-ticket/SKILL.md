@@ -22,7 +22,7 @@ Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHu
 
 **Precondition.** The labels must carry `effort:minor`. Otherwise halt:
 
-> #<N> isn't an `effort:minor` ticket. Run `/architect-ticket <N>` then `/kanban-ci:launch` for `medium`, `/architect-ticket`, `/implement-ticket`, and `/refactor-ticket` by hand for `major`, or an ordinary session for `trivial`. Relabel it if it qualifies as `minor`.
+> #<N> isn't an `effort:minor` ticket. Run `/architect-ticket`, `/implement-ticket`, and `/refactor-ticket` by hand for `medium` or `major`, or an ordinary session for `trivial`. Relabel it if it qualifies as `minor`.
 
 Settle two things, and state both to the user in one line, then continue:
 
