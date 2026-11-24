@@ -22,7 +22,7 @@ Resolve the ticket from the invocation argument, meaning `42`, `#42`, or a GitHu
 
 **Precondition.** The labels must carry `effort:minor`. Otherwise halt:
 
-> #<N> isn't an `effort:minor` ticket. Take the route its effort level names in `ticket-shapes.md`, or relabel it if it qualifies.
+> #<N> isn't an `effort:minor` ticket. Run `/architect-ticket <N>` then `/kanban-ci:launch` for `medium`, `/architect-ticket`, `/implement-ticket`, and `/refactor-ticket` by hand for `major`, or an ordinary session for `trivial`. Relabel it if it qualifies as `minor`.
 
 Settle two things, and state both to the user in one line, then continue:
 
@@ -41,13 +41,13 @@ Read the region you will change, not the whole repo. Grep for the symbols the ti
 
 ### The qualifying check
 
-The `effort:minor` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **effort criteria** in `../new-ticket/ticket-shapes.md`. Any of the three checks failing, or a Behaviour line no automated test reaches, means the ticket was mislabelled, and this session halts with nothing committed beyond the start commit:
+The `effort:minor` label was applied at filing, before anyone read the code. Re-check it now against what you found, per the **effort criteria** in `../new-ticket/ticket-shapes.md`. Any major check holding, a public interface change, a needed ADR or PCR, or a Behaviour line no automated test reaches means the ticket was mislabelled, and this session halts with nothing committed beyond the start commit:
 
 > #<N> needs a decision I shouldn't make unattended: <which check, one line>. Relabel it to the effort level that check gives and take that route.
 
 The same halt applies at any later step where a check turns out to fail. Leave a branch that already carries commits in place and name it in the halt. Never delete it.
 
-**Completion criterion:** the three effort checks each judged against the code, every Behaviour line matched to a test that can reach it, and the test runner command found.
+**Completion criterion:** the major checks, the public interface, and the need for a record each judged against the code, every Behaviour line matched to a test that can reach it, and the test runner command found.
 
 ## 3. Red
 

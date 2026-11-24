@@ -16,7 +16,7 @@ The ticket workflow. Each skill leaves an artifact the next one reads, and GitHu
 | `execute-ticket` | Runs red, green, and refactor in one unattended session for a ticket labelled `effort:minor`, then opens a PR. |
 | `amend-pcr` | Loads when a convention in `docs/pcr/` blocks the work. Ranks the ripple, gives a verdict, and amends or retires the PCR only after you approve the listed changes. The only skill that edits `docs/pcr/`. Model-invoked. |
 
-Run `map-epic` or `new-ticket` first. The ticket's effort label then picks the route, per `new-ticket/ticket-shapes.md`:
+Run `map-epic` or `new-ticket` first. They label each ticket with how much of you it needs, per `new-ticket/ticket-shapes.md`. The label then picks the route:
 
 - `effort:minor` runs `execute-ticket`.
 - `effort:trivial` is an ordinary session where you watch the agent and check what no test reaches.

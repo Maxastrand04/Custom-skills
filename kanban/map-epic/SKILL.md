@@ -101,7 +101,7 @@ For each item that surfaces, classify it:
 
 - **`task`.** A deliverable, ready to be spec'd now, meaning its goal and Spec are already clear enough to state.
 - **`research`.** An open question blocking a later task, such as an unknown API, a library choice, or an unclear fact, that a separate session should resolve.
-- **`prototype`.** Needs a cheap concrete artifact, such as a UI sketch or a behaviour stub, before it can be spec'd, via a separate `/prototype` session.
+- **`prototype`.** Needs a cheap concrete artifact, such as a UI sketch or a behaviour stub, before it can be spec'd, built in a separate session as a throwaway prototype.
 - **fog.** You can sense it's coming but can't state it precisely yet. Don't force it into a ticket. Write a loose one-line sketch instead.
 
 Also propose **blocking edges**, meaning which items can't be worked until another closes. Don't ask the user to enumerate dependencies from scratch.
@@ -178,6 +178,6 @@ If nothing has closed since the last run, tell the user there's nothing to gradu
 
 ## Constraints
 
-- **Never resolve `research` or `prototype` tickets inline.** They're published open and picked up in their own separate sessions, such as a `/prototype` session. This skill only detects their closure on a later run.
+- **Never resolve `research` or `prototype` tickets inline.** They're published open and picked up in their own separate sessions, such as one that builds a throwaway prototype. This skill only detects their closure on a later run.
 - **GitHub is the only record of project state.** The epic issue's sub-issue list is the task list, and no local file mirrors it.
 - **Main thread only.** No subagent dispatch.
