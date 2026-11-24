@@ -71,7 +71,7 @@ A Project Convention Record. A binding convention that holds across the whole pr
 _Avoid_: standard, style guide, project rule, config
 
 **Review note**:
-The comment `review-diff` leaves on the **Ticket PR** when it finishes reviewing a branch. Holds the pre-review commit, the drift verdicts, the fixes, the reconciled tests, the records written, and what was found but not fixed. Its first line, `## review-diff note`, is how `pr-ticket` finds it on a branch that never went through the **TDD cycle**. Shape in `kanban/review-diff/review-note.md`.
+The comment `review-diff` leaves on the **Ticket PR** when it finishes reviewing a branch. Holds the pre-review commit, the drift verdicts, the fixes, the reconciled tests, the records written, and what was found but not fixed. Its first line, `## review-diff note`, is how `pr-ticket` finds it and says in the PR body that a review covers the branch. Shape in `kanban/review-diff/review-note.md`.
 _Avoid_: review summary, review comment, QA report
 
 **Record format**:
@@ -107,7 +107,7 @@ A published GitHub Issue holding one unit of work, in one of two shapes: a task 
 _Avoid_: card, story, work item
 
 **Ticket PR**:
-The one draft pull request a **Ticket**'s branch carries from the moment a station creates the branch until `pr-ticket`, or `execute-ticket` on its own route, rewrites its description and marks it ready. The **Ticket** holds the **Spec**; the Ticket PR holds what happened to the branch: progress, **Review notes**, findings, handoffs. They link both ways, through `Closes #<N>` in the PR and a `Ticket PR:` comment on the issue. A branch with no open Ticket PR gets one before any station works on it, and one whose PR merged takes no more work. Contract in `kanban/pr-ticket/ticket-pr.md`.
+The one draft pull request a **Ticket**'s branch carries from the moment a station creates the branch until `pr-ticket` rewrites its description and marks it ready. The **Ticket** holds the **Spec**; the Ticket PR holds what happened to the branch: progress, **Review notes**, findings, handoffs. They link both ways, through `Closes #<N>` in the PR and a `Ticket PR:` comment on the issue. A branch with no open Ticket PR gets one before any station works on it, and one whose PR merged takes no more work. Contract in `kanban/pr-ticket/ticket-pr.md`.
 _Avoid_: draft, work PR, tracking PR
 
 **Spec amendment**:

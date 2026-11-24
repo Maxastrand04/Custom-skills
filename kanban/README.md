@@ -12,8 +12,8 @@ The ticket workflow. Each skill leaves an artifact the next one reads, and GitHu
 | `refactor-ticket` | The refactor step. Checks the tests cover the ticket, runs the full suite, cleans the code against the project's records, folds the acceptance tests into the unit tests, and closes the issue. |
 | `unit-test-ticket` | The second refactor session. Folds the acceptance file into the unit tests and tidies them. |
 | `review-diff` | Reviews any branch against its ticket, fixes code smells and record breaches, and leaves a review note on the PR or the issue. For branches that skipped `refactor-ticket`. |
-| `pr-ticket` | Checks what the ticket's effort level asks of the branch, then rewrites its ticket PR and marks it ready. |
-| `execute-ticket` | Runs red, green, and refactor in one unattended session for a ticket labelled `effort:minor`, then opens a PR. |
+| `pr-ticket` | Checks the branch is committed and green, then rewrites its ticket PR from the commits and diff. It marks the PR ready only when `For the reviewer` has no red or yellow items, and otherwise leaves it a draft for you to flip. Runs in a fresh subagent, and Claude starts it on its own whenever a ticket branch needs its PR. Works without the kanban. |
+| `execute-ticket` | Runs red, green, and refactor in one unattended session for a ticket labelled `effort:minor`, then hands the branch to `pr-ticket`. |
 | `amend-pcr` | Loads when a convention in `docs/pcr/` blocks the work. Ranks the ripple, gives a verdict, and amends or retires the PCR only after you approve the listed changes. The only skill that edits `docs/pcr/`. Model-invoked. |
 
 Run `map-epic` or `new-ticket` first. They label each ticket with how much of you it needs, per `new-ticket/ticket-shapes.md`. The label then picks the route:
@@ -33,4 +33,4 @@ However a branch was built, it gets one review before its PR:
 - **`effort:major` or `effort:medium`** runs `refactor-ticket`, then `unit-test-ticket`, then `pr-ticket`.
 - **`effort:minor` or `effort:trivial`**, and any branch built by hand, runs `review-diff`, then `pr-ticket`.
 
-`pr-ticket` halts when the review its level asks for is missing. The fold commit covers major and medium. The review note covers minor and trivial. `execute-ticket` still opens its own PR.
+Nothing enforces the review. `pr-ticket` says in the PR body whether a review note covers the branch, and flags test files left off the project's convention, such as an unfolded acceptance file. `execute-ticket` calls `pr-ticket` itself.
