@@ -14,3 +14,6 @@ scratch/
 # Generated personal Codex skills. Marketplace output is tracked under plugins/.
 .codex-build/
 __pycache__/
+
+# Generated Antigravity plugin tree.
+.agy-build/

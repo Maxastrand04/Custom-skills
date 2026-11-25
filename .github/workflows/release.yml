@@ -47,6 +47,13 @@ jobs:
           python3 scripts/release.py plan
           echo "version=$(python3 scripts/release.py plan --version-only)" >> "$GITHUB_OUTPUT"
 
+      - name: Build and check the Antigravity tree
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          python3 scripts/build-agy.py build "$VERSION"
+          python3 scripts/build-agy.py check
+
       - name: Stop here on a dry run
         if: inputs.dry_run
         run: echo "Dry run. Nothing was changed."
