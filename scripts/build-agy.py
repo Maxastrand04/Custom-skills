@@ -11,15 +11,16 @@ ROOT = Path(__file__).resolve().parent.parent
 CATALOG = ".claude-plugin/marketplace.json"
 RULES = "config/agy/AGENTS.md"
 BUILD = ".agy-build"
+MANIFEST = "plugin.json"
+SKILLS = "skills"
 
-# The tree's plugin.json holds these keys, in this order, and no others.
-# version is filled in per build.
 NAME = "max"
 DISPLAY_NAME = "Max Åstrand's skills"
 DESCRIPTION = "Ticket workflows, developer tools, and writing rules for Antigravity."
 
 VERSION = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 KEBAB = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*")
+BLOCK_SCALAR = re.compile(r"[>|][-+]?")
 SCHEMA_KEYS = {
     "$schema", "name", "version", "displayName", "description", "skills", "disabled",
     "author", "homepage", "repository", "license", "keywords", "logo", "suggestedPrompts",
@@ -56,28 +57,13 @@ def build_tree(version, destination, root=ROOT):
     """
     if not VERSION.fullmatch(version):
         raise ValueError(f"Version must be X.Y.Z, not {version!r}")
-    folders = listed_folders(root)
+    folders = _listed_folders(root)
     rules = root / RULES
     if not rules.is_file():
         raise ValueError(f"Missing {RULES}")
 
-    # Everything is read before the old tree goes, so a bad source leaves it alone.
-    files = {"AGENTS.md": rules.read_bytes()}
-    for folder in folders:
-        for path in sorted(folder.rglob("*")):
-            relative = path.relative_to(folder)
-            if path.is_file() and not any(part.startswith(".") for part in relative.parts):
-                files[f"skills/{folder.name}/{relative.as_posix()}"] = path.read_bytes()
-    manifest = {"name": NAME, "version": version, "displayName": DISPLAY_NAME, "description": DESCRIPTION}
-    files["plugin.json"] = (json.dumps(manifest, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
-
-    destination = Path(destination)
-    if destination.exists():
-        shutil.rmtree(destination)
-    for name, content in files.items():
-        target = destination / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(content)
+    files = _tree_files(version, folders, rules)
+    _replace_tree(Path(destination), files)
     return [folder.name for folder in folders]
 
 
@@ -117,16 +103,16 @@ def check_tree(tree):
     tree = Path(tree)
     if not tree.is_dir():
         raise ValueError(f"No tree at {tree}")
-    messages = manifest_problems(tree / "plugin.json")
-    folders = skill_folders(tree)
+    messages = _manifest_problems(tree / MANIFEST)
+    folders = _skill_folders(tree)
     if not folders:
-        messages.append("skills/: must hold at least one skill folder")
+        messages.append(f"{SKILLS}/: must hold at least one skill folder")
     for folder in folders:
-        messages += skill_problems(folder)
+        messages += _skill_problems(folder)
     return messages
 
 
-def listed_folders(root):
+def _listed_folders(root):
     """The max entry's skill folders, in marketplace order, each checked to exist."""
     path = root / CATALOG
     if not path.is_file():
@@ -153,58 +139,87 @@ def listed_folders(root):
     return list(folders.values())
 
 
-def manifest_problems(path):
+def _tree_files(version, folders, rules):
+    """Every file the tree holds, as tree-relative path to bytes."""
+    files = {"AGENTS.md": rules.read_bytes()}
+    for folder in folders:
+        for relative in _skill_files(folder):
+            files[f"{SKILLS}/{folder.name}/{relative.as_posix()}"] = (folder / relative).read_bytes()
+    manifest = {"name": NAME, "version": version, "displayName": DISPLAY_NAME, "description": DESCRIPTION}
+    files[MANIFEST] = (json.dumps(manifest, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+    return files
+
+
+def _skill_files(folder):
+    """Paths of the files under folder, relative to it, sorted, minus any with a part starting with "."."""
+    for path in sorted(folder.rglob("*")):
+        relative = path.relative_to(folder)
+        if path.is_file() and not any(part.startswith(".") for part in relative.parts):
+            yield relative
+
+
+def _replace_tree(destination, files):
+    if destination.exists():
+        shutil.rmtree(destination)
+    for name, content in files.items():
+        target = destination / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content)
+
+
+def _manifest_problems(path):
     if not path.is_file():
-        return ["plugin.json: missing"]
+        return [f"{MANIFEST}: missing"]
     try:
         manifest = json.loads(path.read_text(encoding="utf-8"))
     except ValueError:
         manifest = None
     if not isinstance(manifest, dict):
-        return ["plugin.json: must hold a JSON object"]
+        return [f"{MANIFEST}: must hold a JSON object"]
 
     messages = []
     name = manifest.get("name")
     if not isinstance(name, str) or not KEBAB.fullmatch(name):
-        messages.append("plugin.json: name must be lowercase kebab-case")
+        messages.append(f"{MANIFEST}: name must be lowercase kebab-case")
     unknown = sorted(set(manifest) - SCHEMA_KEYS)
     if unknown:
-        messages.append(f"plugin.json: keys outside Antigravity's schema: {', '.join(unknown)}")
+        messages.append(f"{MANIFEST}: keys outside Antigravity's schema: {', '.join(unknown)}")
     return messages
 
 
-def skill_folders(tree):
-    return sorted((p for p in (tree / "skills").glob("*") if p.is_dir()), key=lambda p: p.name)
+def _skill_folders(tree):
+    return sorted((p for p in (tree / SKILLS).glob("*") if p.is_dir()), key=lambda p: p.name)
 
 
-def skill_problems(folder):
-    where = f"skills/{folder.name}"
+def _skill_problems(folder):
+    where = f"{SKILLS}/{folder.name}"
+    skill_md = f"{where}/SKILL.md"
     path = folder / "SKILL.md"
     if not path.is_file():
         return [f"{where}: missing SKILL.md"]
     lines = path.read_text(encoding="utf-8", errors="replace").split("\n")
     markers = [i for i, line in enumerate(lines) if line.rstrip() == "---"]
     if len(markers) < 2 or markers[0] != 0:
-        return [f"{where}/SKILL.md: must open with a frontmatter block between --- lines"]
+        return [f"{skill_md}: must open with a frontmatter block between --- lines"]
     settings = lines[1:markers[1]]
 
     messages = []
     if not KEBAB.fullmatch(folder.name):
         messages.append(f"{where}: folder name must be lowercase kebab-case")
-    names = [line[len("name: "):].strip() for line in settings if line.startswith("name: ")]
+    names = [line.removeprefix("name: ").strip() for line in settings if line.startswith("name: ")]
     if names != [folder.name]:
-        messages.append(f"{where}/SKILL.md: frontmatter name must equal the folder name")
-    if not has_description(settings):
-        messages.append(f"{where}/SKILL.md: frontmatter needs a description")
+        messages.append(f"{skill_md}: frontmatter name must equal the folder name")
+    if not _has_description(settings):
+        messages.append(f"{skill_md}: frontmatter needs a description")
     return messages
 
 
-def has_description(settings):
+def _has_description(settings):
     for index, line in enumerate(settings):
         if not line.startswith("description:"):
             continue
-        value = line[len("description:"):].strip()
-        if not re.fullmatch(r"[>|][-+]?", value):
+        value = line.removeprefix("description:").strip()
+        if not BLOCK_SCALAR.fullmatch(value):
             return bool(value)
         for below in settings[index + 1:]:
             if below.strip():
@@ -222,7 +237,7 @@ def main():
                     its own line to stderr and exit 1 if there are any,
                     otherwise print how many skills passed
 
-    Any ValueError prints "error: <reason>" and exits 1.
+    Any ValueError or OSError prints "error: <reason>" and exits 1.
     """
     args = sys.argv[1:]
     tree = ROOT / BUILD
@@ -234,7 +249,7 @@ def main():
         if messages:
             print("\n".join(messages), file=sys.stderr)
             sys.exit(1)
-        print(f"{len(skill_folders(tree))} skills passed")
+        print(f"{len(_skill_folders(tree))} skills passed")
     else:
         raise ValueError(USAGE)
 

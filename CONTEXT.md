@@ -31,11 +31,11 @@ Creating a symlink from the agent's skill directory so it can load the Skill. Cl
 _Avoid_: deploy, copy
 
 **Plugin**:
-The shared set distributed as `max`. Claude Code reads its selection from `.claude-plugin/marketplace.json`, with the repo root as its source. Codex reads `.agents/plugins/marketplace.json`, which points to the generated package under `plugins/max/`, built from the same Skill list, so the two marketplaces always match. Skills carry the `max:` prefix, as in `/max:grill-docs` for Claude Code and `$max:grill-docs` for Codex. The list is independent of the personal installer. Both marketplaces serve the Plugin from the **Release marker**, not from `main`. See ADR-0007 and ADR-0008.
+The shared set distributed as `max`. Claude Code reads its selection from `.claude-plugin/marketplace.json`, with the repo root as its source. Codex reads `.agents/plugins/marketplace.json`, which points to the generated package under `plugins/max/`, built from the same Skill list, so the two marketplaces always match. Skills carry the `max:` prefix, as in `/max:grill-docs` for Claude Code and `$max:grill-docs` for Codex. The list is independent of the personal installer. Both marketplaces serve the Plugin from the **Release marker**, not from `main`. Antigravity gets the same list as a flat tree, built by `scripts/build-agy.py` into the untracked `.agy-build/` on every **Release**, with each Skill under `skills/<name>/`, its **Category** dropped, and a root `plugin.json`. See ADR-0005, ADR-0007 and ADR-0008.
 _Avoid_: package, bundle
 
 **Release**:
-One `vX.Y.Z` version of the **Plugin**, made by a hand-started run of `.github/workflows/release.yml` on `main`. `scripts/release.py` picks the number from the conventional commits since the last `vX.Y.Z` tag, and the run writes it into the `max` Plugin for Claude Code and the `max` Plugin for Codex, so both share one version. Each Release gets a GitHub release page. See ADR-0010.
+One `vX.Y.Z` version of the **Plugin**, made by a hand-started run of `.github/workflows/release.yml` on `main`. `scripts/release.py` picks the number from the conventional commits since the last `vX.Y.Z` tag, and the run writes it into the `max` Plugin for Claude Code and the `max` Plugin for Codex, so both share one version. With that version it builds the Antigravity tree and checks it against Antigravity's rules, and a broken tree fails the run, dry or real. Each Release gets a GitHub release page. See ADR-0005 and ADR-0010.
 _Avoid_: deploy, publish, version bump
 
 **Release marker**:
