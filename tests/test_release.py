@@ -17,7 +17,6 @@ spec.loader.exec_module(release)
 MANIFESTS = (
     ".claude-plugin/marketplace.json",
     "plugins/max/plugin.json",
-    "ci/.claude-plugin/plugin.json",
 )
 
 
@@ -207,17 +206,6 @@ class WriteVersionTests(unittest.TestCase):
         release.write_version("1.2.3", self.root)
         self.assertEqual(self.read("plugins/max/plugin.json")["version"], "1.2.3")
 
-    def test_kanban_ci_plugin_gets_the_version(self):
-        """The kanban-ci manifest carries the written version."""
-        release.write_version("1.2.3", self.root)
-        self.assertEqual(self.read("ci/.claude-plugin/plugin.json")["version"], "1.2.3")
-
-    def test_kanban_ci_catalog_entry_stays_without_a_version(self):
-        """kanban-ci's version lives in its plugin.json only, never also in the catalog."""
-        release.write_version("1.2.3", self.root)
-        entry = catalog_entry(self.read(".claude-plugin/marketplace.json"), "kanban-ci")
-        self.assertNotIn("version", entry)
-
     def test_nothing_else_in_the_catalog_changes(self):
         """Apart from the max entry's version, the Claude catalog is unchanged."""
         before = self.read(".claude-plugin/marketplace.json")
@@ -227,12 +215,11 @@ class WriteVersionTests(unittest.TestCase):
         catalog_entry(before, "max").pop("version", None)
         self.assertEqual(after, before)
 
-    def test_nothing_else_in_the_plugin_manifests_changes(self):
-        """Apart from the version, both plugin.json files are unchanged."""
-        paths = ("plugins/max/plugin.json", "ci/.claude-plugin/plugin.json")
-        before = [dict(self.read(p), version="1.2.3") for p in paths]
+    def test_nothing_else_in_the_plugin_manifest_changes(self):
+        """Apart from the version, plugins/max/plugin.json is unchanged."""
+        before = dict(self.read("plugins/max/plugin.json"), version="1.2.3")
         release.write_version("1.2.3", self.root)
-        self.assertEqual([self.read(p) for p in paths], before)
+        self.assertEqual(self.read("plugins/max/plugin.json"), before)
 
     def test_writing_the_same_version_again_changes_nothing(self):
         """A second write of the version the manifests hold leaves every byte alone."""
@@ -253,7 +240,7 @@ class WriteVersionTests(unittest.TestCase):
 
     def test_missing_manifest_is_refused(self):
         """A missing manifest raises ValueError."""
-        (self.root / "ci/.claude-plugin/plugin.json").unlink()
+        (self.root / "plugins/max/plugin.json").unlink()
         with self.assertRaises(ValueError):
             release.write_version("1.2.3", self.root)
 

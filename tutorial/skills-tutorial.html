@@ -794,7 +794,7 @@
 <table class="pick">
   <tr><th>Label</th><th>Run</th></tr>
   <tr><td><code>effort:major</code>. The ticket touches a PCR or ADR, or can't be undone with one <code>git revert</code></td><td><code>/architect-ticket</code>, then <code>/implement-ticket</code>, then <code>/refactor-ticket</code></td></tr>
-  <tr><td><code>effort:medium</code>. The ticket adds or changes a function other code calls, and nothing else needs you. Needs kanban-ci in the project, or it's <code>major</code></td><td><code>/architect-ticket</code>, then <code>/kanban-ci:launch</code>, and review the PR it opens</td></tr>
+  <tr><td><code>effort:medium</code>. The ticket adds or changes a function other code calls, and nothing else needs you</td><td><code>/architect-ticket</code>, then <code>/implement-ticket</code>, then <code>/refactor-ticket</code></td></tr>
   <tr><td><code>effort:trivial</code>. A few lines, nothing public changes, and part of it only a person can check, like rendered UI or a config value</td><td>An ordinary session. The agent makes the change while you check it stays inside the ticket</td></tr>
   <tr><td><code>effort:minor</code>. Small refactors, fixes, and swaps behind a stable interface, where reading the finished diff is cheaper than settling the design first</td><td><code>/execute-ticket</code></td></tr>
   <tr><td><code>research</code> or <code>prototype</code>. A question to answer or a mock-up to build before the real ticket can be written. No effort label</td><td>No station. Answer it in its own session and close it. The next <code>/map-epic</code> run picks up the answer</td></tr>

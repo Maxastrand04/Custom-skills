@@ -35,7 +35,7 @@ The shared set distributed as `max`. Claude Code reads its selection from `.clau
 _Avoid_: package, bundle
 
 **Release**:
-One `vX.Y.Z` version of the **Plugin**, made by a hand-started run of `.github/workflows/release.yml` on `main`. `scripts/release.py` picks the number from the conventional commits since the last `vX.Y.Z` tag, and the run writes it into the `max` Plugin for Claude Code, the `max` Plugin for Codex, and `kanban-ci`, so all three share one version. Each Release gets a GitHub release page. See ADR-0010.
+One `vX.Y.Z` version of the **Plugin**, made by a hand-started run of `.github/workflows/release.yml` on `main`. `scripts/release.py` picks the number from the conventional commits since the last `vX.Y.Z` tag, and the run writes it into the `max` Plugin for Claude Code and the `max` Plugin for Codex, so both share one version. Each Release gets a GitHub release page. See ADR-0010.
 _Avoid_: deploy, publish, version bump
 
 **Release marker**:

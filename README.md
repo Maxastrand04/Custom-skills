@@ -26,7 +26,7 @@ Without a target flag, the script installs to Claude Code. Use `--codex` to sele
 
 ## Codex, from the marketplace
 
-The Codex marketplace ships the same skills as the Claude marketplace. That covers the full ticket chain, the shared developer tools, and the writing and interview rules. Schoolwork, `prune-skill`, `show-me`, and `kanban-ci` are excluded.
+The Codex marketplace ships the same skills as the Claude marketplace. That covers the full ticket chain, the shared developer tools, and the writing and interview rules. Schoolwork, `prune-skill`, and `show-me` are excluded.
 
 Add the marketplace from the `release` branch, which only moves when a release goes out:
 
@@ -81,7 +81,7 @@ Both marketplaces serve the `release` branch, not `main`. Work merged to `main` 
 
 A release is a hand-started run of the **Release** workflow in the Actions tab, on `main`. Leave **dry run** ticked to see the version it would release and the commits that decided it. Untick it to release. The run builds the Codex package and runs the tests, then picks the next version from the conventional commits since the last `vX.Y.Z` tag. A breaking change (`feat!:` or a `BREAKING CHANGE:` body line) raises the first number, `feat` raises the middle, and `fix` raises the last. Other types and commits without a type raise nothing, and a release with none of the three stops without changing anything. The first release is `1.0.0`.
 
-The run writes that one version into `max` on Claude, `max` on Codex, and `kanban-ci`, commits it to `main` as `chore(release): vX.Y.Z`, moves `release` forward to that commit, and creates the GitHub release page with notes grouped into breaking changes, features, and fixes. If a run fails partway, start it again and it finishes the same version. To try the version rules locally, run `python3 scripts/release.py plan`.
+The run writes that one version into `max` on Claude and `max` on Codex, commits it to `main` as `chore(release): vX.Y.Z`, moves `release` forward to that commit, and creates the GitHub release page with notes grouped into breaking changes, features, and fixes. If a run fails partway, start it again and it finishes the same version. To try the version rules locally, run `python3 scripts/release.py plan`.
 
 ### Re-adding a marketplace
 

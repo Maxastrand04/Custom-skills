@@ -58,7 +58,7 @@ jobs:
           VERSION: ${{ steps.plan.outputs.version }}
         run: |
           python3 scripts/release.py write "$VERSION"
-          git add -- .claude-plugin/marketplace.json plugins/max/plugin.json ci/.claude-plugin/plugin.json
+          git add -- .claude-plugin/marketplace.json plugins/max/plugin.json
           if git diff --cached --quiet; then
             # A re-run after a failure partway through. The release commit is already on main.
             target=$(git log -1 --format=%H --fixed-strings --grep="chore(release): v$VERSION")

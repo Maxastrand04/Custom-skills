@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CATALOG = ".claude-plugin/marketplace.json"
-PLUGIN_MANIFESTS = ("plugins/max/plugin.json", "ci/.claude-plugin/plugin.json")
+PLUGIN_MANIFESTS = ("plugins/max/plugin.json",)
 VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)")
 TAG = re.compile("v" + VERSION.pattern)
 CONVENTIONAL = re.compile(r"([A-Za-z]+)(\([^)]*\))?(!)?:")
@@ -147,12 +147,12 @@ def release_notes(messages):
 
 
 def write_version(version, root=ROOT):
-    """Write version into the three plugin manifests under root.
+    """Write version into the two plugin manifests under root.
 
     The manifests are the max entry in .claude-plugin/marketplace.json, which
-    gains a "version" if it has none, plugins/max/plugin.json, and
-    ci/.claude-plugin/plugin.json. Nothing else in those files changes, and
-    writing the version they already hold changes nothing.
+    gains a "version" if it has none, and plugins/max/plugin.json. Nothing else
+    in those files changes, and writing the version they already hold changes
+    nothing.
 
     Raises ValueError when version is not "X.Y.Z" or a manifest is missing.
     """
@@ -221,7 +221,7 @@ def main():
                           the last vX.Y.Z tag
     plan --version-only   print only the next version
     notes                 print the release notes for the commits since the last tag
-    write VERSION         write VERSION into the three plugin manifests
+    write VERSION         write VERSION into the two plugin manifests
 
     Any ValueError prints "error: <reason>" and exits 1.
     """
