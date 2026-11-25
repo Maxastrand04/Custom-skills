@@ -61,8 +61,4 @@ Keep each skill's existing scope and completion checks.
 
 `gloss-me` reads `~/.claude/glossary.md`. The path can stay if both agents intentionally share your existing file. A reusable version should accept a user-specified glossary path and treat a missing file as empty. Codex may need approval to update a glossary outside its writable folders.
 
-### Claude automation
-
-`ci/` invokes Claude, selects Claude models, and uses Claude authentication. Converting that runner to Codex is separate work. Its skill names also overlap the interactive ticket skills, so it is excluded from both Codex outputs.
-
 The setup has been checked for structure and packaging. The individual workflows still need real use in Codex to verify their behavior.
