@@ -58,8 +58,7 @@
   svg text { font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif; }
   svg .mono { font-family: "SF Mono", Menlo, monospace; }
   svg a { cursor: pointer; }
-  svg a circle { transition: r .15s; }
-  svg a:hover circle { stroke: var(--text); stroke-width: 2; r: 11; }
+  svg a:hover circle { stroke: var(--text); stroke-width: 2; }
   svg a:hover rect { stroke: var(--text); }
   svg a:hover text { fill: #ececec; }
 
@@ -262,10 +261,22 @@
   <path d="M180,242 C180,285 260,300 536,300" fill="none" stroke="#6a6a6a" stroke-dasharray="2 3" marker-end="url(#arr4)"/>
   <text x="330" y="292" fill="#8c8c8c" font-size="11">effort:minor</text>
   <a href="#execute-ticket">
-    <rect x="540" y="275" width="400" height="50" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
-    <text x="740" y="305" fill="#cfcfcf" font-size="13" text-anchor="middle">execute-ticket</text>
+    <rect x="540" y="275" width="192" height="50" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="636" y="305" fill="#cfcfcf" font-size="13" text-anchor="middle">execute-ticket</text>
   </a>
-  <text x="740" y="345" fill="#5c5c5c" font-size="11" text-anchor="middle">red, green, refactor in one go, then you review the PR</text>
+  <a href="#review-diff">
+    <rect x="748" y="275" width="88" height="50" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
+    <text x="792" y="305" fill="#cfcfcf" font-size="13" text-anchor="middle">review-diff</text>
+  </a>
+  <a href="#pr-ticket">
+    <rect x="852" y="275" width="88" height="50" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="896" y="305" fill="#cfcfcf" font-size="13" text-anchor="middle">pr</text>
+  </a>
+  <line x1="732" y1="300" x2="744" y2="300" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+  <line x1="836" y1="300" x2="848" y2="300" stroke="#6a6a6a" marker-end="url(#arr4)"/>
+  <text x="636" y="345" fill="#5c5c5c" font-size="11" text-anchor="middle">red, green, refactor in one go</text>
+  <text x="792" y="345" fill="#5c5c5c" font-size="11" text-anchor="middle">asks you about drift</text>
+  <text x="896" y="345" fill="#5c5c5c" font-size="11" text-anchor="middle">readies the PR</text>
 
   <!-- escalation arrows -->
   <g stroke="#6a6a6a" stroke-width="1.5" fill="none" stroke-dasharray="4 4">
@@ -640,10 +651,22 @@
     <text x="913" y="138" fill="#8fa8bd" font-size="11" text-anchor="middle">ready PR</text>
   </a>
   <a href="#execute-ticket">
-    <rect x="520" y="180" width="430" height="54" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
-    <text x="735" y="204" fill="#cfcfcf" font-size="13" text-anchor="middle">execute</text>
-    <text x="735" y="222" fill="#8c8c8c" font-size="11" text-anchor="middle">all three legs in one session, then review-diff</text>
+    <rect x="520" y="180" width="252" height="54" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="646" y="204" fill="#cfcfcf" font-size="13" text-anchor="middle">execute</text>
+    <text x="646" y="222" fill="#8c8c8c" font-size="11" text-anchor="middle">all three legs in one session</text>
   </a>
+  <a href="#review-diff">
+    <rect x="787" y="180" width="74" height="54" rx="6" fill="#2a2a2a" stroke="#c9b27f"/>
+    <text x="824" y="204" fill="#cfcfcf" font-size="13" text-anchor="middle">review</text>
+    <text x="824" y="222" fill="#c9b27f" font-size="11" text-anchor="middle">check</text>
+  </a>
+  <a href="#pr-ticket">
+    <rect x="876" y="180" width="74" height="54" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
+    <text x="913" y="204" fill="#cfcfcf" font-size="13" text-anchor="middle">pr</text>
+    <text x="913" y="222" fill="#8fa8bd" font-size="11" text-anchor="middle">ready PR</text>
+  </a>
+  <line x1="772" y1="207" x2="783" y2="207" stroke="#6a6a6a" marker-end="url(#arr)"/>
+  <line x1="861" y1="207" x2="872" y2="207" stroke="#6a6a6a" marker-end="url(#arr)"/>
 
   <!-- arrows -->
   <line x1="160" y1="71" x2="186" y2="71" stroke="#6a6a6a" marker-end="url(#arr)"/>
