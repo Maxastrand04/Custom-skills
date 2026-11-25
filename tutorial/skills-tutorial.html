@@ -128,6 +128,7 @@
   <a href="#unit-test-ticket">unit-test-ticket</a>
   <a href="#pr-ticket">pr-ticket</a>
   <a href="#execute-ticket">execute-ticket</a>
+  <a href="#review-diff">review-diff</a>
   <a href="#side">Side skills</a>
   <a href="#example">Full example</a>
   <a href="agent-configuration.html">Agent configuration</a>
@@ -255,7 +256,7 @@
   <text x="584" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">loops until green</text>
   <text x="688" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">cleans up code</text>
   <text x="792" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">folds the tests</text>
-  <text x="896" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">opens the PR</text>
+  <text x="896" y="232" fill="#5c5c5c" font-size="11" text-anchor="middle">readies the PR</text>
 
   <!-- execute -->
   <path d="M180,242 C180,285 260,300 536,300" fill="none" stroke="#6a6a6a" stroke-dasharray="2 3" marker-end="url(#arr4)"/>
@@ -282,14 +283,16 @@
 </figure>
 
 <div class="note">
-  <code>implement-ticket</code>, <code>refactor-ticket</code>, <code>unit-test-ticket</code>, <code>pr-ticket</code> and <code>execute-ticket</code> don't ask for permission, but they don't guess either. They come back to you when:
+  <code>implement-ticket</code>, <code>refactor-ticket</code>, <code>unit-test-ticket</code> and <code>execute-ticket</code> don't ask for permission, but they don't guess either. They come back to you when:
   <ul style="margin:8px 0 0">
     <li>a test contradicts the ticket, or a stub can't do what its docstring promises</li>
     <li>the same test fails the same way two passes in a row</li>
-    <li>a PCR or ADR blocks the only workable fix</li>
+    <li>a PCR or ADR blocks the only workable fix. For a PCR they load <code>amend-pcr</code>, which asks you</li>
+    <li>a Spec line turns out wrong, so they propose an amendment and wait for your yes</li>
     <li>a test turns out weaker than the ticket asked for (refactor asks before strengthening it)</li>
     <li>they finish, with a short report of what they did and the commit hash</li>
   </ul>
+  <p style="margin:10px 0 0"><code>pr-ticket</code> never comes back mid-run. It stops only when the branch has uncommitted changes or a red suite, and turns every other question into an item on the PR.</p>
 </div>
 
 <!-- ============ CONTEXT ============ -->
@@ -551,9 +554,10 @@
   <tr><td><code>docs/pcr/</code></td><td>One convention per file. Stack, allowed libraries, naming, test runner</td><td>grill-docs adds one when a grill settles something project-wide. Only <code>amend-pcr</code> changes one, after you approve</td><td>All four code stations</td></tr>
   <tr><td><code>README.md</code></td><td>How to run and configure</td><td>You. refactor and execute, when a run step changes</td><td>architect, refactor, execute</td></tr>
   <tr><td>Acceptance file</td><td>This ticket's tests</td><td>architect</td><td>implement, refactor. unit-test folds it into module tests and deletes it</td></tr>
-  <tr><td>GitHub issues</td><td>Epics, tickets, decisions so far, fog</td><td>map-epic, new-ticket</td><td>Every station</td></tr>
+  <tr><td>GitHub issues</td><td>Epics, tickets, decisions so far, fog, Spec amendment notes</td><td>map-epic, new-ticket. Any station posts an amendment once you approve it</td><td>Every station</td></tr>
+  <tr><td>Ticket PR</td><td>A ticket branch's history: each station's report, the review note, amendment notes</td><td>Every station. pr-ticket rewrites the description at the end</td><td>Every station, pr-ticket, you</td></tr>
 </table>
-<p class="muted">Records share one format: Decision, Reason, Consequence, Date, file named <code>NNNN-slug.md</code>. A record blocks the work? The skill names it and stops. It never codes around it.</p>
+<p class="muted">Records share one format: Decision, Reason, Consequence, Date, file named <code>NNNN-slug.md</code>. A record blocks the work? The skill never codes around it. An ADR gets argued with you, and a PCR loads <code>amend-pcr</code>, which changes nothing until you approve.</p>
 
 <!-- ============ SETUP ============ -->
 <h2 id="setup">Setup</h2>
@@ -567,7 +571,7 @@
 
 <!-- ============ BOARD ============ -->
 <h2 id="board">The board</h2>
-<p>The skills form a kanban board. Each skill is a station, and a piece of work moves left to right through them. Work starts as a ticket, a GitHub issue filed by either <code>map-epic</code> or <code>new-ticket</code>, never both. From there its effort label picks the route onto a branch. A <code>major</code> ticket goes through the five code stations. A <code>minor</code> ticket goes through <code>execute-ticket</code> alone.</p>
+<p>The skills form a kanban board. Each skill is a station, and a piece of work moves left to right through them. Work starts as a ticket, a GitHub issue filed by either <code>map-epic</code> or <code>new-ticket</code>, never both. From there its effort label picks the route onto a branch. A <code>major</code> or <code>medium</code> ticket goes through the five code stations. A <code>minor</code> ticket goes through <code>execute-ticket</code>, then <code>review-diff</code>.</p>
 
 <figure>
 <svg viewBox="0 0 960 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kanban board of skills">
@@ -633,12 +637,12 @@
   <a href="#pr-ticket">
     <rect x="876" y="96" width="74" height="54" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
     <text x="913" y="120" fill="#cfcfcf" font-size="13" text-anchor="middle">pr</text>
-    <text x="913" y="138" fill="#8fa8bd" font-size="11" text-anchor="middle">open PR</text>
+    <text x="913" y="138" fill="#8fa8bd" font-size="11" text-anchor="middle">ready PR</text>
   </a>
   <a href="#execute-ticket">
     <rect x="520" y="180" width="430" height="54" rx="6" fill="#2a2a2a" stroke="#8fa8bd"/>
     <text x="735" y="204" fill="#cfcfcf" font-size="13" text-anchor="middle">execute</text>
-    <text x="735" y="222" fill="#8c8c8c" font-size="11" text-anchor="middle">all three legs in one session, opens a PR</text>
+    <text x="735" y="222" fill="#8c8c8c" font-size="11" text-anchor="middle">all three legs in one session, then review-diff</text>
   </a>
 
   <!-- arrows -->
@@ -651,7 +655,8 @@
   <line x1="683" y1="123" x2="694" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
   <line x1="772" y1="123" x2="783" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
   <line x1="861" y1="123" x2="872" y2="123" stroke="#6a6a6a" marker-end="url(#arr)"/>
-  <text x="493" y="114" fill="#8c8c8c" font-size="11" text-anchor="middle">major</text>
+  <text x="493" y="100" fill="#8c8c8c" font-size="11" text-anchor="middle">major</text>
+  <text x="493" y="114" fill="#8c8c8c" font-size="11" text-anchor="middle">medium</text>
   <text x="470" y="226" fill="#8c8c8c" font-size="11" text-anchor="middle">minor</text>
 
   <!-- side skills -->
@@ -670,7 +675,7 @@
 
 <!-- ============ GIT ============ -->
 <h2 id="git">The git flow</h2>
-<p>A ticket gets its own branch, cut from <code>main</code> and named <code>&lt;issue-number&gt;-&lt;slug&gt;</code>. Each code station leaves its own commit on that branch, so you can read the history and see exactly what each station did. The last station, <code>pr-ticket</code>, pushes the branch and opens the pull request. Merging it is your job, and the merge closes the issue.</p>
+<p>A ticket gets its own branch, cut from <code>main</code> and named <code>&lt;issue-number&gt;-&lt;slug&gt;</code>. The station that creates the branch opens a draft pull request for it straight away, the <em>ticket PR</em>. Each code station leaves its own commit on the branch, pushes it, and posts a short report on the ticket PR, so you can follow the work on GitHub as it happens. The issue keeps the spec. The PR keeps the history. The last station, <code>pr-ticket</code>, rewrites the PR description for a reviewer and marks it ready. Merging it is your job, and the merge closes the issue.</p>
 
 <figure>
 <svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Git graph of a ticket branch">
@@ -689,6 +694,7 @@
   <line x1="180" y1="170" x2="710" y2="170" stroke="#8fa8bd" stroke-width="2"/>
   <path d="M710,170 C760,170 760,60 790,60" fill="none" stroke="#8fa8bd" stroke-width="2" stroke-dasharray="5 5"/>
   <text x="180" y="150" fill="#8c8c8c" font-size="12" class="mono">42-fix-expired-session</text>
+  <text x="460" y="150" fill="#5c5c5c" font-size="11" text-anchor="middle">draft PR open from the first commit</text>
 
   <!-- commits -->
   <a href="#architect-ticket">
@@ -718,8 +724,8 @@
   <a href="#pr-ticket">
     <circle cx="710" cy="170" r="7" fill="#232323" stroke="#8fa8bd" stroke-width="2"/>
     <text x="710" y="200" fill="#cfcfcf" font-size="12" text-anchor="middle">pr-ticket</text>
-    <text x="710" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle">pushes,</text>
-    <text x="710" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">opens the PR</text>
+    <text x="710" y="218" fill="#8c8c8c" font-size="11" text-anchor="middle">rewrites the PR,</text>
+    <text x="710" y="234" fill="#5c5c5c" font-size="11" text-anchor="middle">marks it ready</text>
   </a>
 
   <text x="818" y="128" fill="#8c8c8c" font-size="11" text-anchor="middle">you</text>
@@ -741,9 +747,10 @@
 <p>Two terms the diagram leans on:</p>
 <ul>
   <li><strong>Stub.</strong> A function with its final name, parameters and docstring, whose body only raises "not implemented". It pins down what the function looks like before anyone writes it.</li>
+  <li><strong>Ticket PR.</strong> The draft pull request a ticket's branch gets the moment it exists. Stations post their reports there. When a Spec line turns out wrong, the station proposes a change, and once you approve it posts a <code>Spec amendment</code> note on both the issue and the PR. The issue body itself never changes.</li>
   <li><strong>Acceptance file.</strong> One test file at the root of the test tree, named in the project's style, like <code>tests/test_acceptance.py</code> or <code>tests/acceptance.test.ts</code>. It holds this ticket's tests and nothing else, and it is the finish line for implement. <code>unit-test-ticket</code> moves its tests into the normal test files and deletes it, so <code>main</code> never carries one.</li>
 </ul>
-<p class="muted">An execute-ticket branch looks different. It has one <code>Test #42</code> commit, one <code>Implement #42</code> commit per behaviour, and a <code>Refactor</code> commit. Then the skill pushes and opens the PR itself. The issue closes when you merge.</p>
+<p class="muted">An execute-ticket branch looks different. It opens its own ticket PR, then has one <code>Test #42</code> commit, one <code>Implement #42</code> commit per behaviour, and a <code>Refactor</code> commit. Then it pushes and hands the branch to <code>pr-ticket</code>. The issue closes when you merge.</p>
 
 <!-- ============ GRILL ============ -->
 <h2 id="grill">What a grilling round looks like</h2>
@@ -790,13 +797,13 @@
 </table>
 <p class="muted">A quick test: if you can picture three or more tickets that only make sense together, it's an epic. If it ships alone, it's a single ticket.</p>
 
-<p>Once a task ticket exists, its effort label picks the route. Effort means how much of you the ticket needs, not how big the diff is. <code>map-epic</code> and <code>new-ticket</code> both suggest a level for each task ticket, and you confirm or override it.</p>
+<p>Once a task ticket exists, its effort label picks the route. Effort means how much of you the ticket needs, not how big the diff is. Implementation only means no public name changes and no record is needed. <code>map-epic</code> and <code>new-ticket</code> both suggest a level for each task ticket, and you confirm or override it.</p>
 <table class="pick">
   <tr><th>Label</th><th>Run</th></tr>
-  <tr><td><code>effort:major</code>. The ticket touches a PCR or ADR, or can't be undone with one <code>git revert</code></td><td><code>/architect-ticket</code>, then <code>/implement-ticket</code>, then <code>/refactor-ticket</code></td></tr>
-  <tr><td><code>effort:medium</code>. The ticket adds or changes a function other code calls, and nothing else needs you</td><td><code>/architect-ticket</code>, then <code>/implement-ticket</code>, then <code>/refactor-ticket</code></td></tr>
-  <tr><td><code>effort:trivial</code>. A few lines, nothing public changes, and part of it only a person can check, like rendered UI or a config value</td><td>An ordinary session. The agent makes the change while you check it stays inside the ticket</td></tr>
-  <tr><td><code>effort:minor</code>. Small refactors, fixes, and swaps behind a stable interface, where reading the finished diff is cheaper than settling the design first</td><td><code>/execute-ticket</code></td></tr>
+  <tr><td><code>effort:major</code>. The ticket adds a file, changes behaviour in more than one file, changes a function or other public name that more than one other file already calls, or can't be fully undone with one <code>git revert</code></td><td><code>/architect-ticket</code>, <code>/implement-ticket</code>, <code>/refactor-ticket</code>, <code>/unit-test-ticket</code>, then <code>/pr-ticket</code></td></tr>
+  <tr><td><code>effort:medium</code>. None of that, but the ticket changes a function other code calls, or needs an ADR or PCR</td><td>The same five as <code>major</code></td></tr>
+  <tr><td><code>effort:trivial</code>. Implementation only, a few lines, and part of it only a person can check, like rendered UI or a config value</td><td>An ordinary session where the agent makes the change while you check it stays inside the ticket. Then <code>/review-diff</code>, then <code>/pr-ticket</code></td></tr>
+  <tr><td><code>effort:minor</code>. Implementation only, and tests can check every Behaviour line. Small refactors, fixes, and swaps behind a stable interface</td><td><code>/execute-ticket</code>, then <code>/review-diff</code>, then <code>/pr-ticket</code> once more so the PR shows the review</td></tr>
   <tr><td><code>research</code> or <code>prototype</code>. A question to answer or a mock-up to build before the real ticket can be written. No effort label</td><td>No station. Answer it in its own session and close it. The next <code>/map-epic</code> run picks up the answer</td></tr>
 </table>
 
@@ -838,7 +845,7 @@
   <dl>
     <dt>It does</dt><dd>Reads <code>CONTEXT.md</code>, <code>docs/adr/</code>, <code>docs/pcr/</code> and the code around your topic, then interviews you. It points out when you use a word differently from <code>CONTEXT.md</code> or when the plan breaks a record. As each decision settles it adds the term to <code>CONTEXT.md</code> and writes or amends an ADR, or writes a new PCR. It never changes an existing PCR. That takes <code>amend-pcr</code> and your approval.</dd>
     <dt>Stops for you</dt><dd>At every interview round.</dd>
-    <dt>Leaves behind</dt><dd>Updated <code>CONTEXT.md</code> and records, uncommitted. Started by you, it ends with a list of what changed. Borrowed by another skill, it hands back to that skill, which commits the docs with its own work.</dd>
+    <dt>Leaves behind</dt><dd>Updated <code>CONTEXT.md</code> and records, uncommitted. Started by you, it ends with a list of what changed. Borrowed by another skill, it hands back to that skill. <code>architect-ticket</code> commits the docs in its red commit. <code>new-ticket</code>, <code>map-epic</code> and <code>brainstorming</code> leave them for you to commit.</dd>
   </dl>
   <pre>/grill-docs I want to add refunds to the order flow
 /grill-docs 42
@@ -849,17 +856,20 @@ grill me on whether we need a cache at all</pre>
   <header><h3><span class="dot" style="background:var(--red)"></span> architect-ticket</h3><span class="tag">station 2</span><span class="tag">red commit</span></header>
   <p>Decides what the code will look like from the outside, then writes failing tests for it. You own this part. Every name and parameter gets agreed with you here.</p>
   <dl>
-    <dt>It does</dt><dd>Reads the ticket and the code around it, posts a "What I found" summary, then interviews you about each new function: name, parameters, return value, and what errors it raises. Then it creates the branch, writes the stubs and the acceptance file, and runs the tests to check every one fails for the right reason.</dd>
-    <dt>Stops for you</dt><dd>After "What I found", so you can correct it. Then at the staged diff. Nothing is committed until you approve.</dd>
-    <dt>Leaves behind</dt><dd>Branch <code>42-&lt;slug&gt;</code>, one commit <code>Architect #42: ...</code>, and an ADR in <code>docs/adr/</code> for each design choice you argued over.</dd>
+    <dt>It does</dt><dd>Reads the ticket and the code around it and posts a "What I found" summary. Then it creates the branch and opens the draft ticket PR. Anything that has to be settled before code exists, like a PCR or ADR in the way, comes as one grill round. Then it works through the new functions one at a time, in the order the ticket's flow reaches them. It writes each one straight into its real source file, with name, typed parameters, return value, a docstring listing every error and edge case, and a body that only raises "not implemented". In chat it defends that shape in a few lines of prose and never pastes code, so you read the code in your own editor. Once every function is settled, it writes the acceptance file in one pass and runs it to check every test fails for the right reason.</dd>
+    <dt>Stops for you</dt><dd>After "What I found", so you can correct it. After each function, until you say "ok" or ask for a change. Then at the unstaged diff. Nothing is committed until you approve.</dd>
+    <dt>Leaves behind</dt><dd>Branch <code>42-&lt;slug&gt;</code> with its draft PR, one commit <code>Architect #42: ...</code>, a <code>Red at ...</code> comment on the PR, and an ADR in <code>docs/adr/</code> for each design choice you argued over. <code>grill-docs</code> writes those as they settle.</dd>
   </dl>
   <pre><span class="c"># from an up-to-date main</span>
 /architect-ticket 42
+<span class="c"># after a function, with the file open in your editor</span>
+why a list and not an iterator?
+ok
 <span class="c"># at the diff gate</span>
 looks good, commit
 <span class="c"># or, to fix something small</span>
 rename refresh_session to renew_session, keep the rest</pre>
-  <p class="muted">If your objection is about the design itself, not a name, say so. It goes back to the interview rather than patching the code.</p>
+  <p class="muted">If your objection is about the design itself, not a name, say so. It goes back to those functions, one at a time, rather than patching the code.</p>
 </section>
 
 <section class="card" id="implement-ticket">
@@ -868,7 +878,7 @@ rename refresh_session to renew_session, keep the rest</pre>
   <dl>
     <dt>It does</dt><dd>Reads the ticket and the architect's diff, then loops: write code, run the acceptance file, read failures. It reports each pass as "pass 3: 2 of 6 still red". It runs only the acceptance file, never the whole suite. Old tests the ticket made out of date are refactor's problem.</dd>
     <dt>Stops for you</dt><dd>Only when something is wrong that isn't its call: a test that contradicts the ticket, a stub that can't do the job, or no progress after two passes.</dd>
-    <dt>Leaves behind</dt><dd>One commit <code>Implement #42: ...</code> and a comment on the issue listing the passing tests.</dd>
+    <dt>Leaves behind</dt><dd>One pushed commit <code>Implement #42: ...</code> and a comment on the ticket PR, one summary line with the passing tests folded below it. If it stops early, the same kind of report goes on the PR, failing tests open and passing ones folded.</dd>
   </dl>
   <pre><span class="c"># on the ticket branch, in a fresh session</span>
 /implement-ticket</pre>
@@ -885,8 +895,8 @@ rename refresh_session to renew_session, keep the rest</pre>
       Cleans the code against <code>docs/pcr/</code>, <code>docs/adr/</code> and its own code standards.
       Updates <code>CONTEXT.md</code> and <code>README.md</code> if the branch changed something they describe.
     </dd>
-    <dt>Stops for you</dt><dd>If a test is weaker than the ticket asked for, it asks before strengthening it. If a function's public or private status is unclear, or a test reaches into private code, it asks once, all together, before any code moves.</dd>
-    <dt>Leaves behind</dt><dd><code>Refactor: ...</code>, plus <code>Fix #42: ...</code> if implement broke something and <code>Tests #42: module halt</code> if it asked you about tests. The issue stays open.</dd>
+    <dt>Stops for you</dt><dd>If a test is weaker than the ticket asked for, it asks before strengthening it. If you say the Spec line itself is wrong, it proposes an amendment instead. If a function's public or private status is unclear, or a test reaches into private code, it asks once, all together, before any code moves.</dd>
+    <dt>Leaves behind</dt><dd><code>Refactor: ...</code>, plus <code>Fix #42: ...</code> if implement broke something and <code>Tests #42: module halt</code> if it asked you about tests, all pushed. Its report tables go on the ticket PR. The issue stays open.</dd>
   </dl>
   <pre><span class="c"># on the ticket branch, in a fresh session</span>
 /refactor-ticket</pre>
@@ -900,7 +910,7 @@ rename refresh_session to renew_session, keep the rest</pre>
       Drops acceptance tests that can't fail and rewrites ones tied to private code through the public interface.
       Moves each surviving test into its module's test file and deletes the acceptance file.
       Tidies the touched modules' tests against its own test standards, and checks every test it writes can go red.
-      Comments on the issue with where each acceptance test ended up.
+      Pushes, then comments on the ticket PR with how many tests moved, were rewritten or were dropped, and folds the per-test lines below.
     </dd>
     <dt>Stops for you</dt><dd>Only if the branch isn't ready: no <code>Refactor:</code> commit yet, the acceptance file already folded, or a red suite. A new test that fails on the untouched code has found a bug. It deletes that test and lists it for the reviewer instead of fixing the code.</dd>
     <dt>Leaves behind</dt><dd>One commit <code>Tests #42: tidy and fold</code>, and no acceptance file.</dd>
@@ -910,32 +920,56 @@ rename refresh_session to renew_session, keep the rest</pre>
 </section>
 
 <section class="card" id="pr-ticket">
-  <header><h3><span class="dot" style="background:var(--blue)"></span> pr-ticket</h3><span class="tag">station 6</span><span class="tag">opens a PR</span></header>
-  <p>The last station. Pushes the finished branch and opens a PR whose body a reviewer can read without having seen the ticket. It never edits code or tests.</p>
+  <header><h3><span class="dot" style="background:var(--blue)"></span> pr-ticket</h3><span class="tag">station 6</span><span class="tag">any finished branch</span></header>
+  <p>The last station, and the one skill here you can use on any branch. Claude starts it on its own whenever a branch is ready for review, in any session, with or without the kanban. It rewrites the ticket PR's description into a body a reviewer can read without having seen the ticket. It never edits code or tests.</p>
   <dl>
     <dt>It does</dt><dd>
-      Reads the ticket, the commits and the full diff.
-      Writes three sections. Summary says what changed, with a diagram for new features. Evidence lists the tests that failed at the architect commit and pass now. Merge danger says whether a revert can undo the merge, how far a bad merge reaches including behaviour callers may rely on, and which changed behaviour no test protects.
-      Copies every "for the reviewer" item the earlier stations left on the issue.
+      Runs in a fresh subagent that knows nothing about your session, so it writes only from the issue, the PR comments, the commits and the full diff.
+      Writes Summary, what changed, with a diagram for new features. Evidence, the tests that failed at the red commit and pass now. Merge danger, whether a revert can undo the merge, how far a bad merge reaches, and which changed behaviour no test protects.
+      Folds the detail. Summary and the revert verdict stay open. Evidence, the reach lines and the untested list sit in closed folds you open with a click.
+      Sorts every item the stations left into For the reviewer, as three coloured boxes. Red for bugs found, yellow for things that need your call, green for notes, folded. A missing or outdated review note is a yellow item.
+      Pushes, then marks the PR ready when no red or yellow item is left. Otherwise the PR stays a draft until you deal with them and flip it.
     </dd>
-    <dt>Stops for you</dt><dd>Only if the branch isn't ready: the tests aren't folded, there are uncommitted changes, the suite is red, or a PR already exists. Otherwise it pushes and opens the PR without asking. You read the body on the PR.</dd>
-    <dt>Leaves behind</dt><dd>A pushed branch and a PR with <code>Closes #42</code>, so the issue closes when you merge.</dd>
+    <dt>Stops for you</dt><dd>Only if the branch has uncommitted changes or the suite is red. It never stops to ask anything else. An open question becomes a yellow item on the PR. A branch with no ticket still gets a PR, written from the diff alone.</dd>
+    <dt>Leaves behind</dt><dd>A pushed branch and a rewritten PR with <code>Closes #42</code>, ready or draft, so the issue closes when you merge.</dd>
   </dl>
   <pre><span class="c"># on the ticket branch, in a fresh session</span>
-/pr-ticket</pre>
+/pr-ticket
+<span class="c"># or, in any session once the work is done</span>
+this branch is ready, open the PR</pre>
 </section>
 
 <section class="card" id="execute-ticket">
-  <header><h3><span class="dot" style="background:var(--blue)"></span> execute-ticket</h3><span class="tag">instead of stations 2 to 6</span><span class="tag">opens a PR</span></header>
-  <p>For a ticket labelled <code>effort:minor</code>. Runs red, green and refactor in one session with no gates, then opens a PR. The review moves from the design, before the code, to the PR, after it.</p>
+  <header><h3><span class="dot" style="background:var(--blue)"></span> execute-ticket</h3><span class="tag">instead of stations 2 to 5</span><span class="tag">hands off to pr-ticket</span></header>
+  <p>For a ticket labelled <code>effort:minor</code>. Runs red, green and refactor in one session with no gates, then hands the branch to <code>pr-ticket</code>. The review moves from the design, before the code, to the PR, after it.</p>
   <dl>
-    <dt>It does</dt><dd>Reads the ticket and the code it touches, then checks the label still holds. Covers each Behaviour line with a failing test, makes them pass one behaviour at a time, runs the existing tests near the files it changed, and cleans up against the same records as refactor.</dd>
-    <dt>Stops for you</dt><dd>If the ticket turns out to need a decision: a public function changes, a PCR or ADR is in the way, or a behaviour can't be tested. It names the reason and tells you to relabel and run <code>/architect-ticket</code>. Same escalations as implement otherwise.</dd>
-    <dt>Leaves behind</dt><dd>A pushed branch, one <code>Test #42</code> commit, one <code>Implement #42</code> commit per behaviour, a <code>Refactor</code> commit, and a PR that closes the issue on merge.</dd>
+    <dt>It does</dt><dd>Creates the branch and opens the draft ticket PR. Reads the ticket and the code it touches, then checks the label still holds. Covers each Behaviour line with a failing test, makes them pass one behaviour at a time, runs the existing tests near the files it changed, and cleans up against the same records as refactor.</dd>
+    <dt>Stops for you</dt><dd>If the ticket turns out to need a decision: a public function changes, an ADR or PCR is needed or in the way, or a behaviour can't be tested. It names the reason and the route for the right label. Same escalations as implement otherwise. Every stop also goes on the ticket PR.</dd>
+    <dt>Leaves behind</dt><dd>A pushed branch, one <code>Test #42</code> commit, one <code>Implement #42</code> commit per behaviour, a <code>Refactor</code> commit, and a ticket PR <code>pr-ticket</code> has written up. With no review note yet, it stays a draft.</dd>
   </dl>
   <pre><span class="c"># from an up-to-date main</span>
-/execute-ticket 42</pre>
-  <p class="muted">The PR body starts with a note that AI wrote it unattended. Read the diff before you merge. That's the only review it gets.</p>
+/execute-ticket 42
+<span class="c"># then the review, in a fresh session</span>
+/review-diff 42
+/pr-ticket</pre>
+  <p class="muted">Nobody watched the code get written, so <code>review-diff</code> is the review. Then <code>pr-ticket</code> runs again, sees the review note, and marks the PR ready if nothing is left to tackle.</p>
+</section>
+
+<section class="card" id="review-diff">
+  <header><h3><span class="dot" style="background:var(--amber)"></span> review-diff</h3><span class="tag">after trivial and minor</span><span class="tag">1 to 3 commits</span></header>
+  <p>The review for a branch <code>refactor-ticket</code> never saw: an <code>effort:minor</code> branch from <code>execute-ticket</code>, an <code>effort:trivial</code> change from an ordinary session, or anything you built by hand. It is the last step before <code>pr-ticket</code> on those routes.</p>
+  <dl>
+    <dt>It does</dt><dd>
+      Opens the ticket PR if the branch has none yet, and commits anything left loose with your say.
+      Checks every Spec line against the diff. Drift you call a mistake gets fixed. Drift you call intentional becomes a Spec amendment you approve.
+      Cleans the changed files against <code>docs/pcr/</code>, <code>docs/adr/</code> and the same code standards as refactor, without changing behaviour. A PCR in the way loads <code>amend-pcr</code>.
+    </dd>
+    <dt>Stops for you</dt><dd>At the drift table, for your verdict on each line. When an ADR or PCR blocks a fix.</dd>
+    <dt>Leaves behind</dt><dd>Pushed commits and a review note on the ticket PR, which <code>pr-ticket</code> reads to say the branch was reviewed.</dd>
+  </dl>
+  <pre><span class="c"># on the finished branch, in a fresh session</span>
+/review-diff 42
+/pr-ticket</pre>
 </section>
 
 <hr>
@@ -978,7 +1012,7 @@ rename refresh_session to renew_session, keep the rest</pre>
 
 <!-- ============ EXAMPLE ============ -->
 <h2 id="example">Full example</h2>
-<p>A small bug, from idea to merged PR. Everything you type is below.</p>
+<p>A small bug, from idea to merged PR. Everything you type is below. From step 2 on, the ticket PR on GitHub shows each station's report as it lands.</p>
 <pre><span class="c"># 1. file the ticket</span>
 /new-ticket users get logged out when they reload the page
 <span class="c">#    answer the rounds, confirm the label, approve the preview. Ticket #42 is filed.</span>
@@ -999,12 +1033,15 @@ git checkout main &amp;&amp; git pull
 
 <span class="c"># 6. ship, in a fresh session</span>
 /pr-ticket
-<span class="c">#    review the PR it opens, then merge</span></pre>
+<span class="c">#    read the ticket PR it marks ready, then merge</span></pre>
 
 <p>If you labelled #42 <code>effort:minor</code> in step 1, steps 2 to 6 shrink to this:</p>
 <pre>git checkout main &amp;&amp; git pull
 /execute-ticket 42
-<span class="c">#    read the PR it opens, then merge</span></pre>
+<span class="c"># in a fresh session</span>
+/review-diff 42
+/pr-ticket
+<span class="c">#    read the ticket PR, then merge</span></pre>
 
 <p class="muted">Skill sources live in the <a href="https://github.com/Maxastrand04/Custom-skills">Custom-skills repo</a>. Change them there, and <code>git pull</code> picks the change up everywhere they're installed.</p>
 

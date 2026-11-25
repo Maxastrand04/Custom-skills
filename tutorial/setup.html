@@ -97,13 +97,13 @@
   <tr><td>Use the skills as they are, in Codex</td><td><a href="#codex">The Codex marketplace</a><span class="tag">Recommended</span></td></tr>
   <tr><td>Change the skills, add your own, or use Antigravity</td><td><a href="#install-sh">install.sh on a fork</a></td></tr>
 </table>
-<p class="muted">Using both Claude Code and Codex? Install each marketplace in its own tool. They ship the same 18 skills and don't clash.</p>
+<p class="muted">Using both Claude Code and Codex? Install each marketplace in its own tool. They ship the same 20 skills and don't clash.</p>
 
 <!-- ============ BEFORE ============ -->
 <h2 id="before">Before you start</h2>
 <ul>
   <li><a href="https://code.claude.com/docs/en/setup">Claude Code</a> or <a href="https://developers.openai.com/codex/cli">Codex</a> installed and logged in.</li>
-  <li>The <a href="https://cli.github.com/"><code>gh</code> command line tool</a>, logged in with <code>gh auth login</code>. The kanban skills (<code>map-epic</code>, <code>new-ticket</code>, and the four <code>*-ticket</code> workflow skills) file tickets as GitHub issues and stop without it. The other skills don't need it.</li>
+  <li>The <a href="https://cli.github.com/"><code>gh</code> command line tool</a>, logged in with <code>gh auth login</code>. The kanban skills (<code>map-epic</code>, <code>new-ticket</code>, <code>review-diff</code> and every <code>*-ticket</code> skill) file tickets as GitHub issues and open pull requests, and stop without it. The other skills don't need it.</li>
 </ul>
 
 <!-- ============ MARKETPLACE ============ -->
@@ -141,7 +141,7 @@
   <div class="num">4</div>
   <div>
     <h3>Check it worked</h3>
-    <p>Type <code>/max:</code> and the list should show 18 skills. Try one:</p>
+    <p>Type <code>/max:</code> and the list should show 20 skills. Try one:</p>
     <pre>/max:brainstorming a CLI that renames photos by the date they were taken</pre>
     <p class="muted">Every skill from the plugin starts with <code>max:</code>. The other sheets write them without it, so <code>/map-epic</code> there means <code>/max:map-epic</code> for you.</p>
   </div>
@@ -155,7 +155,7 @@ claude plugin install max@custom-skills</pre>
 
 <!-- ============ CODEX ============ -->
 <h2 id="codex">Codex marketplace<span class="tag">Recommended</span></h2>
-<p>Same 18 skills as the Claude Code marketplace, built for Codex.</p>
+<p>Same 20 skills as the Claude Code marketplace, built for Codex.</p>
 
 <div class="step">
   <div class="num">1</div>
