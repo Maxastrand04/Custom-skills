@@ -97,9 +97,14 @@ jobs:
         if: ${{ !inputs.dry_run }}
         env:
           VERSION: ${{ steps.plan.outputs.version }}
+          TARGET: ${{ steps.commit.outputs.target }}
           AGY_DEPLOY_KEY: ${{ secrets.AGY_DEPLOY_KEY }}
           REMOTE: git@github.com:Maxastrand04/Custom-skills-agy.git
         run: |
+          source="$RUNNER_TEMP/release-source"
+          git worktree add --quiet --detach "$source" "$TARGET"
+          python3 scripts/build-agy.py build "$VERSION" "$source"
+          python3 scripts/build-agy.py check
           key="$RUNNER_TEMP/agy_deploy_key"
           trap 'rm -f "$key"' EXIT
           (umask 077 && printf '%s\n' "$AGY_DEPLOY_KEY" > "$key")

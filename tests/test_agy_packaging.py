@@ -592,6 +592,13 @@ class PublishTreeTests(PublishCase):
         self.publish()
         self.assertEqual(self.remote.subject(), TITLE)
 
+    def test_folder_that_became_a_file_is_published(self):
+        write(self.remote.work / "skills/alpha/notes/old/one.md", "old\n")
+        self.remote.commit("docs: Add notes")
+        write(self.tree / "skills/alpha/notes", "now a file\n")
+        self.publish()
+        self.assertEqual(self.remote.show("skills/alpha/notes"), b"now a file\n")
+
     def test_skill_dropped_from_the_list_is_deleted(self):
         self.publish()
         self.assertNotIn("skills/old/SKILL.md", self.remote.files())
@@ -799,6 +806,14 @@ class CommandLineTests(unittest.TestCase):
 
     def test_build_exits_zero(self):
         self.assertEqual(self.run_script("build", "9.9.9").returncode, 0)
+
+    def test_build_reads_the_source_folder_when_given(self):
+        with tempfile.TemporaryDirectory(prefix="agy-source-test-") as temp:
+            fake = FakeCheckout(Path(temp))
+            fake.skill("kanban/alpha")
+            fake.list(["./kanban/alpha"])
+            self.run_script("build", "9.9.9", str(fake.root))
+        self.assertEqual([p.name for p in (self.BUILD / "skills").glob("*")], ["alpha"])
 
     def test_check_after_build_exits_zero(self):
         self.run_script("build", "9.9.9")

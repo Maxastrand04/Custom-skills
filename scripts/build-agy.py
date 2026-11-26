@@ -28,7 +28,7 @@ SCHEMA_KEYS = {
     "$schema", "name", "version", "displayName", "description", "skills", "disabled",
     "author", "homepage", "repository", "license", "keywords", "logo", "suggestedPrompts",
 }
-USAGE = "usage: build-agy.py build VERSION | build-agy.py check | build-agy.py publish VERSION REMOTE"
+USAGE = "usage: build-agy.py build VERSION [SOURCE] | build-agy.py check | build-agy.py publish VERSION REMOTE"
 BOT_NAME = "github-actions[bot]"
 BOT_EMAIL = "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -220,11 +220,20 @@ def _sync_clone(clone, tree):
     tracked = _git(clone, "ls-files", "-z", strip=False).split("\0")
     for path in filter(None, tracked):
         if not _kept(path):
-            (clone / path).unlink(missing_ok=True)
+            _delete_file(clone / path, clone)
     for source in sorted(tree.rglob("*")):
         relative = source.relative_to(tree).as_posix()
         if source.is_file() and not _kept(relative) and not relative.startswith(".git/"):
             _write_file(clone / relative, source.read_bytes())
+
+
+def _delete_file(target, root):
+    """Delete the file at target, then every folder under root that this leaves empty."""
+    target.unlink(missing_ok=True)
+    for folder in target.parents:
+        if folder == root or not folder.is_dir() or any(folder.iterdir()):
+            return
+        folder.rmdir()
 
 
 def _git(cwd, *args, bot=False, strip=True):
@@ -371,8 +380,11 @@ def _has_description(settings):
 def main():
     """Command line for the release workflow.
 
-    build VERSION   write the tree for VERSION into .agy-build/ at the repo root
-                    and print how many skills it holds
+    build VERSION [SOURCE]
+                    write the tree for VERSION into .agy-build/ at the repo root
+                    and print how many skills it holds. The skills, their list
+                    and the rules file are read from the checkout at SOURCE, or
+                    from this repo when SOURCE is left out
     check           check .agy-build/ with check_tree; print each message on
                     its own line to stderr and exit 1 if there are any,
                     otherwise print how many skills passed
@@ -389,8 +401,9 @@ def main():
     """
     args = sys.argv[1:]
     tree = ROOT / BUILD
-    if len(args) == 2 and args[0] == "build":
-        names = build_tree(args[1], tree)
+    if len(args) in (2, 3) and args[0] == "build":
+        source = Path(args[2]) if len(args) == 3 else ROOT
+        names = build_tree(args[1], tree, source)
         print(f"Built {len(names)} skills into {BUILD}/")
     elif args == ["check"]:
         messages = check_tree(tree)
