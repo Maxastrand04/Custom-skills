@@ -79,8 +79,8 @@ A module here is one file. A public interface is any name, parameter, or return 
 
 | Level | When | The user's part |
 |---|---|---|
-| `effort:major` | Any major check holds | Takes part in every step, from settling the interface to reviewing the code |
-| `effort:medium` | The ticket changes a public interface, or needs an ADR or PCR in `docs/adr/` or `docs/pcr/` | Settles the interface, tests, and any record, then reviews the finished change |
+| `effort:major` | Any major check holds | Settles the interface, tests, and any record with the orchestrator, answers every question the grill left open, then reviews the PR |
+| `effort:medium` | The ticket changes a public interface, or needs an ADR or PCR in `docs/adr/` or `docs/pcr/` | Settles the interface, tests, and any record with the orchestrator, answers its escalations, then reviews the PR |
 | `effort:trivial` | Implementation only, a few lines, and a Behaviour line no automated test can reach | Works alongside the agent, keeps it inside the ticket, and checks what no test reaches |
 | `effort:minor` | Implementation only, and automated tests reach every Behaviour line | Reviews the finished change |
 

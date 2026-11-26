@@ -12,6 +12,14 @@ One session, one ticket, all three legs of **red-green-refactor**, no gates. The
 
 Every `../` path resolves from this skill's directory. Never search the repo for it.
 
+**Orchestrated runs.** `tdd-ticket` starts this skill in a subagent with the line `Option: orchestrated`. With that line, three things change, and nothing else:
+
+- Skip step 6. Don't push for `pr-ticket` and don't invoke it. Push the branch with `git push -u origin <branch>` and go to step 7.
+- Word every halt without naming a skill or a command. The orchestrator decides the route, so `/architect-ticket <N>` and the like stay out of the halt text, on the ticket PR too.
+- End with step 7's three lines, without `pr-ticket`'s report, then the result block the orchestrator's prompt defines.
+
+Without the line, run exactly as written.
+
 ---
 
 ## 1. Pin the work
