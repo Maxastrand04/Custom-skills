@@ -158,6 +158,30 @@ def publish_tree(version, tree, remote):
     no tag.
     """
     tree = Path(tree)
+    _check_publish_input(version, tree)
+    tag = _tag_name(version)
+    with tempfile.TemporaryDirectory(prefix="agy-publish-") as temp:
+        clone = Path(temp) / "clone"
+        _git(temp, "clone", "--quiet", "--", str(remote), str(clone))
+        if _git(clone, "ls-remote", "--tags", "origin", f"refs/tags/{tag}"):
+            return None
+        branch = _default_branch(clone)
+        title = f"chore(release): {tag}"
+        if _git(clone, "log", "-1", "--format=%s") != title:
+            _commit_and_push_tree(clone, tree, title, branch)
+        commit = _git(clone, "rev-parse", "HEAD")
+        _git(clone, "tag", tag, commit)
+        _git(clone, "push", "--quiet", "origin", f"refs/tags/{tag}")
+        return commit
+
+
+def _tag_name(version):
+    """The Release tag for an "X.Y.Z" version, "vX.Y.Z"."""
+    return f"v{version}"
+
+
+def _check_publish_input(version, tree):
+    """Raise ValueError unless version is "X.Y.Z" and tree is a folder built for it."""
     if not isinstance(version, str) or not VERSION.fullmatch(version):
         raise ValueError(f"Version must be X.Y.Z, got {version!r}")
     if not tree.is_dir():
@@ -165,33 +189,25 @@ def publish_tree(version, tree, remote):
     manifest_path = tree / MANIFEST
     if not manifest_path.is_file():
         raise ValueError(f"{tree} has no {MANIFEST}")
-    try:
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except ValueError:
-        manifest = None
+    manifest = _load_json(manifest_path)
     built_for = manifest.get("version") if isinstance(manifest, dict) else None
     if built_for != version:
         raise ValueError(f"{manifest_path} is for version {built_for!r}, not {version}")
 
-    tag = f"v{version}"
-    title = f"chore(release): {tag}"
-    with tempfile.TemporaryDirectory(prefix="agy-publish-") as temp:
-        clone = Path(temp) / "clone"
-        _git(temp, "clone", "--quiet", "--", str(remote), str(clone))
-        if _git(clone, "ls-remote", "--tags", "origin", f"refs/tags/{tag}"):
-            return None
-        branch = _git(clone, "symbolic-ref", "--short", "HEAD")
-        _git(clone, "rev-parse", "--verify", "HEAD")
 
-        if _git(clone, "log", "-1", "--format=%s") != title:
-            _sync_clone(clone, tree)
-            _git(clone, "add", "--all", "--force")
-            _git(clone, "commit", "--quiet", "--allow-empty", "--no-verify", "-m", title, bot=True)
-            _git(clone, "push", "--quiet", "origin", f"HEAD:refs/heads/{branch}")
-        commit = _git(clone, "rev-parse", "HEAD")
-        _git(clone, "tag", tag, commit)
-        _git(clone, "push", "--quiet", "origin", f"refs/tags/{tag}")
-        return commit
+def _default_branch(clone):
+    """The clone's default branch name, or RuntimeError when it has no commit yet."""
+    branch = _git(clone, "symbolic-ref", "--short", "HEAD")
+    _git(clone, "rev-parse", "--verify", "HEAD")
+    return branch
+
+
+def _commit_and_push_tree(clone, tree, title, branch):
+    """Make the clone hold tree's files, commit that as the Actions bot, and push it to branch."""
+    _sync_clone(clone, tree)
+    _git(clone, "add", "--all", "--force")
+    _git(clone, "commit", "--quiet", "--allow-empty", "--no-verify", "-m", title, bot=True)
+    _git(clone, "push", "--quiet", "origin", f"HEAD:refs/heads/{branch}")
 
 
 def _kept(path):
@@ -208,9 +224,7 @@ def _sync_clone(clone, tree):
     for source in sorted(tree.rglob("*")):
         relative = source.relative_to(tree).as_posix()
         if source.is_file() and not _kept(relative) and not relative.startswith(".git/"):
-            target = clone / relative
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(source.read_bytes())
+            _write_file(clone / relative, source.read_bytes())
 
 
 def _git(cwd, *args, bot=False, strip=True):
@@ -279,18 +293,19 @@ def _replace_tree(destination, files):
     if destination.exists():
         shutil.rmtree(destination)
     for name, content in files.items():
-        target = destination / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(content)
+        _write_file(destination / name, content)
+
+
+def _write_file(target, content):
+    """Write content's bytes to target, making its parent folders first."""
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(content)
 
 
 def _manifest_problems(path):
     if not path.is_file():
         return [f"{MANIFEST}: missing"]
-    try:
-        manifest = json.loads(path.read_text(encoding="utf-8"))
-    except ValueError:
-        manifest = None
+    manifest = _load_json(path)
     if not isinstance(manifest, dict):
         return [f"{MANIFEST}: must hold a JSON object"]
 
@@ -302,6 +317,14 @@ def _manifest_problems(path):
     if unknown:
         messages.append(f"{MANIFEST}: keys outside Antigravity's schema: {', '.join(unknown)}")
     return messages
+
+
+def _load_json(path):
+    """The JSON value in the UTF-8 file at path, or None when it isn't valid JSON."""
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except ValueError:
+        return None
 
 
 def _skill_folders(tree):
@@ -376,7 +399,7 @@ def main():
             sys.exit(1)
         print(f"{len(_skill_folders(tree))} skills passed")
     elif len(args) == 3 and args[0] == "publish":
-        tag = f"v{args[1]}"
+        tag = _tag_name(args[1])
         commit = publish_tree(args[1], tree, args[2])
         if commit is None:
             print(f"{tag} is already published, nothing pushed")
