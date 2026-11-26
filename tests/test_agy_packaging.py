@@ -1,11 +1,13 @@
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -16,6 +18,21 @@ spec.loader.exec_module(builder)
 
 SKILL = "---\nname: {name}\ndescription: Does {name} things.\n---\n\nBody of {name}.\n"
 RULES = "# Rules\n\nStay plain.\n"
+VERSION = "1.2.3"
+TAG = "v1.2.3"
+TITLE = "chore(release): v1.2.3"
+BOT_NAME = "github-actions[bot]"
+BOT_EMAIL = "41898282+github-actions[bot]@users.noreply.github.com"
+
+# Git run by the tests and by publish_tree ignores the user's own config.
+GIT_ENV = {
+    "GIT_CONFIG_GLOBAL": os.devnull,
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_AUTHOR_NAME": "Test",
+    "GIT_AUTHOR_EMAIL": "test@example.com",
+    "GIT_COMMITTER_NAME": "Test",
+    "GIT_COMMITTER_EMAIL": "test@example.com",
+}
 
 
 def write(path, content):
@@ -52,6 +69,77 @@ class FakeCheckout:
 
     def build(self, version="1.2.3"):
         return builder.build_tree(version, self.dest, self.root)
+
+
+def git(cwd, *args):
+    result = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, check=True)
+    return result.stdout.strip()
+
+
+def snapshot(folder):
+    return {f: (folder / f).read_bytes() for f in files_under(folder)}
+
+
+def write_tree(folder, version=VERSION):
+    """A plugin tree as build_tree writes it, plus a root README.md and .github/ file of its own."""
+    manifest = {"name": "max", "version": version, "displayName": "Max", "description": "Skills."}
+    write(folder / "plugin.json", json.dumps(manifest, indent=2) + "\n")
+    write(folder / "AGENTS.md", "# Rules\n")
+    write(folder / "skills/alpha/SKILL.md", "---\nname: alpha\ndescription: Alpha.\n---\n")
+    write(folder / "skills/alpha/README.md", "Alpha's own readme.\n")
+    write(folder / "skills/alpha/icon.bin", bytes(range(256)))
+    write(folder / "README.md", "The tree's readme, which must not land.\n")
+    write(folder / ".github/workflows/ci.yml", "name: from the tree\n")
+
+
+class FakeRemote:
+    """A local bare repo standing in for Custom-skills-agy, default branch main."""
+
+    README = "Custom-skills-agy readme.\n"
+    CI = "name: agy ci\n"
+    FUNDING = "github: someone\n"
+
+    def __init__(self, base, name="remote.git"):
+        self.path = base / name
+        self.url = str(self.path)
+        self.work = base / f"{name}-work"
+        git(base, "init", "-q", "--bare", "-b", "main", str(self.path))
+        git(base, "init", "-q", "-b", "main", str(self.work))
+        git(self.work, "remote", "add", "origin", self.url)
+
+    def seed(self):
+        """Give the remote what Custom-skills-agy holds before the first publish."""
+        write(self.work / "README.md", self.README)
+        write(self.work / ".github/workflows/ci.yml", self.CI)
+        write(self.work / ".github/FUNDING.yml", self.FUNDING)
+        write(self.work / "skills/old/SKILL.md", "---\nname: old\ndescription: Old.\n---\n")
+        write(self.work / ".gitignore", "*.tmp\n")
+        self.commit("chore(release): v1.2.2")
+
+    def commit(self, message):
+        git(self.work, "add", "-A")
+        git(self.work, "commit", "-q", "--allow-empty", "-m", message)
+        git(self.work, "push", "-q", "origin", "HEAD:refs/heads/main")
+
+    def run(self, *args):
+        return git(self.path, *args)
+
+    def head(self):
+        return self.run("rev-parse", "main")
+
+    def files(self):
+        return set(self.run("ls-tree", "-r", "--name-only", "main").splitlines())
+
+    def show(self, path):
+        return subprocess.run(
+            ["git", "show", f"main:{path}"], cwd=self.path, capture_output=True, check=True
+        ).stdout
+
+    def subject(self):
+        return self.run("log", "-1", "--format=%s", "main")
+
+    def tags(self):
+        return self.run("tag", "--list").splitlines()
 
 
 class BuildTreeTests(unittest.TestCase):
@@ -425,6 +513,258 @@ class CheckTreeTests(unittest.TestCase):
             builder.check_tree(self.tree / "nowhere")
 
 
+class PublishCase(unittest.TestCase):
+    def setUp(self):
+        patcher = mock.patch.dict(os.environ, GIT_ENV)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.temp = tempfile.TemporaryDirectory(prefix="agy-publish-test-")
+        self.base = Path(self.temp.name)
+        self.tree = self.base / "tree"
+        write_tree(self.tree)
+        self.remote = FakeRemote(self.base)
+        self.remote.seed()
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def publish(self, version=VERSION, tree=None, remote=None):
+        return builder.publish_tree(version, tree or self.tree, remote or self.remote.url)
+
+
+class PublishTreeTests(PublishCase):
+    def test_tree_skill_lands_on_the_default_branch(self):
+        self.publish()
+        self.assertIn("skills/alpha/SKILL.md", self.remote.files())
+
+    def test_tree_manifest_lands_at_the_root(self):
+        self.publish()
+        self.assertEqual(self.remote.show("plugin.json"), (self.tree / "plugin.json").read_bytes())
+
+    def test_file_bytes_are_unchanged(self):
+        self.publish()
+        self.assertEqual(self.remote.show("skills/alpha/icon.bin"), bytes(range(256)))
+
+    def test_commit_is_titled_with_the_version(self):
+        self.publish()
+        self.assertEqual(self.remote.subject(), TITLE)
+
+    def test_commit_author_name_is_the_actions_bot(self):
+        self.publish()
+        self.assertEqual(self.remote.run("log", "-1", "--format=%an", "main"), BOT_NAME)
+
+    def test_commit_author_email_is_the_actions_bot(self):
+        self.publish()
+        self.assertEqual(self.remote.run("log", "-1", "--format=%ae", "main"), BOT_EMAIL)
+
+    def test_committer_is_the_actions_bot(self):
+        self.publish()
+        self.assertEqual(self.remote.run("log", "-1", "--format=%cn", "main"), BOT_NAME)
+
+    def test_commit_lands_on_top_of_the_existing_history(self):
+        before = self.remote.head()
+        self.publish()
+        self.assertEqual(self.remote.run("rev-parse", "main^"), before)
+
+    def test_tag_names_the_pushed_commit(self):
+        self.publish()
+        self.assertEqual(self.remote.run("rev-parse", f"{TAG}^{{commit}}"), self.remote.head())
+
+    def test_tag_is_lightweight(self):
+        self.publish()
+        self.assertEqual(self.remote.run("cat-file", "-t", TAG), "commit")
+
+    def test_returns_the_tagged_commit_hash(self):
+        self.assertEqual(self.publish(), self.remote.head())
+
+    def test_tree_is_left_unchanged(self):
+        before = snapshot(self.tree)
+        self.publish()
+        self.assertEqual(snapshot(self.tree), before)
+
+    def test_commit_is_made_even_when_no_file_changed(self):
+        shutil.rmtree(self.remote.work / "skills")
+        for path, content in snapshot(self.tree).items():
+            if path != "README.md" and not path.startswith(".github/"):
+                write(self.remote.work / path, content)
+        (self.remote.work / ".gitignore").unlink()
+        self.remote.commit("docs: Match the tree")
+        self.publish()
+        self.assertEqual(self.remote.subject(), TITLE)
+
+    def test_skill_dropped_from_the_list_is_deleted(self):
+        self.publish()
+        self.assertNotIn("skills/old/SKILL.md", self.remote.files())
+
+    def test_root_dotfile_not_in_the_tree_is_deleted(self):
+        self.publish()
+        self.assertNotIn(".gitignore", self.remote.files())
+
+    def test_root_readme_is_unchanged(self):
+        self.publish()
+        self.assertEqual(self.remote.show("README.md"), FakeRemote.README.encode())
+
+    def test_github_file_is_unchanged(self):
+        self.publish()
+        self.assertEqual(self.remote.show(".github/workflows/ci.yml"), FakeRemote.CI.encode())
+
+    def test_github_file_absent_from_the_tree_stays(self):
+        self.publish()
+        self.assertEqual(self.remote.show(".github/FUNDING.yml"), FakeRemote.FUNDING.encode())
+
+    def test_nested_readme_is_published(self):
+        self.publish()
+        self.assertEqual(self.remote.show("skills/alpha/README.md"), b"Alpha's own readme.\n")
+
+    def test_version_without_three_numbers_is_refused(self):
+        write_tree(self.tree, version="1.2")
+        with self.assertRaises(ValueError):
+            self.publish(version="1.2")
+
+    def test_version_with_v_prefix_is_refused(self):
+        write_tree(self.tree, version=TAG)
+        with self.assertRaises(ValueError):
+            self.publish(version=TAG)
+
+    def test_missing_tree_is_refused(self):
+        with self.assertRaises(ValueError):
+            self.publish(tree=self.base / "no-tree")
+
+    def test_tree_without_a_manifest_is_refused(self):
+        (self.tree / "plugin.json").unlink()
+        with self.assertRaises(ValueError):
+            self.publish()
+
+    def test_tree_built_for_another_version_is_refused(self):
+        write_tree(self.tree, version="1.2.2")
+        with self.assertRaises(ValueError):
+            self.publish()
+
+    def test_bad_input_is_found_before_the_clone(self):
+        with self.assertRaises(ValueError):
+            self.publish(version="1.2", remote=str(self.base / "nowhere.git"))
+
+    def test_refused_input_pushes_nothing(self):
+        before = self.remote.head()
+        write_tree(self.tree, version="1.2.2")
+        with self.assertRaises(ValueError):
+            self.publish()
+        self.assertEqual(self.remote.head(), before)
+
+    def test_remote_with_no_default_branch_raises_runtime_error(self):
+        empty = FakeRemote(self.base, "empty.git")
+        with self.assertRaisesRegex(RuntimeError, "git"):
+            self.publish(remote=empty.url)
+
+    def test_failed_clone_raises_runtime_error_naming_it(self):
+        with self.assertRaisesRegex(RuntimeError, "clone"):
+            self.publish(remote=str(self.base / "nowhere.git"))
+
+    def test_empty_negative_or_suffixed_version_is_refused(self):
+        for version in ("", "-1.2.3", "1.2.3-rc1"):
+            write_tree(self.tree, version=version)
+            with self.subTest(version=version), self.assertRaises(ValueError):
+                self.publish(version=version)
+
+    def test_version_that_is_not_a_string_is_refused(self):
+        for version in (None, 123):
+            write_tree(self.tree, version=version)
+            with self.subTest(version=version), self.assertRaises(ValueError):
+                self.publish(version=version)
+
+    def test_tree_whose_manifest_names_no_version_is_refused(self):
+        for text in ("{name: max", '["max"]', "{}"):
+            write(self.tree / "plugin.json", text)
+            with self.subTest(manifest=text), self.assertRaises(ValueError):
+                self.publish()
+
+    def test_git_folder_in_the_tree_is_not_copied(self):
+        write(self.tree / ".git/config", "not a git config\n")
+        self.publish()
+        self.assertEqual(self.remote.subject(), TITLE)
+
+    def test_refused_tag_push_raises_runtime_error(self):
+        hook = self.remote.path / "hooks/update"
+        write(hook, '#!/bin/sh\ncase "$1" in refs/tags/*) exit 1 ;; esac\n')
+        hook.chmod(0o755)
+        with self.assertRaisesRegex(RuntimeError, "push"):
+            self.publish()
+
+
+class PublishAlreadyTaggedTests(PublishCase):
+    def setUp(self):
+        super().setUp()
+        self.remote.run("tag", TAG, "main")
+        self.before = self.remote.head()
+
+    def test_returns_none(self):
+        self.assertIsNone(self.publish())
+
+    def test_default_branch_is_unchanged(self):
+        self.publish()
+        self.assertEqual(self.remote.head(), self.before)
+
+    def test_tag_is_unchanged(self):
+        self.publish()
+        self.assertEqual(self.remote.run("rev-parse", TAG), self.before)
+
+
+class PublishUntaggedCommitTests(PublishCase):
+    """An earlier run pushed the release commit and then failed to push the tag."""
+
+    def setUp(self):
+        super().setUp()
+        self.remote.commit(TITLE)
+        self.before = self.remote.head()
+
+    def test_no_second_release_commit_is_made(self):
+        self.publish()
+        self.assertEqual(self.remote.head(), self.before)
+
+    def test_existing_release_commit_is_tagged(self):
+        self.publish()
+        self.assertEqual(self.remote.run("rev-parse", f"{TAG}^{{commit}}"), self.before)
+
+
+class PublishToMovedBranchTests(PublishCase):
+    """The remote's default branch gains a commit between the clone and the push.
+
+    Clones read from self.remote, while pushes to that URL go to self.ahead,
+    which holds the same history plus one newer commit.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.ahead = FakeRemote(self.base, "ahead.git")
+        git(self.ahead.work, "pull", "-q", self.remote.url, "main")
+        self.ahead.commit("docs: Land while the release runs")
+        self.ahead_head = self.ahead.head()
+        redirect = {
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": f"url.{self.ahead.url}.pushInsteadOf",
+            "GIT_CONFIG_VALUE_0": self.remote.url,
+        }
+        patcher = mock.patch.dict(os.environ, redirect)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def refused_publish(self):
+        """Publish, expecting the git push to be refused."""
+        with self.assertRaisesRegex(RuntimeError, "push"):
+            self.publish()
+
+    def test_push_is_refused_with_runtime_error(self):
+        self.refused_publish()
+
+    def test_newer_commit_survives(self):
+        self.refused_publish()
+        self.assertEqual(self.ahead.head(), self.ahead_head)
+
+    def test_nothing_is_tagged(self):
+        self.refused_publish()
+        self.assertEqual(self.ahead.tags(), [])
+
+
 class RealPluginTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="agy-real-test-")
@@ -480,12 +820,55 @@ class CommandLineTests(unittest.TestCase):
         self.assertEqual((result.returncode, result.stderr.startswith("error:")), (1, True))
 
     def test_unknown_command_exits_one_with_an_error_line(self):
-        result = self.run_script("publish")
+        result = self.run_script("deploy")
         self.assertEqual((result.returncode, result.stderr.startswith("error:")), (1, True))
 
     def test_build_folder_is_ignored_by_git(self):
         result = subprocess.run(["git", "check-ignore", "-q", ".agy-build/plugin.json"], cwd=ROOT)
         self.assertEqual(result.returncode, 0)
+
+
+class PublishCommandLineTests(PublishCase):
+    """build-agy.py publish VERSION REMOTE, run from a copy of the script beside a built tree."""
+
+    def setUp(self):
+        super().setUp()
+        self.checkout = self.base / "checkout"
+        write(self.checkout / "scripts/build-agy.py", SCRIPT.read_bytes())
+        write_tree(self.checkout / ".agy-build")
+
+    def run_publish(self, *args):
+        return subprocess.run(
+            [sys.executable, str(self.checkout / "scripts/build-agy.py"), "publish", *args],
+            cwd=self.checkout, capture_output=True, text=True, timeout=60,
+        )
+
+    def test_publish_prints_the_pushed_commit(self):
+        result = self.run_publish(VERSION, self.remote.url)
+        self.assertIn(f"Published {TAG} as {self.remote.head()}", result.stdout)
+
+    def test_publish_reads_the_built_tree(self):
+        self.run_publish(VERSION, self.remote.url)
+        self.assertIn("skills/alpha/SKILL.md", self.remote.files())
+
+    def test_already_published_prints_so(self):
+        self.remote.run("tag", TAG, "main")
+        result = self.run_publish(VERSION, self.remote.url)
+        self.assertIn(f"{TAG} is already published, nothing pushed", result.stdout)
+
+    def test_already_published_exits_zero(self):
+        self.remote.run("tag", TAG, "main")
+        self.assertEqual(self.run_publish(VERSION, self.remote.url).returncode, 0)
+
+    def test_failed_clone_exits_one_with_an_error_line(self):
+        result = self.run_publish(VERSION, str(self.base / "nowhere.git"))
+        self.assertEqual(
+            (result.returncode, result.stderr.startswith("error: ")), (1, True), result.stderr
+        )
+
+    def test_publish_without_a_remote_exits_one_with_an_error_line(self):
+        result = self.run_publish(VERSION)
+        self.assertEqual((result.returncode, result.stderr.startswith("error: usage:")), (1, True))
 
 
 if __name__ == "__main__":
