@@ -418,10 +418,12 @@ class PublishCommandLineTests(PublishCase):
         self.remote.run("tag", TAG, "main")
         self.assertEqual(self.run_publish(VERSION, self.remote.url).returncode, 0)
 
-    def test_failed_clone_prints_an_error_line(self):
-        """A failed git command prints error: <reason> to stderr, not a traceback."""
+    def test_failed_clone_exits_one_with_an_error_line(self):
+        """A failed git command exits 1 and prints error: <reason> to stderr, not a traceback."""
         result = self.run_publish(VERSION, str(self.base / "nowhere.git"))
-        self.assertTrue(result.stderr.startswith("error: "), result.stderr)
+        self.assertEqual(
+            (result.returncode, result.stderr.startswith("error: ")), (1, True), result.stderr
+        )
 
 
 if __name__ == "__main__":
