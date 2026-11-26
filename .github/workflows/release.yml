@@ -93,6 +93,20 @@ jobs:
           fi
           git push origin "$TARGET:refs/heads/release"
 
+      # Before the release page: gh release create fails on a re-run, so a
+      # publish placed after it would never be retried.
+      - name: Publish the Antigravity tree
+        if: ${{ !inputs.dry_run }}
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+          AGY_DEPLOY_KEY: ${{ secrets.AGY_DEPLOY_KEY }}
+          REMOTE: git@github.com:Maxastrand04/Custom-skills-agy.git
+        run: |
+          # Not implemented: load AGY_DEPLOY_KEY for ssh, then
+          # python3 scripts/build-agy.py publish "$VERSION" "$REMOTE"
+          echo "Publishing to Custom-skills-agy is not implemented yet."
+          exit 1
+
       - name: Create the release page
         if: ${{ !inputs.dry_run }}
         env:

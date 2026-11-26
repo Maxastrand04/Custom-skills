@@ -25,7 +25,7 @@ SCHEMA_KEYS = {
     "$schema", "name", "version", "displayName", "description", "skills", "disabled",
     "author", "homepage", "repository", "license", "keywords", "logo", "suggestedPrompts",
 }
-USAGE = "usage: build-agy.py build VERSION | build-agy.py check"
+USAGE = "usage: build-agy.py build VERSION | build-agy.py check | build-agy.py publish VERSION REMOTE"
 
 
 def build_tree(version, destination, root=ROOT):
@@ -110,6 +110,49 @@ def check_tree(tree):
     for folder in folders:
         messages += _skill_problems(folder)
     return messages
+
+
+def publish_tree(version, tree, remote):
+    """Push the plugin tree at tree to remote's default branch as Release version, and tag it.
+
+    version is the "X.Y.Z" the Release planned. tree is a folder build_tree
+    wrote for that version. remote is any URL git clone accepts: the
+    workflow passes Custom-skills-agy's SSH URL, tests pass a local bare repo.
+
+    Clones remote into a temporary folder, removed before returning
+    whatever happens, and works only there; the Custom-skills checkout and
+    tree are never changed. Then:
+
+    - If remote already has the tag "vX.Y.Z", returns None and pushes
+      nothing, so a re-run after a later step failed is safe.
+    - Otherwise the clone's files become tree's files. Every tracked file
+      not in tree is deleted, every file in tree is written with its bytes
+      unchanged, and README.md at the clone root and everything under
+      .github/ are left exactly as they were, even when tree has a file at
+      the same path.
+    - Commits that as "chore(release): vX.Y.Z", author and committer
+      "github-actions[bot]" <41898282+github-actions[bot]@users.noreply.github.com>,
+      even when no file changed, so every Release gets its commit. If the
+      default branch's newest commit already has that title, because an
+      earlier run pushed it and then failed to tag, it is reused instead of
+      committing again.
+    - Pushes the commit to the default branch without force, so a branch
+      that moved ahead of the clone rejects the push.
+    - Creates the lightweight tag "vX.Y.Z" on that commit and pushes it.
+      The tag is pushed only after the commit push succeeds.
+
+    Returns the full hash of the tagged commit, or None when the tag
+    already existed.
+
+    Raises ValueError when version is not "X.Y.Z", when tree is not an
+    existing folder, or when tree/plugin.json is missing or its "version"
+    is not version. Every one of these is found before remote is cloned.
+    Raises RuntimeError when a git command fails, such as the clone, either
+    push, or a remote with no default branch, naming the command and git's
+    error output. A failed commit push leaves remote with no new commit and
+    no tag.
+    """
+    raise NotImplementedError
 
 
 def _listed_folders(root):
@@ -236,8 +279,16 @@ def main():
     check           check .agy-build/ with check_tree; print each message on
                     its own line to stderr and exit 1 if there are any,
                     otherwise print how many skills passed
+    publish VERSION REMOTE
+                    publish .agy-build/ to REMOTE as VERSION with
+                    publish_tree; print "Published vVERSION as <commit>"
+                    when it pushed, or "vVERSION is already published,
+                    nothing pushed" when the tag already existed. Exit 0
+                    either way. REMOTE is any URL git clone accepts; the
+                    workflow passes Custom-skills-agy's SSH URL.
 
-    Any ValueError or OSError prints "error: <reason>" and exits 1.
+    Any ValueError, OSError or RuntimeError prints "error: <reason>" and
+    exits 1.
     """
     args = sys.argv[1:]
     tree = ROOT / BUILD
@@ -250,6 +301,8 @@ def main():
             print("\n".join(messages), file=sys.stderr)
             sys.exit(1)
         print(f"{len(_skill_folders(tree))} skills passed")
+    elif len(args) == 3 and args[0] == "publish":
+        raise NotImplementedError
     else:
         raise ValueError(USAGE)
 
