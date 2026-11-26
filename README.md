@@ -52,6 +52,18 @@ GitHub Actions rebuilds the package when the list or skill sources change. It va
 
 Packaging details and remaining proposed skill edits are in [codex/README.md](codex/README.md).
 
+## Antigravity, from the plugin repo
+
+Each release also pushes the `max` skills to [Custom-skills-agy](https://github.com/Maxastrand04/Custom-skills-agy) as an Antigravity plugin. Install it with the Antigravity CLI:
+
+```bash
+agy plugin install https://github.com/Maxastrand04/Custom-skills-agy
+```
+
+Then type `/grill-docs` in Antigravity to run a skill.
+
+The [Custom-skills-agy README](https://github.com/Maxastrand04/Custom-skills-agy#readme) covers pinning a version, updating, and adding the plugin's `AGENTS.md` to your global rules. To pick a personal set of skills or work from a clone instead, use [install.sh](#installsh-step-by-step) with `--agy`.
+
 ## Claude Code, from the marketplace (recommended)
 
 The main way to install, and the quickest. Inside Claude Code:
@@ -81,7 +93,7 @@ Both marketplaces serve the `release` branch, not `main`. Work merged to `main` 
 
 A release is a hand-started run of the **Release** workflow in the Actions tab, on `main`. Leave **dry run** ticked to see the version it would release and the commits that decided it. Untick it to release. The run builds the Codex package and runs the tests, then picks the next version from the conventional commits since the last `vX.Y.Z` tag. It builds the Antigravity plugin tree with that version and checks it, so a dry run fails too if a shared skill breaks Antigravity's rules. A breaking change (`feat!:` or a `BREAKING CHANGE:` body line) raises the first number, `feat` raises the middle, and `fix` raises the last. Other types and commits without a type raise nothing, and a release with none of the three stops without changing anything. The first release is `1.0.0`.
 
-The run writes that one version into `max` on Claude and `max` on Codex, commits it to `main` as `chore(release): vX.Y.Z`, moves `release` forward to that commit, and creates the GitHub release page with notes grouped into breaking changes, features, and fixes. If a run fails partway, start it again and it finishes the same version. To try the version rules locally, run `python3 scripts/release.py plan`. To build and check the Antigravity tree locally, run `python3 scripts/build-agy.py build 1.2.3` and then `python3 scripts/build-agy.py check`. The tree lands in `.agy-build/`, which git ignores.
+The run writes that one version into `max` on Claude and `max` on Codex, commits it to `main` as `chore(release): vX.Y.Z`, moves `release` forward to that commit, rebuilds the Antigravity tree from that commit's files, pushes it to `Maxastrand04/Custom-skills-agy` and tags it `vX.Y.Z`, and creates the GitHub release page with notes grouped into breaking changes, features, and fixes. The push to Custom-skills-agy needs a repo secret, `AGY_DEPLOY_KEY`, holding the private half of a deploy key with write access to that repo. If a run fails partway, start it again and it finishes the same version. To try the version rules locally, run `python3 scripts/release.py plan`. To build and check the Antigravity tree locally, run `python3 scripts/build-agy.py build 1.2.3` and then `python3 scripts/build-agy.py check`. The tree lands in `.agy-build/`, which git ignores.
 
 ### Re-adding a marketplace
 
@@ -105,7 +117,7 @@ codex plugin add max@custom-skills-codex
 
 ## install.sh, step by step
 
-Use this route if you want to change the skills, add your own, use Antigravity, or type skills without the `max:` prefix. The script symlinks each skill folder into `~/.claude/skills/` (Claude Code) or `~/.gemini/config/skills/` (Antigravity), so the agent reads straight from your clone and an edit to a `SKILL.md` applies the next time that skill runs.
+Use this route if you want to change the skills, add your own, pick a personal set in Antigravity, or type skills without the `max:` prefix. The script symlinks each skill folder into `~/.claude/skills/` (Claude Code) or `~/.gemini/config/skills/` (Antigravity), so the agent reads straight from your clone and an edit to a `SKILL.md` applies the next time that skill runs.
 
 If you installed from the marketplace, run `/plugin uninstall max@custom-skills` first. Otherwise every skill shows up twice.
 
