@@ -50,6 +50,14 @@ _Avoid_: dangling (too narrow, an archived Skill's link still resolves), orphan
 The three stations `architect-ticket`, `implement-ticket` and `refactor-ticket`, run in that order on one **Ticket** and one branch, as the red, green and refactor legs of one red-green-refactor cycle. Each Skill's name says which leg it is. Red leaves every **Acceptance test** failing, green takes them all passing, refactor changes only shape underneath them. The cycle is split across three sessions rather than three phases of one session, so the legs hand off through the **Red branch** and then the green suite instead of through accumulated context.
 _Avoid_: review stage, QA pass, cleanup pass
 
+**Orchestrator**:
+The `tdd-ticket` session for one **Ticket**. It reads the effort label, runs `architect-ticket` itself with the user on `medium` and `major`, then starts each later station in a fresh subagent whose starting prompt carries that station's full `SKILL.md` text and its folder. When a subagent halts, the orchestrator answers from what the grill settled and starts the next fresh subagent, or raises an **Escalation**. It may settle implementation details and change an **Acceptance test** that still follows the **Spec** and the **Public interface**. Changing the **Spec** or the **Public interface** is never its call. On `major` it decides nothing the grill left open. It refuses `trivial`, unlabelled, question, and merged tickets. Claude Code only.
+_Avoid_: router, architect session, driver
+
+**Escalation**:
+The **Orchestrator** stopping to ask the user in its own chat. Never a PR comment, never a new session. Raised on every level for a change to the **Spec** or the **Public interface**, on `major` for any halt the grill's context doesn't answer, and on any level when a subagent halts twice on the same point.
+_Avoid_: handoff, halt note, ping
+
 **Red branch**:
 What `architect-ticket` leaves behind and the only handoff between it and `implement-ticket`: a committed branch carrying the **Public interface** as stubs in the real source files, the **Acceptance tests** written against those stubs, and every one of those tests observed failing. It replaced the plan file, because a signature and a failing test carry the contract exactly where prose could only describe it. `implement-ticket` reads the **Ticket** plus `git diff main...HEAD` and needs nothing else.
 _Avoid_: plan, spec branch, scaffold, skeleton
