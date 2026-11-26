@@ -35,7 +35,7 @@ The shared set distributed as `max`. Claude Code reads its selection from `.clau
 _Avoid_: package, bundle
 
 **Release**:
-One `vX.Y.Z` version of the **Plugin**, made by a hand-started run of `.github/workflows/release.yml` on `main`. `scripts/release.py` picks the number from the conventional commits since the last `vX.Y.Z` tag, and the run writes it into the `max` Plugin for Claude Code and the `max` Plugin for Codex, so both share one version. With that version it builds the Antigravity tree and checks it against Antigravity's rules, and a broken tree fails the run, dry or real. Each Release gets a GitHub release page. See ADR-0005 and ADR-0010.
+One `vX.Y.Z` version of the **Plugin**, made by a hand-started run of `.github/workflows/release.yml` on `main`. `scripts/release.py` picks the number from the conventional commits since the last `vX.Y.Z` tag, and the run writes it into the `max` Plugin for Claude Code and the `max` Plugin for Codex, so both share one version. With that version it builds the Antigravity tree and checks it against Antigravity's rules, and a broken tree fails the run, dry or real. A real Release then rebuilds the tree from the files of its own release commit, even when `main` has moved past it, and pushes it to `Maxastrand04/Custom-skills-agy` as a `chore(release): vX.Y.Z` commit and tags it `vX.Y.Z`, leaving that repo's root `README.md` and `.github/` alone. Each Release gets a GitHub release page. See ADR-0005, ADR-0010 and ADR-0013.
 _Avoid_: deploy, publish, version bump
 
 **Release marker**:
