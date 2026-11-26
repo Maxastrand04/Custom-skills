@@ -2,9 +2,12 @@
 """Build the max Plugin as an Antigravity plugin tree, and check one. No extra packages."""
 
 import json
+import os
 import re
 import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -26,6 +29,8 @@ SCHEMA_KEYS = {
     "author", "homepage", "repository", "license", "keywords", "logo", "suggestedPrompts",
 }
 USAGE = "usage: build-agy.py build VERSION | build-agy.py check | build-agy.py publish VERSION REMOTE"
+BOT_NAME = "github-actions[bot]"
+BOT_EMAIL = "41898282+github-actions[bot]@users.noreply.github.com"
 
 
 def build_tree(version, destination, root=ROOT):
@@ -152,7 +157,76 @@ def publish_tree(version, tree, remote):
     error output. A failed commit push leaves remote with no new commit and
     no tag.
     """
-    raise NotImplementedError
+    tree = Path(tree)
+    if not isinstance(version, str) or not VERSION.fullmatch(version):
+        raise ValueError(f"Version must be X.Y.Z, got {version!r}")
+    if not tree.is_dir():
+        raise ValueError(f"Not a folder: {tree}")
+    manifest_path = tree / MANIFEST
+    if not manifest_path.is_file():
+        raise ValueError(f"{tree} has no {MANIFEST}")
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except ValueError:
+        manifest = None
+    built_for = manifest.get("version") if isinstance(manifest, dict) else None
+    if built_for != version:
+        raise ValueError(f"{manifest_path} is for version {built_for!r}, not {version}")
+
+    tag = f"v{version}"
+    title = f"chore(release): {tag}"
+    with tempfile.TemporaryDirectory(prefix="agy-publish-") as temp:
+        clone = Path(temp) / "clone"
+        _git(temp, "clone", "--quiet", "--", str(remote), str(clone))
+        if _git(clone, "ls-remote", "--tags", "origin", f"refs/tags/{tag}"):
+            return None
+        branch = _git(clone, "symbolic-ref", "--short", "HEAD")
+        _git(clone, "rev-parse", "--verify", "HEAD")
+
+        if _git(clone, "log", "-1", "--format=%s") != title:
+            _sync_clone(clone, tree)
+            _git(clone, "add", "--all", "--force")
+            _git(clone, "commit", "--quiet", "--allow-empty", "--no-verify", "-m", title, bot=True)
+            _git(clone, "push", "--quiet", "origin", f"HEAD:refs/heads/{branch}")
+        commit = _git(clone, "rev-parse", "HEAD")
+        _git(clone, "tag", tag, commit)
+        _git(clone, "push", "--quiet", "origin", f"refs/tags/{tag}")
+        return commit
+
+
+def _kept(path):
+    """True for a clone-relative posix path publish_tree never replaces."""
+    return path == "README.md" or path.startswith(".github/")
+
+
+def _sync_clone(clone, tree):
+    """Make the clone's files tree's files, leaving the kept paths alone."""
+    tracked = _git(clone, "ls-files", "-z", strip=False).split("\0")
+    for path in filter(None, tracked):
+        if not _kept(path):
+            (clone / path).unlink(missing_ok=True)
+    for source in sorted(tree.rglob("*")):
+        relative = source.relative_to(tree).as_posix()
+        if source.is_file() and not _kept(relative) and not relative.startswith(".git/"):
+            target = clone / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source.read_bytes())
+
+
+def _git(cwd, *args, bot=False, strip=True):
+    """Run git in cwd and return its output, or raise RuntimeError naming the command."""
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
+    if bot:
+        env.update(
+            GIT_AUTHOR_NAME=BOT_NAME, GIT_AUTHOR_EMAIL=BOT_EMAIL,
+            GIT_COMMITTER_NAME=BOT_NAME, GIT_COMMITTER_EMAIL=BOT_EMAIL,
+        )
+    command = ["git", *args]
+    result = subprocess.run(command, cwd=cwd, env=env, capture_output=True, text=True)
+    if result.returncode != 0:
+        output = (result.stderr or result.stdout).strip()
+        raise RuntimeError(f"git {' '.join(args)} failed: {output}")
+    return result.stdout.strip() if strip else result.stdout
 
 
 def _listed_folders(root):
@@ -302,7 +376,12 @@ def main():
             sys.exit(1)
         print(f"{len(_skill_folders(tree))} skills passed")
     elif len(args) == 3 and args[0] == "publish":
-        raise NotImplementedError
+        tag = f"v{args[1]}"
+        commit = publish_tree(args[1], tree, args[2])
+        if commit is None:
+            print(f"{tag} is already published, nothing pushed")
+        else:
+            print(f"Published {tag} as {commit}")
     else:
         raise ValueError(USAGE)
 
@@ -310,6 +389,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (ValueError, OSError) as error:
+    except (ValueError, OSError, RuntimeError) as error:
         print(f"error: {error}", file=sys.stderr)
         sys.exit(1)
