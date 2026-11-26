@@ -52,6 +52,18 @@ GitHub Actions rebuilds the package when the list or skill sources change. It va
 
 Packaging details and remaining proposed skill edits are in [codex/README.md](codex/README.md).
 
+## Antigravity, from the plugin repo
+
+Each release also pushes the `max` skills to [Custom-skills-agy](https://github.com/Maxastrand04/Custom-skills-agy) as an Antigravity plugin. Install it with the Antigravity CLI:
+
+```bash
+agy plugin install https://github.com/Maxastrand04/Custom-skills-agy
+```
+
+Then type `/grill-docs` in Antigravity to run a skill.
+
+The [Custom-skills-agy README](https://github.com/Maxastrand04/Custom-skills-agy#readme) covers pinning a version, updating, and adding the plugin's `AGENTS.md` to your global rules. To pick a personal set of skills or work from a clone instead, use [install.sh](#installsh-step-by-step) with `--agy`.
+
 ## Claude Code, from the marketplace (recommended)
 
 The main way to install, and the quickest. Inside Claude Code:
@@ -105,7 +117,7 @@ codex plugin add max@custom-skills-codex
 
 ## install.sh, step by step
 
-Use this route if you want to change the skills, add your own, use Antigravity, or type skills without the `max:` prefix. The script symlinks each skill folder into `~/.claude/skills/` (Claude Code) or `~/.gemini/config/skills/` (Antigravity), so the agent reads straight from your clone and an edit to a `SKILL.md` applies the next time that skill runs.
+Use this route if you want to change the skills, add your own, pick a personal set in Antigravity, or type skills without the `max:` prefix. The script symlinks each skill folder into `~/.claude/skills/` (Claude Code) or `~/.gemini/config/skills/` (Antigravity), so the agent reads straight from your clone and an edit to a `SKILL.md` applies the next time that skill runs.
 
 If you installed from the marketplace, run `/plugin uninstall max@custom-skills` first. Otherwise every skill shows up twice.
 
