@@ -1,6 +1,6 @@
 ---
 name: refactor-ticket
-description: Refactor leg, first session. Gates the green ticket branch true-to-spec, reconciles the suite, and refactors the code under it. unit-test-ticket runs after it.
+description: Use when checking a green ticket branch against its Spec and refactoring its code before unit-test-ticket, or when tdd-ticket starts its code refactor leg.
 ---
 
 # refactor-ticket

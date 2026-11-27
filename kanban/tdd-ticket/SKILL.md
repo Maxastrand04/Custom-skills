@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 You are the **orchestrator** for one ticket. The user settles the design with you once, and next sees the PR. Every station after the architect runs in a fresh subagent, and you stand between those subagents and the user: you answer what you may, and escalate what you may not.
 
-You run a station by reading its `SKILL.md` from `../<station>/SKILL.md` and handing the full text to a subagent. Never start a station through the Skill tool, and never give a subagent a path to go find its instructions. `pr-ticket` is the exception, since it is model-invoked: start it through the Skill tool. See ADR-0001 and ADR-0004.
+The stations are model-invoked. Start `architect-ticket` and `pr-ticket` through the Skill tool in this chat. For every other station, start a fresh subagent that invokes the station through its own Skill tool. Never read or copy a station's `SKILL.md` into this session or a subagent prompt. If the skill is unavailable, report a halt instead of copying its instructions. See ADR-0001 and ADR-0004.
 
 Every `../` path resolves from this skill's directory. Never search the repo for it.
 
@@ -45,7 +45,7 @@ Then route on the label: `medium` or `major` to step 2, `minor` to step 4.
 
 ## 2. Architect with the user (medium, major)
 
-Read `../<station>/SKILL.md` for `architect-ticket` and follow it yourself, in this chat, with the user, on this session's model. It borrows `grill-docs` for the grill. Stop at its step 6 Confirm: skip the line pointing at `/implement-ticket`, since you start it next.
+Invoke `architect-ticket` through the Skill tool with the ticket reference, in this chat, with the user, on this session's model. It borrows `grill-docs` for the grill. Stop at its step 6 Confirm: skip the line pointing at `/implement-ticket`, since you start it next.
 
 Keep what the grill settled in mind. It is the context you answer later halts from.
 
@@ -68,7 +68,7 @@ Each must return `Result  green` before the next starts. Then go to step 5.
 | `execute-ticket` | sonnet |
 | `review-diff` | opus |
 
-Start `execute-ticket` with the line `Option: orchestrated` in its prompt, before the station text. Then `review-diff`. Then go to step 5.
+Start `execute-ticket` with the line `Option: orchestrated` in its prompt, before it invokes the skill. Then `review-diff`. Then go to step 5.
 
 **Mislabelled.** When `execute-ticket` halts on its qualifying check, or on a record or decision halt, the ticket is not `minor`. Stop the route. Post one comment on the ticket PR with `gh pr comment <PR> --body-file <file>`:
 
@@ -97,11 +97,9 @@ List every decision you made without the user, and every haiku halt. Write `Deci
 
 ## Starting a subagent
 
-Use the Agent tool with `subagent_type: general-purpose` and the station's model. Build the prompt from three parts, in order:
+Use the Agent tool with `subagent_type: general-purpose` and the station's model. Build the prompt from the wrapper in `subagent-prompt.md`, beside this file, with its placeholders filled. Include `Option: orchestrated` for `execute-ticket`.
 
-1. The wrapper in `subagent-prompt.md`, beside this file, with its placeholders filled.
-2. The station's full `SKILL.md`, read from `../<station>/SKILL.md`, verbatim.
-3. On a restart, the resume block the wrapper describes.
+On a restart, append the resume block from that file, carrying every earlier answer for this station. The subagent invokes the station through its own Skill tool and applies the wrapper and resume instructions to that invocation. Use the skill name exposed by the installed catalog, including its plugin prefix when present.
 
 Wait for it to finish. Read its last block, the halt block the wrapper defines. Anything else, such as a missing block, counts as a halt with the point `no result block`.
 

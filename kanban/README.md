@@ -14,7 +14,7 @@ The ticket workflow. Each skill leaves an artifact the next one reads, and GitHu
 | `review-diff` | Reviews any branch against its ticket, fixes code smells and record breaches, and leaves a review note on the PR or the issue. For branches that skipped `refactor-ticket`. |
 | `pr-ticket` | Checks the branch is committed and green, then rewrites its ticket PR from the commits and diff. It marks the PR ready only when `For the reviewer` has no red or yellow items, and otherwise leaves it a draft for you to flip. Runs in a fresh subagent, and Claude starts it on its own whenever a ticket branch needs its PR. Works without the kanban. |
 | `execute-ticket` | Runs red, green, and refactor in one unattended session for a ticket labelled `effort:minor`, then hands the branch to `pr-ticket`. |
-| `tdd-ticket` | The orchestrator. Runs a `medium`, `major` or `minor` ticket's whole route from one session: the architect grill with you, then each later station in a fresh subagent, then `pr-ticket`. Escalates Spec, interface and record changes to you. Claude Code only, and not in the plugin. |
+| `tdd-ticket` | The orchestrator. Runs a `medium`, `major` or `minor` ticket's whole route from one session: the architect grill with you, then each later station in a fresh subagent that loads its own model-invoked skill, then `pr-ticket`. It never copies station instructions into subagent prompts. Escalates Spec, interface and record changes to you. Claude Code only, and not in the plugin. |
 | `helper-skill` | Carries copies of the base files the stations read, so the kanban works when the base ships as a separate plugin. Nobody runs it. Edit the originals and run `scripts/sync-helper-skill.py`. |
 | `amend-pcr` | Loads when a convention in `docs/pcr/` blocks the work. Ranks the ripple, gives a verdict, and amends or retires the PCR only after you approve the listed changes. The only skill that edits `docs/pcr/`. Model-invoked. |
 
@@ -23,7 +23,7 @@ Run `map-epic` or `new-ticket` first. They label each ticket with how much of yo
 - `effort:medium`, `effort:major` and `effort:minor` run `tdd-ticket`. It grills the interface with you on `medium` and `major`, then runs every later station in a fresh subagent and asks you only what it may not decide. On `minor` it runs `execute-ticket` and `review-diff` with no grill. You next see the PR.
 - `effort:trivial` is an ordinary session where you watch the agent and check what no test reaches.
 
-You can still run the stations by hand, in the order `tdd-ticket` would.
+The six stations `architect-ticket`, `implement-ticket`, `refactor-ticket`, `unit-test-ticket`, `execute-ticket` and `review-diff` are model-invoked so subagents can load them through the Skill tool. `tdd-ticket` remains user-invoked. You can still run the stations by hand, in the order `tdd-ticket` would.
 
 ## Every branch has a ticket PR
 
