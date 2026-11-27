@@ -1,7 +1,6 @@
 ---
 name: review-diff
-description: Reviews any branch's committed diff against its ticket, the code smells, and the project's records, fixes what it finds, and leaves a review note on the ticket PR. Runs before pr-ticket on branches refactor-ticket never saw.
-disable-model-invocation: true
+description: Use when reviewing a committed branch against its ticket and project records before pr-ticket, including tdd-ticket's minor route.
 ---
 
 # review-diff

@@ -10,8 +10,6 @@ We rejected the looser form, any file in any sibling, because it makes every Ski
 
 **Consequence:** A Skill can now fail at runtime because of a sibling. `refactor-ticket` breaks if `codebase-rules` is renamed, uninstalled, or moved to `archive/`, which `install.sh` never symlinks. Owning a shared contract also costs freedom: its owner can no longer rename or restructure it without checking who reads it, and there is deliberately no list to check, so that means grepping.
 
-Publication is one declaration and nothing more, so a bundled file with no such line stays private and may not be reached from outside. In a diff, a breach looks like a `../` reference to a file that never declares itself shared, a `../` reference to any `SKILL.md` outside `kanban/tdd-ticket`, or a referenced path that leaves the Skill directories entirely.
+Publication is one declaration and nothing more, so a bundled file with no such line stays private and may not be reached from outside. In a diff, a breach looks like a `../` reference to a file that never declares itself shared, a `../` reference to any `SKILL.md`, or a referenced path that leaves the Skill directories entirely.
 
-**Exceptions:** `kanban/tdd-ticket` may read a station's `SKILL.md` through `../<station>/SKILL.md`, to hand its full text to a fresh subagent, per ADR-0004.
-
-**Date:** 2026-11-26
+**Date:** 2026-11-27

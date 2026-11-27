@@ -1,10 +1,12 @@
 # Subagent prompt
 
-The wrapper `tdd-ticket` puts above a station's `SKILL.md` text. Fill the placeholders, then send everything between the lines. `<station folder>` is the absolute path of `../<station>/`, resolved from `tdd-ticket`'s own directory.
+The prompt `tdd-ticket` sends to a station's subagent. Fill the placeholders, then send everything between the lines. Never append the station's `SKILL.md`.
 
 ---
 
-You are running the `<station>` skill for ticket #<N> on branch `<branch>`, in the project at `<project root>`. Its full `SKILL.md` follows below this wrapper. Follow it as written, with the changes listed here. The skill's own folder is `<station folder>`, and every `../` path in it resolves from there, never from the project.
+Invoke the `<station>` skill through the Skill tool for ticket #<N> on branch `<branch>`, in the project at `<project root>`. Use its installed name, including its plugin prefix when present. Follow the skill with the changes listed here and any Option or Resume block in this prompt. Resolve the skill's relative paths from the skill directory supplied by the tool, never from the project.
+
+If the skill is unavailable, return a halt block with Point `skill unavailable`. Never read its `SKILL.md` as a fallback.
 
 A user started an orchestrator session, and you report to it. The user is not reading this conversation.
 
@@ -31,7 +33,7 @@ Options   <the options the skill names for this stop, or none>
 
 ## Resume block
 
-On a restart, append this after the station's text:
+On a restart, append this to the subagent prompt. Apply it when invoking the skill:
 
 ```
 ## Resume

@@ -1,7 +1,6 @@
 ---
 name: architect-ticket
-description: Third station, the red leg of red-green-refactor. Turns a ticket into a branch of interface stubs and failing acceptance tests, committed and pushed once you approve the diff.
-disable-model-invocation: true
+description: Use when turning a ticket into a red branch of interface stubs and failing acceptance tests, or when tdd-ticket starts its architect leg.
 ---
 
 # architect-ticket

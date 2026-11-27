@@ -1,6 +1,6 @@
 ---
 name: implement-ticket
-description: Fills in the stub bodies on a red branch until the acceptance file passes, then commits.
+description: Use when filling in a red branch until its acceptance tests pass, or when tdd-ticket starts its implementation leg.
 ---
 
 # implement-ticket

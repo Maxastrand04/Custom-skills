@@ -1,6 +1,6 @@
 ---
 name: unit-test-ticket
-description: Refactor leg, second session. Folds the acceptance file into the unit suite and tidies the changed modules' tests against test-standards.md. Runs after refactor-ticket.
+description: Use after refactor-ticket to fold the acceptance file into the unit suite and tidy the changed modules' tests, or when tdd-ticket starts its test refactor leg.
 ---
 
 # unit-test-ticket

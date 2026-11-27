@@ -1,6 +1,6 @@
 ---
 name: execute-ticket
-description: Executes an effort:minor ticket unattended, red-green-refactor in one session, and hands the branch to pr-ticket for review. Takes the ticket reference as its argument.
+description: Use when executing an effort:minor ticket unattended, or when tdd-ticket starts its minor route. Takes the ticket reference as its argument.
 ---
 
 # execute-ticket
