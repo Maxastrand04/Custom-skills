@@ -51,11 +51,11 @@ The three stations `architect-ticket`, `implement-ticket` and `refactor-ticket`,
 _Avoid_: review stage, QA pass, cleanup pass
 
 **Orchestrator**:
-The `tdd-ticket` session for one **Ticket**. It reads the effort label, runs `architect-ticket` itself with the user on `medium` and `major`, then starts each later station in a fresh subagent whose starting prompt carries that station's full `SKILL.md` text and its folder. When a subagent halts, the orchestrator answers from what the grill settled and starts the next fresh subagent, or raises an **Escalation**. It may settle implementation details and change an **Acceptance test** that still follows the **Spec** and the **Public interface**. Changing the **Spec** or the **Public interface** is never its call. On `major` it decides nothing the grill left open. It refuses `trivial`, unlabelled, question, and merged tickets. Claude Code only.
+The `tdd-ticket` session for one **Ticket**. It reads the effort label, runs `architect-ticket` itself with the user on `medium` and `major`, then starts each later station in a fresh subagent whose starting prompt carries that station's full `SKILL.md` text and its folder. When a subagent halts, the orchestrator answers from what the grill settled and starts the next fresh subagent, or raises an **Escalation**. It may settle implementation details and change an **Acceptance test** that still follows the **Spec** and the **Public interface**. Changing the **Spec**, the **Public interface**, an **ADR** or a **PCR** is never its call. On `major` it decides nothing the grill left open. It refuses `trivial`, unlabelled, question, and merged tickets. Claude Code only.
 _Avoid_: router, architect session, driver
 
 **Escalation**:
-The **Orchestrator** stopping to ask the user in its own chat. Never a PR comment, never a new session. Raised on every level for a change to the **Spec** or the **Public interface**, on `major` for any halt the grill's context doesn't answer, and on any level when a subagent halts twice on the same point.
+The **Orchestrator** stopping to ask the user in its own chat. Never a PR comment, never a new session. Raised on every level for a change to the **Spec**, the **Public interface**, an **ADR** or a **PCR**, on `major` for any halt the grill's context doesn't answer, and on any level when a subagent halts twice on the same point.
 _Avoid_: handoff, halt note, ping
 
 **Red branch**:
